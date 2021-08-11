@@ -1,0 +1,3 @@
+rootProject.name = 'JavaPlaid'
+include 'core'
+include 'annotation-processors'
