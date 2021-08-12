@@ -20,9 +20,12 @@ public class LinkHandler implements RequestHandler<PlaidLinkTokenCreateRequest, 
         logger.log(logTemplate);
 
         try {
-            return linkGrabber.getLinkToken(user, products);
+            String linkToken = linkGrabber.getLinkToken(user, products);
+            logger.log( String.format("Retrieved linkToken %s for user %s for %s products", linkToken, user, products));
+            return linkToken;
         } catch (Exception e) {
             // Rethrow Exception to prevent Lambda from succeeding.
+            logger.log("Exception" + e.toString() + System.currentTimeMillis());
             throw new RuntimeException(String.format("Exception: %s", e.toString()));
         }
     }
