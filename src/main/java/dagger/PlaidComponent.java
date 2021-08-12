@@ -1,7 +1,7 @@
 package dagger;
 
 import com.plaid.client.PlaidClient;
-import plaid.PlaidGrabber;
+import plaid.LinkGrabber;
 
 import javax.inject.Singleton;
 
@@ -10,5 +10,5 @@ import javax.inject.Singleton;
 public interface PlaidComponent {
 
     PlaidClient buildPLaidClient();
-    PlaidGrabber buildPlaidGrabber();
+    LinkGrabber buildPlaidGrabber();
 }

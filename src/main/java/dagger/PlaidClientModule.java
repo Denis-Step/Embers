@@ -1,7 +1,6 @@
 package dagger;
 
 import com.plaid.client.PlaidClient;
-import plaid.PlaidGrabber;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

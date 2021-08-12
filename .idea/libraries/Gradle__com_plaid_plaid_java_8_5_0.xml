@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.plaid:plaid-java:8.5.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.plaid/plaid-java/8.5.0/feadd8f4a92685f54ff5cca485b6643321f1bd7e/plaid-java-8.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.plaid/plaid-java/8.5.0/6f3c6123265d70e5a1309c09cf09ce6ed7217bb1/plaid-java-8.5.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
