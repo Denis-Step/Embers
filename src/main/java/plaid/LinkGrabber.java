@@ -28,7 +28,12 @@ public class LinkGrabber {
 
         Call<LinkTokenCreateResponse> response =  plaidClient.service().linkTokenCreate(linkTokenCreateRequest);
         Response<LinkTokenCreateResponse> resp = response.execute();
-        return resp.body().getLinkToken();
+
+        if (resp.isSuccessful()) {
+            return resp.body().getLinkToken();
+        } else {
+            throw new RuntimeException(resp.toString());
+        }
 
     }
 

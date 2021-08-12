@@ -21,8 +21,9 @@ public class LinkHandler implements RequestHandler<PlaidLinkTokenCreateRequest, 
 
         try {
             return linkGrabber.getLinkToken(user, products);
-        } catch (IOException e) {
-            return String.format("Exception: %s", e.toString());
+        } catch (Exception e) {
+            // Rethrow Exception to prevent Lambda from succeeding.
+            throw new RuntimeException(String.format("Exception: %s", e.toString()));
         }
     }
 
