@@ -5,9 +5,15 @@ import java.util.List;
 
 public class PlaidLinkTokenCreateRequest {
 
-    private String user;
-    private List<String> products;
+    public String user;
+    public List<String> products;
 
+    PlaidLinkTokenCreateRequest() {}
+
+    PlaidLinkTokenCreateRequest(String user, List<String> products) {
+        this.user = user;
+        this.products = products;
+    }
 
     public String getUser() {
         return user;

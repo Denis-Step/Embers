@@ -7,15 +7,26 @@ import dagger.DaggerPlaidComponent;
 import lambda.PlaidLinkTokenCreateRequest;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class LinkHandler implements RequestHandler<PlaidLinkTokenCreateRequest, String> {
     LinkGrabber linkGrabber = DaggerPlaidComponent.create().buildPlaidGrabber();
 
+    public String handleTestRequest(Map<String, Object> event, Context context) {
+        LambdaLogger logger = context.getLogger();
+        logger.log(event.toString());
+        return event.toString();
+    }
+
+    @Override
     public String handleRequest(PlaidLinkTokenCreateRequest event, Context context) {
         String user = event.getUser();
         List<String> products = event.getProducts();
         LambdaLogger logger = context.getLogger();
+        logger.log(user);
+        logger.log(event.toString());
         String logTemplate = String.format("Requesting link token for user %s for %s products .", user, products.toString());
         logger.log(logTemplate);
 
