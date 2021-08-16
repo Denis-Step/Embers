@@ -11,10 +11,10 @@ public interface PlaidClientModule {
     @Provides
     @Singleton
     static PlaidClient providePlaidClient(@Named("CLIENT_ID") String clientId,
-                                          @Named("SANDBOX_SECRET") String clientSecret){
+                                          @Named("DEVELOPMENT_SECRET") String clientSecret){
         return PlaidClient.newBuilder()
                 .clientIdAndSecret(clientId, clientSecret)
-                .sandboxBaseUrl()
+                .developmentBaseUrl()
                 .build();
     }
 
