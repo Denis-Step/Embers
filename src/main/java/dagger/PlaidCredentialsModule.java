@@ -3,7 +3,7 @@ package dagger;
 import javax.inject.Named;
 
 @Module
-public interface CredentialsModule {
+public interface PlaidCredentialsModule {
 
     @Provides
     @Named("CLIENT_ID")

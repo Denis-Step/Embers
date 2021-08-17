@@ -1,16 +1,16 @@
-package lambda;
+package lambda.requests;
 
 import java.util.List;
 
 
-public class PlaidLinkTokenCreateRequest {
+public class CreateLinkTokenRequest {
 
     public String user;
     public List<String> products;
 
-    PlaidLinkTokenCreateRequest() {}
+    CreateLinkTokenRequest() {}
 
-    PlaidLinkTokenCreateRequest(String user, List<String> products) {
+    CreateLinkTokenRequest(String user, List<String> products) {
         this.user = user;
         this.products = products;
     }

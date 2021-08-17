@@ -10,23 +10,46 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: com.amazonaws:aws-lambda-java-core:1.2.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.amazonaws:aws-lambda-java-events:3.1.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.plaid:plaid-java:8.5.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.dagger:dagger:2.4" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.8.9" level="project" />
-    <orderEntry type="library" name="Gradle: javax.inject:javax.inject:1" level="project" />
-    <orderEntry type="library" name="Gradle: joda-time:joda-time:2.6" level="project" />
-    <orderEntry type="library" name="Gradle: com.squareup.retrofit2:converter-gson:2.9.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.squareup.retrofit2:retrofit:2.9.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.squareup.okhttp3:logging-interceptor:3.14.9" level="project" />
-    <orderEntry type="library" name="Gradle: com.squareup.okhttp3:okhttp:3.14.9" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.8.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.8.9" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.5" level="project" />
-    <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.17.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.amazonaws:aws-lambda-java-log4j2:1.2.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.apache.logging.log4j:log4j-core:2.13.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.apache.logging.log4j:log4j-api:2.13.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.amazonaws:aws-lambda-java-core:1.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:auth:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.amazonaws:aws-java-sdk-dynamodb:1.12.47" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.amazonaws:aws-lambda-java-events:3.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.plaid:plaid-java:8.5.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.dagger:dagger:2.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.12.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.inject:javax.inject:1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:regions:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:json-utils:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:sdk-core:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:profiles:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:http-client-spi:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:utils:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:annotations:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.eventstream:eventstream:1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.amazonaws:aws-java-sdk-s3:1.12.47" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.amazonaws:aws-java-sdk-core:1.12.47" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.amazonaws:jmespath-java:1.12.47" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: joda-time:joda-time:2.8.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.squareup.retrofit2:converter-gson:2.9.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.squareup.retrofit2:retrofit:2.9.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.squareup.okhttp3:logging-interceptor:3.14.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.squareup.okhttp3:okhttp:3.14.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.12.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.12.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-api:1.7.30" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:third-party-jackson-core:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.awssdk:metrics-spi:2.17.19" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.reactivestreams:reactive-streams:1.0.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.amazonaws:aws-java-sdk-kms:1.12.47" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.12.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpclient:4.5.13" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-codec:commons-codec:1.15" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: software.amazon.ion:ion-java:1.0.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.gson:gson:2.8.5" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.squareup.okio:okio:1.17.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpcore:4.4.13" level="project" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="Gradle: com.amazonaws:aws-lambda-java-log4j2:1.2.0" level="project" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="Gradle: org.apache.logging.log4j:log4j-api:2.13.2" level="project" />
   </component>
 </module>

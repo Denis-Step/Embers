@@ -16,6 +16,8 @@ dependencies {
 
     implementation platform('software.amazon.awssdk:bom:2.15.0')
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    implementation 'software.amazon.awssdk:auth:2.17.19'
+    implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.47'
     implementation 'com.amazonaws:aws-lambda-java-events:3.1.0'
     runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
 

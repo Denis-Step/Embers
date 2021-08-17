@@ -28,6 +28,8 @@ const LinkAccount = () => {
     // onSuccess callback for LinkFlow.
     const onLinkSuccess = useCallback(async (public_token: string,
                                            metadata: PlaidLinkOnSuccessMetadata) => {
+        console.log('public token', public_token);
+        console.log('metadata', metadata);
         setPublicToken(public_token);
         setMetadata(metadata);
         // Send info back to server.

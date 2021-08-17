@@ -1,27 +1,19 @@
-package plaid;
+package lambda.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerPlaidComponent;
-import lambda.PlaidLinkTokenCreateRequest;
+import lambda.requests.CreateLinkTokenRequest;
+import plaid.LinkGrabber;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-public class LinkHandler implements RequestHandler<PlaidLinkTokenCreateRequest, String> {
+public class CreateLinkTokenHandler implements RequestHandler<CreateLinkTokenRequest, String> {
     LinkGrabber linkGrabber = DaggerPlaidComponent.create().buildPlaidGrabber();
 
-    public String handleTestRequest(Map<String, Object> event, Context context) {
-        LambdaLogger logger = context.getLogger();
-        logger.log(event.toString());
-        return event.toString();
-    }
-
     @Override
-    public String handleRequest(PlaidLinkTokenCreateRequest event, Context context) {
+    public String handleRequest(CreateLinkTokenRequest event, Context context) {
         String user = event.getUser();
         List<String> products = event.getProducts();
         LambdaLogger logger = context.getLogger();
