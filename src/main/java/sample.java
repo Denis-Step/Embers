@@ -7,6 +7,8 @@ import dynamo.ItemsDAO;
 import lambda.handlers.CreateItemHandler;
 import lambda.requests.CreateItemRequest;
 import plaid.LinkGrabber;
+import plaid.Transaction;
+import plaid.TransactionsGrabber;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -14,19 +16,26 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class sample {
 
-    public static void main(String[] args){
-       testDynamoDbUpload();
+    public static void main(String[] args) throws  IOException{
+       testTransactionsGrabber();
     }
 
-    public static void testItemHandler() {
-        CreateItemRequest createItemRequest = new CreateItemRequest();
-        createItemRequest.setAccessToken("public-development-32d715cf-252e-44cb-a230-95267d9e85fa");
-        createItemRequest.setUser("Dan");
-        CreateItemHandler createItemHandler = new CreateItemHandler();
+
+    public static void testTransactionsGrabber() throws IOException {
+        TransactionsGrabber txGrabber = DaggerPlaidComponent.create().buildTransactionsGrabber();
+
+        Date startDate = Date.from(Instant.parse("2020-08-01T10:15:30.00Z"));
+        List<Transaction> transactions = txGrabber.requestTransactions("access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b", startDate );
+        System.out.println(transactions);
+
+        for (Transaction transaction: transactions) {
+            System.out.println(transaction);
+        }
     }
 
     public static void testDynamoDbUpload() {
