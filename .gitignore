@@ -1,0 +1,7 @@
+gradle
+out
+build
+generated
+node_modules
+.gradle
+.idea
