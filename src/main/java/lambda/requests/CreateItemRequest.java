@@ -3,14 +3,33 @@ package lambda.requests;
 public class CreateItemRequest {
 
     public String user;
-    public String plaidItem;
+    public String itemId;
+    public String accessToken;
 
-    public CreateItemRequest() {}
+    public CreateItemRequest(){};
 
-    CreateItemRequest(String user, String plaidItem) {
+    public CreateItemRequest(String user, String itemId, String accessToken) {
         this.user = user;
-        this.plaidItem = plaidItem;
+        this.itemId = itemId;
+        this.accessToken = accessToken;
     }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
 
     public String getUser() {
         return user;
@@ -20,11 +39,4 @@ public class CreateItemRequest {
         this.user = user;
     }
 
-    public String getPlaidItem() {
-        return plaidItem;
-    }
-
-    public void setPlaidItem(String plaidItem) {
-        this.plaidItem = plaidItem;
-    }
 }

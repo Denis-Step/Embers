@@ -1,5 +1,6 @@
 package dagger;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -11,11 +12,11 @@ import javax.inject.Singleton;
 @Module
 public interface AwsClientModule {
 
-    @Provides
+   /* @Provides
     @Singleton
-    static ProfileCredentialsProvider provideProfileCredentialsProvider() {
-        return new ProfileCredentialsProvider();
-    }
+    static AWSCredentialsProvider provideAwsCredentials() {
+        return new EnvironmentVariableCredentialsProvider();
+    } */
 
     @Provides
     @Singleton
@@ -25,11 +26,11 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    static AmazonDynamoDB provideAmazonDynamoDb(ProfileCredentialsProvider profileCredentialsProvider) {
+    static AmazonDynamoDB provideAmazonDynamoDb() {
         return AmazonDynamoDBClientBuilder
                 .standard()
                 .withRegion("us-east-2")
-                .withCredentials(profileCredentialsProvider)
+                .withCredentials(new EnvironmentVariableCredentialsProvider())
                 .build();
     }
 

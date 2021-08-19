@@ -3,7 +3,7 @@ import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
 import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
-import dynamo.TransactionsDAO;
+import dynamo.ItemsDAO;
 import lambda.handlers.ItemHandler;
 import lambda.requests.CreateItemRequest;
 import plaid.LinkGrabber;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Main {
+public class sample {
 
     public static void main(String[] args){
        testDynamoDbUpload();
@@ -24,18 +24,17 @@ public class Main {
 
     public static void testItemHandler() {
         CreateItemRequest createItemRequest = new CreateItemRequest();
-        createItemRequest.setPlaidItem("public-development-32d715cf-252e-44cb-a230-95267d9e85fa");
+        createItemRequest.setAccessToken("public-development-32d715cf-252e-44cb-a230-95267d9e85fa");
         createItemRequest.setUser("Dan");
         ItemHandler itemHandler = new ItemHandler();
     }
 
     public static void testDynamoDbUpload() {
         DynamoDBMapper dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();
-        TransactionsDAO testTx = new TransactionsDAO();
+        ItemsDAO testTx = new ItemsDAO();
         testTx.setUser("Denis");
-        testTx.setPlaidItem("public-development-32d715cf-252e-44cb-a230-95267d9e85fa");
+        testTx.setItemAccessToken("public-development-32d715cf-252e-44cb-a230-95267d9e85fa");
         List<String> plaidItems = new ArrayList<String>();
-        testTx.setTransactions(plaidItems);
         testTx.setDate(Instant.now().toString());
 
         dynamoDBMapper.save(testTx);
@@ -44,7 +43,7 @@ public class Main {
 
     private void testLinkCreateTokenResponse() {
         LinkGrabber linkGrabber = DaggerPlaidComponent.create().buildPlaidGrabber();
-        System.out.println(Main.class.getPackage());
+        System.out.println(sample.class.getPackage());
         List<String> products = Arrays.asList("transactions");
         List<String> countryCodes = Arrays.asList("US");
 

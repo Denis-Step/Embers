@@ -2,18 +2,18 @@ package dynamo;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.util.List;
 
-@DynamoDBTable(tableName="Transactions")
-public class TransactionsDAO {
+@DynamoDBTable(tableName="Items")
+public class ItemsDAO {
     private String user;
-    private String plaidItem;
+    private String itemAccessToken;
     private String date;
-    private List<String> transactions;
 
-    public TransactionsDAO() {
+    public ItemsDAO() {
     }
 
     @DynamoDBHashKey(attributeName = "User")
@@ -21,9 +21,9 @@ public class TransactionsDAO {
         return this.user;
     }
 
-    @DynamoDBHashKey(attributeName = "PlaidItem")
-    public String getPlaidItem() {
-        return this.plaidItem;
+    @DynamoDBRangeKey(attributeName = "ItemAccessToken")
+    public String getItemAccessToken() {
+        return itemAccessToken;
     }
 
     @DynamoDBAttribute(attributeName = "Date")
@@ -31,25 +31,16 @@ public class TransactionsDAO {
         return date;
     }
 
-    @DynamoDBAttribute(attributeName = "Transactions")
-    public List<String> getTransactions() {
-        return transactions;
-    }
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-    public void setPlaidItem(String plaidItem) {
-        this.plaidItem = plaidItem;
     }
 
     public void setUser(String user) {
         this.user = user;
     }
 
-
-    public void setTransactions(List<String> transactions) {
-        this.transactions = transactions;
+    public void setItemAccessToken(String itemAccessToken) {
+        this.itemAccessToken = itemAccessToken;
     }
 }

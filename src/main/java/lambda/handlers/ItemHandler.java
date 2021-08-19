@@ -1,19 +1,24 @@
 package lambda.handlers;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import dagger.DaggerAwsComponent;
-import dynamo.TransactionsDAO;
+import dynamo.ItemsDAO;
 import lambda.requests.CreateItemRequest;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ItemHandler implements RequestHandler<CreateItemRequest, String> {
-    DynamoDBMapper dynamoDBMapper =  DaggerAwsComponent.create().buildDynamo();
+    AWSCredentialsProvider environmentVariableCredentialsProvider = new EnvironmentVariableCredentialsProvider();
+    DynamoDBMapper dynamoDBMapper =  new DynamoDBMapper(AmazonDynamoDBClientBuilder
+            .standard()
+            .withRegion("us-east-2")
+            .withCredentials(environmentVariableCredentialsProvider)
+            .build());
 
     public ItemHandler() {
     }
@@ -22,13 +27,13 @@ public class ItemHandler implements RequestHandler<CreateItemRequest, String> {
     public String handleRequest(CreateItemRequest event, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log(event.getUser());
-        logger.log(event.getPlaidItem());
-        String logTemplate = String.format("Storing item %s for user %s.", event.getPlaidItem(), event.getUser());
+        logger.log(event.getAccessToken());
+        String logTemplate = String.format("Storing item %s for user %s.", event.getAccessToken(), event.getUser());
         logger.log(logTemplate);
 
-        TransactionsDAO transactionsDAO = mapRequest(event);
+        ItemsDAO transactionsDAO = mapRequest(event);
         dynamoDBMapper.save(transactionsDAO);
-        logger.log("Item stored:" + event.getPlaidItem());
+        logger.log("Item stored:" + event.getAccessToken());
 
         return "Status code: 200.";
 
@@ -36,16 +41,15 @@ public class ItemHandler implements RequestHandler<CreateItemRequest, String> {
 
     // Time now and empty transactions list stored.
     // @TODO: Change time implementation.
-    private TransactionsDAO mapRequest(CreateItemRequest request) {
-        List<String> transactions = new ArrayList<String>();
+    private ItemsDAO mapRequest(CreateItemRequest request) {
         String timeNow = Instant.now().toString();
+        ItemsDAO itemsDAO = new ItemsDAO();
 
-        TransactionsDAO transactionsDAO = new TransactionsDAO();
-        transactionsDAO.setUser(request.getUser());
-        transactionsDAO.setPlaidItem(request.getPlaidItem());
-        transactionsDAO.setTransactions(transactions);
-        transactionsDAO.setDate(timeNow);
-
-        return transactionsDAO;
+        // Set sort key
+        String itemAccessToken = request.getItemId() + "#" + request.getAccessToken();
+        itemsDAO.setItemAccessToken(itemAccessToken);
+        itemsDAO.setUser(request.getUser());
+        itemsDAO.setDate(timeNow);
+        return itemsDAO;
     }
 }

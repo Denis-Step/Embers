@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useMemo} from 'react';
 import { Button, FormControl, FormLabel, Input, FormHelperText } from "@chakra-ui/react"
 import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
-import {getLinkToken} from "../common/apicalls";
+import {getLinkToken, postNewItem} from "../common/apicalls";
 import LinkFlow from "./LinkFlow";
 
 const LinkAccount = () => {
@@ -32,8 +32,10 @@ const LinkAccount = () => {
         console.log('metadata', metadata);
         setPublicToken(public_token);
         setMetadata(metadata);
+
         // Send info back to server.
-    },[])
+        postNewItem(user, public_token)
+    },[user, publicToken, metadata]);
 
     const linkFlow = useMemo(() => {
         // Fire off link flow iff there is a linkToken and no publicToken yet.
