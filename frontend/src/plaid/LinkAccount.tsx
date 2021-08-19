@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useMemo} from 'react';
 import { Button, FormControl, FormLabel, Input, FormHelperText } from "@chakra-ui/react"
 import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
-import {getLinkToken, postPublicToken} from "../common/apicalls";
+import {getLinkToken} from "../common/apicalls";
 import LinkFlow from "./LinkFlow";
 
 const LinkAccount = () => {
@@ -28,15 +28,10 @@ const LinkAccount = () => {
     // onSuccess callback for LinkFlow.
     const onLinkSuccess = useCallback(async (public_token: string,
                                            metadata: PlaidLinkOnSuccessMetadata) => {
-        console.log('public token', public_token);
-        console.log('metadata', metadata);
         setPublicToken(public_token);
         setMetadata(metadata);
-
         // Send info back to server.
-        const response = await postPublicToken(user, public_token);
-        console.log(response);
-    },[user, publicToken, metadata]);
+    },[])
 
     const linkFlow = useMemo(() => {
         // Fire off link flow iff there is a linkToken and no publicToken yet.
