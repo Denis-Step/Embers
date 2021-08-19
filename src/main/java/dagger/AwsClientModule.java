@@ -12,11 +12,11 @@ import javax.inject.Singleton;
 @Module
 public interface AwsClientModule {
 
-   /* @Provides
+   @Provides
     @Singleton
     static AWSCredentialsProvider provideAwsCredentials() {
         return new EnvironmentVariableCredentialsProvider();
-    } */
+    }
 
     @Provides
     @Singleton
@@ -26,11 +26,11 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    static AmazonDynamoDB provideAmazonDynamoDb() {
+    static AmazonDynamoDB provideAmazonDynamoDb(AWSCredentialsProvider awsCredentialsProvider) {
         return AmazonDynamoDBClientBuilder
                 .standard()
                 .withRegion("us-east-2")
-                .withCredentials(new EnvironmentVariableCredentialsProvider())
+                .withCredentials(awsCredentialsProvider)
                 .build();
     }
 

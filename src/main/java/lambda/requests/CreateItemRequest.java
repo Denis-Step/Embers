@@ -1,5 +1,6 @@
 package lambda.requests;
 
+// LambdaRequest
 public class CreateItemRequest {
 
     public String user;

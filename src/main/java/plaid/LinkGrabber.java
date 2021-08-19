@@ -26,8 +26,8 @@ public class LinkGrabber {
     public String getLinkToken(String user, List<String> products) throws IOException {
         LinkTokenCreateRequest linkTokenCreateRequest = getLinkTokenCreateRequest(user, products);
 
-        Call<LinkTokenCreateResponse> response =  plaidClient.service().linkTokenCreate(linkTokenCreateRequest);
-        Response<LinkTokenCreateResponse> resp = response.execute();
+        Call<LinkTokenCreateResponse> call =  plaidClient.service().linkTokenCreate(linkTokenCreateRequest);
+        Response<LinkTokenCreateResponse> resp = call.execute();
 
         if (resp.isSuccessful()) {
             return resp.body().getLinkToken();
@@ -39,7 +39,7 @@ public class LinkGrabber {
 
     // Only serve English requests. Differ only on users and products supported for the item.
     private LinkTokenCreateRequest getLinkTokenCreateRequest(String user, List<String> products) {
-        return new LinkTokenCreateRequest(new LinkTokenCreateRequest.User("Denis"),
+        return new LinkTokenCreateRequest(new LinkTokenCreateRequest.User(user),
                 "PlaidJava",
                 products,
                 COUNTRY_CODES,

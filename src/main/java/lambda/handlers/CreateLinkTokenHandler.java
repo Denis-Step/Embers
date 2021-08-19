@@ -10,7 +10,11 @@ import plaid.LinkGrabber;
 import java.util.List;
 
 public class CreateLinkTokenHandler implements RequestHandler<CreateLinkTokenRequest, String> {
-    LinkGrabber linkGrabber = DaggerPlaidComponent.create().buildPlaidGrabber();
+    LinkGrabber linkGrabber;
+
+    public CreateLinkTokenHandler() {
+        linkGrabber = DaggerPlaidComponent.create().buildPlaidGrabber();
+    }
 
     @Override
     public String handleRequest(CreateLinkTokenRequest event, Context context) {

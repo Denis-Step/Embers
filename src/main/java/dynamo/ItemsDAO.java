@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import plaid.PlaidItem;
 
 import java.util.List;
 
@@ -30,7 +31,6 @@ public class ItemsDAO {
     public String getDate() {
         return date;
     }
-
 
     public void setDate(String date) {
         this.date = date;

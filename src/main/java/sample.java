@@ -4,7 +4,7 @@ import com.plaid.client.response.LinkTokenCreateResponse;
 import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
 import dynamo.ItemsDAO;
-import lambda.handlers.ItemHandler;
+import lambda.handlers.CreateItemHandler;
 import lambda.requests.CreateItemRequest;
 import plaid.LinkGrabber;
 import retrofit2.Call;
@@ -26,7 +26,7 @@ public class sample {
         CreateItemRequest createItemRequest = new CreateItemRequest();
         createItemRequest.setAccessToken("public-development-32d715cf-252e-44cb-a230-95267d9e85fa");
         createItemRequest.setUser("Dan");
-        ItemHandler itemHandler = new ItemHandler();
+        CreateItemHandler createItemHandler = new CreateItemHandler();
     }
 
     public static void testDynamoDbUpload() {

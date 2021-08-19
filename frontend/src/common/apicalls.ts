@@ -15,10 +15,10 @@ export const getLinkToken = async (user: string,
     return request.data;
 }
 
-export const postNewItem = async(user: string, plaidItem: string): Promise<String> => {
+export const postPublicToken = async (user: string, publicToken: string): Promise<String> => {
     const endpoint = BETA_ENDPOINT + ITEM_API_RESOURCE;
     const request = await axios.post(endpoint,
-        {user: user, plaidItem: plaidItem})
+        {user: user, publicToken: publicToken})
 
     return request.data;
 }

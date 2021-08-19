@@ -2,7 +2,7 @@ package lambda.requests;
 
 import java.util.List;
 
-
+// LambdaRequest
 public class CreateLinkTokenRequest {
 
     public String user;
