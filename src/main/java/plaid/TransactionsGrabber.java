@@ -1,5 +1,6 @@
 package plaid;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.TransactionsGetRequest;
 import com.plaid.client.response.TransactionsGetResponse;
@@ -19,21 +20,21 @@ import java.util.List;
  */
 // @TODO: Tx builder
 public class TransactionsGrabber {
-    PlaidClient plaidClient;
+    private final PlaidClient plaidClient;
+    private final String accessToken;
 
-    @Inject
-    public TransactionsGrabber(PlaidClient plaidClient){
+    public TransactionsGrabber(PlaidClient plaidClient, String accessToken){
         this.plaidClient = plaidClient;
+        this.accessToken = accessToken;
     }
 
     /**
-     * @param accessToken
      * @param startDate
      * @param endDate
      * @return
      * @throws IOException
      */
-    public List<Transaction> requestTransactions(String accessToken, Date startDate, Date endDate) throws IOException {
+    public List<Transaction> requestTransactions(Date startDate, Date endDate) throws IOException {
         TransactionsGetRequest transactionsGetRequest = getTransactionsRequest(accessToken, startDate, endDate);
 
         Call<TransactionsGetResponse> call =  plaidClient.service().transactionsGet(transactionsGetRequest);
@@ -42,16 +43,19 @@ public class TransactionsGrabber {
         if (resp.isSuccessful()) {
             List<Transaction> processedTransactions = new ArrayList<>();
 
+
             for (TransactionsGetResponse.Transaction plaidTransaction: resp.body().getTransactions()) {
-                Transaction newTransaction = new Transaction();
-                newTransaction.accountId = plaidTransaction.getAccountId();
-                newTransaction.transactionId = plaidTransaction.getTransactionId();
-                newTransaction.amount = plaidTransaction.getAmount();
-                newTransaction.date = plaidTransaction.getDate();
-                newTransaction.description = plaidTransaction.getName();
-                newTransaction.originalDescription = plaidTransaction.getOriginalDescription();
-                newTransaction.merchantName = plaidTransaction.getMerchantName();
-                processedTransactions.add(newTransaction);
+                Transaction newTx = Transaction.getBuilder()
+                        .setAccountId(plaidTransaction.getAccountId())
+                        .setTransactionId(plaidTransaction.getTransactionId())
+                        .setAmount(plaidTransaction.getAmount())
+                        .setDate(plaidTransaction.getDate())
+                        .setDescription(plaidTransaction.getName())
+                        .setOriginalDescription(plaidTransaction.getOriginalDescription())
+                        .setMerchantName(plaidTransaction.getMerchantName())
+                        .build();
+                processedTransactions.add(newTx);
+
             }
 
             return processedTransactions;
@@ -62,12 +66,14 @@ public class TransactionsGrabber {
     }
 
     // Expected to mostly be used through start Date only.
-    public List<Transaction> requestTransactions(String accessToken, Date startDate) throws IOException {
-        return requestTransactions(accessToken, startDate, Date.from(Instant.now()));
+    // Automatically makes end date now.
+    public List<Transaction> requestTransactions(Date startDate) throws IOException {
+        return requestTransactions(startDate, Date.from(Instant.now()));
     }
 
     private TransactionsGetRequest getTransactionsRequest(String accessToken, Date startDate, Date endDate) {
         return new TransactionsGetRequest(accessToken, startDate, endDate);
     }
+
 }
 

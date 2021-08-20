@@ -18,5 +18,4 @@ public interface PlaidComponent {
     LinkGrabber buildPlaidGrabber();
     ItemRequester buildItemRequestor();
 
-    TransactionsGrabber buildTransactionsGrabber();
 }

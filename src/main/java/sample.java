@@ -1,4 +1,5 @@
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.plaid.client.PlaidClient;
 import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
 import dagger.DaggerAwsComponent;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 public class sample {
+    private static final String SAMPLE_ACCESS_TOKEN = "access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b";
 
     public static void main(String[] args) throws  IOException{
        testTransactionsGrabber();
@@ -27,10 +29,11 @@ public class sample {
 
 
     public static void testTransactionsGrabber() throws IOException {
-        TransactionsGrabber txGrabber = DaggerPlaidComponent.create().buildTransactionsGrabber();
+        PlaidClient plaidClient = DaggerPlaidComponent.create().buildPLaidClient();
+        TransactionsGrabber txGrabber = new  TransactionsGrabber(plaidClient, SAMPLE_ACCESS_TOKEN);
 
         Date startDate = Date.from(Instant.parse("2020-08-01T10:15:30.00Z"));
-        List<Transaction> transactions = txGrabber.requestTransactions("access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b", startDate );
+        List<Transaction> transactions = txGrabber.requestTransactions(startDate );
         System.out.println(transactions);
 
         for (Transaction transaction: transactions) {
