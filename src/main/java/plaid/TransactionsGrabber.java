@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Gets Transactions. Abstracts away interacting with Plaid.
@@ -41,24 +42,10 @@ public class TransactionsGrabber {
         Response<TransactionsGetResponse> resp = call.execute();
 
         if (resp.isSuccessful()) {
-            List<Transaction> processedTransactions = new ArrayList<>();
 
-
-            for (TransactionsGetResponse.Transaction plaidTransaction: resp.body().getTransactions()) {
-                Transaction newTx = Transaction.getBuilder()
-                        .setAccountId(plaidTransaction.getAccountId())
-                        .setTransactionId(plaidTransaction.getTransactionId())
-                        .setAmount(plaidTransaction.getAmount())
-                        .setDate(plaidTransaction.getDate())
-                        .setDescription(plaidTransaction.getName())
-                        .setOriginalDescription(plaidTransaction.getOriginalDescription())
-                        .setMerchantName(plaidTransaction.getMerchantName())
-                        .build();
-                processedTransactions.add(newTx);
-
-            }
-
-            return processedTransactions;
+            return resp.body().getTransactions().stream()
+                    .map(tx -> buildFromPlaid(tx))
+                    .collect(Collectors.toList());
 
         } else {
             throw new RuntimeException(resp.toString());
@@ -69,6 +56,19 @@ public class TransactionsGrabber {
     // Automatically makes end date now.
     public List<Transaction> requestTransactions(Date startDate) throws IOException {
         return requestTransactions(startDate, Date.from(Instant.now()));
+    }
+
+    private Transaction buildFromPlaid (TransactionsGetResponse.Transaction plaidTransaction) {
+        Transaction.Builder builder = new Transaction.Builder()
+                .setAmount(plaidTransaction.getAmount())
+                .setDescription(plaidTransaction.getName())
+                .setOriginalDescription(plaidTransaction.getOriginalDescription())
+                .setMerchantName(plaidTransaction.getMerchantName())
+                .setDate(plaidTransaction.getDate())
+                .setAccountId(plaidTransaction.getAccountId())
+                .setTransactionId(plaidTransaction.getTransactionId());
+
+        return builder.build();
     }
 
     private TransactionsGetRequest getTransactionsRequest(String accessToken, Date startDate, Date endDate) {

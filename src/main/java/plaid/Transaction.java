@@ -1,5 +1,7 @@
 package plaid;
 
+import com.plaid.client.response.TransactionsGetResponse;
+
 import java.util.Optional;
 
 // Wrapper on Plaid Transactions. Removes unnecessary info.
@@ -86,10 +88,13 @@ public class Transaction {
         private String accountId;
         private String transactionId;
 
+        public Builder() {}
+
         public Transaction build() {
             validateTransaction();
             return new Transaction(this);
         }
+
 
         private void validateTransaction() {
             // Leave empty for now.
