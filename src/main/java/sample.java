@@ -4,9 +4,7 @@ import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
 import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
-import dynamo.ItemsDAO;
-import lambda.handlers.CreateItemHandler;
-import lambda.requests.CreateItemRequest;
+import dynamo.PlaidItemDAO;
 import plaid.LinkGrabber;
 import plaid.Transaction;
 import plaid.TransactionsGrabber;
@@ -24,10 +22,10 @@ public class sample {
     private static final String SAMPLE_ACCESS_TOKEN = "access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b";
 
     public static void main(String[] args) throws  IOException{
-       testTransactionsGrabber();
+
     }
 
-
+/*
     public static void testTransactionsGrabber() throws IOException {
         PlaidClient plaidClient = DaggerPlaidComponent.create().buildPLaidClient();
         TransactionsGrabber txGrabber = new  TransactionsGrabber(plaidClient, SAMPLE_ACCESS_TOKEN);
@@ -43,7 +41,7 @@ public class sample {
 
     public static void testDynamoDbUpload() {
         DynamoDBMapper dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();
-        ItemsDAO testTx = new ItemsDAO();
+        PlaidItemDAO testTx = new PlaidItemDAO();
         testTx.setUser("Denis");
         testTx.setItemAccessToken("public-development-32d715cf-252e-44cb-a230-95267d9e85fa");
         List<String> plaidItems = new ArrayList<String>();
@@ -73,5 +71,5 @@ public class sample {
         } catch (IOException e) {
             System.out.println(e);
         }
-    }
+    }*/
 }

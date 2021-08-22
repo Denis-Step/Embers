@@ -6,15 +6,16 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
-import dynamo.ItemsDAO;
-import lambda.requests.ExchangePublicTokenRequest;
+import dynamo.PlaidItemDAO;
+import lambda.requests.CreateItemRequest;
 import plaid.ItemRequester;
 import plaid.PlaidItem;
+import plaid.responses.PublicTokenExchangeResponse;
 
 import java.io.IOException;
 import java.time.Instant;
 
-public class CreateItemHandler implements RequestHandler<ExchangePublicTokenRequest, String> {
+public class CreateItemHandler implements RequestHandler<CreateItemRequest, String> {
     DynamoDBMapper dynamoDBMapper;
     ItemRequester itemRequester;
 
@@ -24,33 +25,51 @@ public class CreateItemHandler implements RequestHandler<ExchangePublicTokenRequ
     }
 
     @Override
-    public String handleRequest(ExchangePublicTokenRequest event, Context context) {
+    public String handleRequest(CreateItemRequest event, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("Getting access token for" + event.getPublicToken());
 
         try {
-            PlaidItem plaidItem = itemRequester.requestItem(event.getPublicToken());
-            logger.log("Received item: " + plaidItem.getItemId() + "with access token: " + plaidItem.getAccessToken());
-            ItemsDAO itemsDAO = createItemsDao(event.getUser(), plaidItem);
-            dynamoDBMapper.save(itemsDAO);
-            return plaidItem.getItemId();
-        } catch (IOException e) {
+            PlaidItem plaidItem = createPlaidItem(event);
+            logger.log("Received item: " + plaidItem.toString());
+            dynamoDBMapper.save(createItemsDao(plaidItem));
+            logger.log("Saved item:" + plaidItem.getID());
+            return plaidItem.toString();
+        } catch (IOException e){
+            // Rethrow Exception to prevent Lambda from succeeding.
             logger.log("Exception" + e.toString() + System.currentTimeMillis());
             throw new RuntimeException(String.format("Exception: %s", e.toString()));
         }
+
     }
 
-    // Time now and empty transactions list stored.
-    // @TODO: Change time implementation.
-    private ItemsDAO createItemsDao(String user, PlaidItem plaidItem) {
-        String timeNow = Instant.now().toString();
-        ItemsDAO itemsDAO = new ItemsDAO();
+    // Calls Plaid client to request a new Item and uses info from incoming request
+    // to build PlaidItem.
+    private PlaidItem createPlaidItem (CreateItemRequest createItemRequest) throws IOException {
+        PublicTokenExchangeResponse itemInfo = itemRequester.requestItem(createItemRequest.getPublicToken());
 
-        // Set sort key
-        String itemAccessToken = plaidItem.getItemId()+ "#" + plaidItem.getAccessToken();
-        itemsDAO.setItemAccessToken(itemAccessToken);
-        itemsDAO.setUser(user);
-        itemsDAO.setDate(timeNow);
-        return itemsDAO;
+        return PlaidItem.getBuilder()
+                .setID(itemInfo.getID())
+                .setAccessToken(itemInfo.getAccessToken())
+                .setUser(createItemRequest.getUser())
+                .setDateCreated(createItemRequest.getDateCreated())
+                .setAvailableProducts(createItemRequest.getAvailableProducts())
+                .setInstitutionId(createItemRequest.getInstitutionId())
+                .setMetaData(createItemRequest.getMetaData())
+                .build();
+    }
+
+    private PlaidItemDAO createItemsDao(PlaidItem plaidItem) {
+        PlaidItemDAO plaidItemDAO = new PlaidItemDAO();
+
+        plaidItemDAO.setUser(plaidItem.getUser()); // Set partition key.
+        plaidItemDAO.setInstitutionId(plaidItem.getInstitutionId()); // Set sort key.
+        plaidItemDAO.setID(plaidItem.getID());
+        plaidItemDAO.setAccessToken(plaidItem.getAccessToken());
+        plaidItemDAO.setAvailableProducts(plaidItem.getAvailableProducts());
+        plaidItemDAO.setDateCreated(plaidItem.getDateCreated());
+        plaidItemDAO.setMetaData(plaidItem.getMetaData());
+
+        return plaidItemDAO;
     }
 }

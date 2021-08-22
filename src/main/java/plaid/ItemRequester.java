@@ -3,6 +3,7 @@ package plaid;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.ItemPublicTokenExchangeRequest;
 import com.plaid.client.response.ItemPublicTokenExchangeResponse;
+import plaid.responses.PublicTokenExchangeResponse;
 import retrofit2.Response;
 
 import javax.inject.Inject;
@@ -19,12 +20,15 @@ public class ItemRequester {
         this.plaidClient = plaidClient;
     }
 
-    public PlaidItem requestItem(String publicToken) throws IOException {
+    public PublicTokenExchangeResponse requestItem(String publicToken) throws IOException {
         ItemPublicTokenExchangeRequest request = createRequest(publicToken);
         Response<ItemPublicTokenExchangeResponse> resp = plaidClient.service().itemPublicTokenExchange(request).execute();
 
         if (resp.isSuccessful()) {
-            return new PlaidItem(resp.body().getAccessToken(),resp.body().getItemId());
+            return new PublicTokenExchangeResponse(
+                    resp.body().getItemId(),
+                    resp.body().getAccessToken()
+            );
         }
         else {
             throw new RuntimeException(resp.toString());

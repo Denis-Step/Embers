@@ -4,6 +4,26 @@ import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
 import {getLinkToken} from "../common/apicalls";
 import LinkFlow from "./LinkFlow";
 
+/* {"user":  "BillyBobThornton",
+  "publicToken":  "public-development-32d715cf-252e-44cb-a230-95267d9e85fa",
+  "institutionId":  "6969",
+  "availableProducts" :  ["transactions"],
+  "dateCreated":  "2021-08-21T22:05:05",
+  "metaData":  {"foo":  "bar"}
+} */
+
+interface PlaidItem {}
+
+export interface ItemCreationState {
+    user: string;
+    linkToken: string;
+    publicToken: string;
+}
+
+function reducer(state, action) {
+
+}
+
 const LinkAccount = () => {
     // State for getLinkToken params.
     const [user, setUser] = useState<string>("");

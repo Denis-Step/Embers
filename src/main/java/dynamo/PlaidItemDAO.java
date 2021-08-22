@@ -1,18 +1,26 @@
-package lambda.requests;
+package dynamo;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.util.List;
 import java.util.Map;
 
-// LambdaRequest with result of calling link flow.
-public class CreateItemRequest {
-
+@DynamoDBTable(tableName="PlaidItems")
+public class PlaidItemDAO {
+    // Primary Key:
     private String user;
-    private String publicToken;
     private String institutionId;
+    private String accessToken;
+    private String ID;
     private List<String> availableProducts;
     private String dateCreated;
     private Map<String, String> metaData; // Remaining metadata. Rarely used.
 
+
+    @DynamoDBHashKey(attributeName = "User")
     public String getUser() {
         return user;
     }
@@ -21,6 +29,7 @@ public class CreateItemRequest {
         this.user = user;
     }
 
+    @DynamoDBRangeKey(attributeName = "InstitutionID")
     public String getInstitutionId() {
         return institutionId;
     }
@@ -29,6 +38,25 @@ public class CreateItemRequest {
         this.institutionId = institutionId;
     }
 
+    @DynamoDBAttribute(attributeName = "AccessToken")
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @DynamoDBAttribute(attributeName = "ID")
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    @DynamoDBAttribute(attributeName = "AvailableProducts")
     public List<String> getAvailableProducts() {
         return availableProducts;
     }
@@ -37,6 +65,7 @@ public class CreateItemRequest {
         this.availableProducts = availableProducts;
     }
 
+    @DynamoDBAttribute(attributeName = "DateCreated")
     public String getDateCreated() {
         return dateCreated;
     }
@@ -45,19 +74,12 @@ public class CreateItemRequest {
         this.dateCreated = dateCreated;
     }
 
+    @DynamoDBAttribute(attributeName = "Metadata")
     public Map<String, String> getMetaData() {
         return metaData;
     }
 
     public void setMetaData(Map<String, String> metaData) {
         this.metaData = metaData;
-    }
-
-    public String getPublicToken() {
-        return publicToken;
-    }
-
-    public void setPublicToken(String publicToken) {
-        this.publicToken = publicToken;
     }
 }

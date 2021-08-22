@@ -5,15 +5,8 @@ import java.util.List;
 // LambdaRequest
 public class CreateLinkTokenRequest {
 
-    public String user;
-    public List<String> products;
-
-    CreateLinkTokenRequest() {}
-
-    CreateLinkTokenRequest(String user, List<String> products) {
-        this.user = user;
-        this.products = products;
-    }
+    private String user;
+    private List<String> products;
 
     public String getUser() {
         return user;
