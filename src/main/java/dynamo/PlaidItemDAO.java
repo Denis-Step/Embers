@@ -16,6 +16,7 @@ public class PlaidItemDAO {
     private String accessToken;
     private String ID;
     private List<String> availableProducts;
+    private List<String> accounts;
     private String dateCreated;
     private Map<String, String> metaData; // Remaining metadata. Rarely used.
 
@@ -81,5 +82,14 @@ public class PlaidItemDAO {
 
     public void setMetaData(Map<String, String> metaData) {
         this.metaData = metaData;
+    }
+
+    @DynamoDBAttribute(attributeName = "Accounts")
+    public List<String> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<String> accounts) {
+        this.accounts = accounts;
     }
 }

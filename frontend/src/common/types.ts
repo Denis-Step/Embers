@@ -8,11 +8,12 @@
 
 import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
 
-export interface PlaidItemCreationRequest {
+export interface PlaidItemCreationInfo {
     user: string;
     publicToken: string;
-    institutionId: string;
+    institutionId: string; // {INST_NAME}-{INST_ID} need both for Dynamo sort key.
     availableProducts: string[];
+    accounts: string[];
     dateCreated: Date | string;
     metaData: PlaidLinkOnSuccessMetadata
 }

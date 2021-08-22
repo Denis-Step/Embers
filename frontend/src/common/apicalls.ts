@@ -1,6 +1,6 @@
 import axios from "axios";
 import {BETA_ENDPOINT, ITEM_API_RESOURCE, LINK_API_RESOURCE, LINK_DEFAULT_PRODUCTS} from "./constants";
-import {PlaidItemCreationRequest} from "./types";
+import {PlaidItemCreationInfo} from "./types";
 
 // Get link token for plaid flow.
 export const getLinkToken = async (user: string,
@@ -17,7 +17,7 @@ export const getLinkToken = async (user: string,
 }
 
 // To be called after LinkFlow completion.
-export const requestItemCreation = async (itemInfo: PlaidItemCreationRequest): Promise<String> => {
+export const requestItemCreation = async (itemInfo: PlaidItemCreationInfo): Promise<String> => {
     const endpoint = BETA_ENDPOINT + ITEM_API_RESOURCE;
     const request = await axios.post(endpoint,
         itemInfo)

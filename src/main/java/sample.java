@@ -5,9 +5,8 @@ import com.plaid.client.response.LinkTokenCreateResponse;
 import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
 import dynamo.PlaidItemDAO;
-import plaid.LinkGrabber;
-import plaid.Transaction;
-import plaid.TransactionsGrabber;
+import plaid.*;
+import plaid.responses.PublicTokenExchangeResponse;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -22,7 +21,16 @@ public class sample {
     private static final String SAMPLE_ACCESS_TOKEN = "access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b";
 
     public static void main(String[] args) throws  IOException{
+        testItemCreator();
 
+    }
+
+    public static void testItemCreator() throws IOException {
+        PlaidClient plaidClient = DaggerPlaidComponent.create().buildPLaidClient();
+        ItemRequester itemRequester = new ItemRequester(plaidClient);
+
+        PublicTokenExchangeResponse response = itemRequester.requestItem("public-development-32d715cf-252e-44cb-a230-95267d9e85fa");
+        System.out.println(response);
     }
 
 /*

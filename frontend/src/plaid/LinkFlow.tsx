@@ -22,7 +22,7 @@ const LinkFlow = (props: LinkFlowProps) => {
         // receivedRedirectUri: window.location.href,
     }
 
-    const {open, exit, ready} = usePlaidLink(config);
+    const {open} = usePlaidLink(config);
 
     // Will imperatively fire the Plaid Link components.
     // Plaid Link will close itself when complete.

@@ -8,8 +8,10 @@ public class CreateItemRequest {
 
     private String user;
     private String publicToken;
+    // # {INST_NAME}{INST_ID}
     private String institutionId;
     private List<String> availableProducts;
+    private List<String> accounts;
     private String dateCreated;
     private Map<String, String> metaData; // Remaining metadata. Rarely used.
 
@@ -59,5 +61,13 @@ public class CreateItemRequest {
 
     public void setPublicToken(String publicToken) {
         this.publicToken = publicToken;
+    }
+
+    public List<String> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<String> accounts) {
+        this.accounts = accounts;
     }
 }

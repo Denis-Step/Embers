@@ -54,6 +54,7 @@ public class CreateItemHandler implements RequestHandler<CreateItemRequest, Stri
                 .setUser(createItemRequest.getUser())
                 .setDateCreated(createItemRequest.getDateCreated())
                 .setAvailableProducts(createItemRequest.getAvailableProducts())
+                .setAccounts(createItemRequest.getAccounts())
                 .setInstitutionId(createItemRequest.getInstitutionId())
                 .setMetaData(createItemRequest.getMetaData())
                 .build();
@@ -67,6 +68,7 @@ public class CreateItemHandler implements RequestHandler<CreateItemRequest, Stri
         plaidItemDAO.setID(plaidItem.getID());
         plaidItemDAO.setAccessToken(plaidItem.getAccessToken());
         plaidItemDAO.setAvailableProducts(plaidItem.getAvailableProducts());
+        plaidItemDAO.setAccounts(plaidItem.getAccounts());
         plaidItemDAO.setDateCreated(plaidItem.getDateCreated());
         plaidItemDAO.setMetaData(plaidItem.getMetaData());
 

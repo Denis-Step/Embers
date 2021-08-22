@@ -10,6 +10,7 @@ public class PlaidItem {
     private final String accessToken;
     private final String ID;
     private final List<String> availableProducts;
+    private final List<String> accounts;
     private final String dateCreated;
     private final Map<String, String> metaData; // Remaining metadata. Rarely used.
 
@@ -19,6 +20,7 @@ public class PlaidItem {
         this.accessToken = builder.getAccessToken();
         this.ID = builder.getID();
         this.availableProducts = builder.getAvailableProducts();
+        this.accounts = builder.getAccounts();
         this.dateCreated = builder.getDateCreated();
         this.metaData = builder.getMetaData();
     }
@@ -35,6 +37,7 @@ public class PlaidItem {
                 ", accessToken='" + accessToken + '\'' +
                 ", ID='" + ID + '\'' +
                 ", availableProducts=" + availableProducts +
+                ", accounts=" + accounts + '\'' +
                 ", dateCreated='" + dateCreated + '\'' +
                 ", metaData=" + metaData +
                 '}';
@@ -68,12 +71,17 @@ public class PlaidItem {
         return metaData;
     }
 
+    public List<String> getAccounts() {
+        return accounts;
+    }
+
     public static class Builder {
         private String user;
         private String institutionId;
         private String accessToken;
         private String ID;
         private List<String> availableProducts;
+        private List<String> accounts;
         private String dateCreated;
         private Map<String, String> metaData; // Remaining metadata. Rarely used.
 
@@ -146,6 +154,15 @@ public class PlaidItem {
 
         public Builder setMetaData(Map<String, String> metaData) {
             this.metaData = metaData;
+            return this;
+        }
+
+        public List<String> getAccounts() {
+            return accounts;
+        }
+
+        public Builder setAccounts(List<String> accounts) {
+            this.accounts = accounts;
             return this;
         }
     }
