@@ -19,33 +19,32 @@ type Action = {
 }
 
 type State = {
-    user?: string;
+    user: string;
     linkToken?: string;
     publicToken?: string;
+    metaData?: PlaidLinkOnSuccessMetadata;
 }
 
-const initialState: State = {};
+const initialState: State = {user: ""};
 
-function linkReducer(state: Partial<PlaidItemCreationRequest>, action: Action): State {
+function linkReducer(state: State, action: Action): State {
     switch(action.type) {
         case ActionKind.UpdateUser:
             return { ...state, user: action.payload};
         case ActionKind.UpdateLinkToken:
             return {...state, linkToken: action.payload};
         case ActionKind.UpdatePublicToken:
-            return {...state, publicToken: action.payload}
+            return {...state,
+                publicToken: action.payload.publicToken,
+                metaData: action.payload.metaData
+            }
     }
 }
 
 const LinkAccount = () => {
     // State for getLinkToken params.
-    const [user, setUser] = useState<string>("");
-    const [linkToken, setLinkToken] = useState<string>("");
-    const [publicToken, setPublicToken] = useState<string>();
-    const [metadata, setMetadata] = useState<object>();
     const [state, dispatch] = useReducer(linkReducer, initialState);
 
-    // Handler to set user.
     const updateUser = (event: React.FormEvent<HTMLInputElement>): void => {
         const input = event.currentTarget.value;
         dispatch({type: ActionKind.UpdateUser, payload: input});
@@ -53,37 +52,39 @@ const LinkAccount = () => {
 
     // Handler for link token button.
     const updateLinkToken = useCallback(async () => {
-        if (user) {
-            const link = await getLinkToken(user);
+        if (state.user) {
+            const link = await getLinkToken(state.user);
             dispatch({type: ActionKind.UpdateLinkToken, payload: link});
         }
-    }, [user]);
+    }, [state.user]);
 
-    // onSuccess callback for LinkFlow.
+    // onSuccess callback for LinkFlow to initiate item creation
+    // server-side.
     const onLinkSuccess = useCallback(async (public_token: string,
                                            metadata: PlaidLinkOnSuccessMetadata) => {
-        setPublicToken(public_token);
-        setMetadata(metadata);
-        // Send info back to server.
+        dispatch({type: ActionKind.UpdatePublicToken,
+            payload: {publicToken: public_token, metadata: metadata}});
+        // @TODO: Send info back to server.
+        console.log(metadata);
     },[])
 
     const linkFlow = useMemo(() => {
         // Fire off link flow iff there is a linkToken and no publicToken yet.
-        if (linkToken && !Boolean(publicToken)) {
-            return (<LinkFlow link_token={linkToken}
+        if (state.linkToken && !Boolean(state.publicToken)) {
+            return (<LinkFlow link_token={state.linkToken}
                       onSuccess={onLinkSuccess} />)
         } else {
             return null;
         }
         },
-        [linkToken, publicToken, onLinkSuccess])
+        [state.linkToken, state.publicToken, onLinkSuccess])
 
 
     return (
         <div id = "link-token-creation">
             <FormControl id="Link Params">
                 <FormLabel>Request Link Token</FormLabel>
-                <Input key="linkInput" type="user" value={user} placeholder="John" onChange={updateUser}  />
+                <Input key="linkInput" type="user" value={state.user} placeholder="John" onChange={updateUser}  />
                 <FormHelperText>Username for Plaid.</FormHelperText>
             </FormControl>
             <Button colorScheme="teal"
