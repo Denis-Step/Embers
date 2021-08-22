@@ -1,27 +1,40 @@
-import React, {useState, useCallback, useMemo} from 'react';
+import React, {useState, useCallback, useMemo, useReducer} from 'react';
 import { Button, FormControl, FormLabel, Input, FormHelperText } from "@chakra-ui/react"
 import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
-import {getLinkToken} from "../common/apicalls";
+import {getLinkToken, requestItemCreation} from "../common/apicalls";
 import LinkFlow from "./LinkFlow";
+import {PlaidItemCreationRequest} from "../common/types";
 
-/* {"user":  "BillyBobThornton",
-  "publicToken":  "public-development-32d715cf-252e-44cb-a230-95267d9e85fa",
-  "institutionId":  "6969",
-  "availableProducts" :  ["transactions"],
-  "dateCreated":  "2021-08-21T22:05:05",
-  "metaData":  {"foo":  "bar"}
-} */
+// @TODO: Use discriminated unions to type reducer actions.
 
-interface PlaidItem {}
-
-export interface ItemCreationState {
-    user: string;
-    linkToken: string;
-    publicToken: string;
+enum ActionKind {
+    UpdateUser = "UPDATEUSER",
+    UpdateLinkToken = "UPDATELINKTOKEN",
+    UpdatePublicToken = "UPDATEPUBLICTOKEN"
 }
 
-function reducer(state, action) {
+type Action = {
+    type: ActionKind,
+    payload: any
+}
 
+type State = {
+    user?: string;
+    linkToken?: string;
+    publicToken?: string;
+}
+
+const initialState: State = {};
+
+function linkReducer(state: Partial<PlaidItemCreationRequest>, action: Action): State {
+    switch(action.type) {
+        case ActionKind.UpdateUser:
+            return { ...state, user: action.payload};
+        case ActionKind.UpdateLinkToken:
+            return {...state, linkToken: action.payload};
+        case ActionKind.UpdatePublicToken:
+            return {...state, publicToken: action.payload}
+    }
 }
 
 const LinkAccount = () => {
@@ -30,18 +43,19 @@ const LinkAccount = () => {
     const [linkToken, setLinkToken] = useState<string>("");
     const [publicToken, setPublicToken] = useState<string>();
     const [metadata, setMetadata] = useState<object>();
+    const [state, dispatch] = useReducer(linkReducer, initialState);
 
     // Handler to set user.
     const updateUser = (event: React.FormEvent<HTMLInputElement>): void => {
         const input = event.currentTarget.value;
-        setUser(input)
+        dispatch({type: ActionKind.UpdateUser, payload: input});
     };
 
     // Handler for link token button.
     const updateLinkToken = useCallback(async () => {
         if (user) {
             const link = await getLinkToken(user);
-            setLinkToken(link);
+            dispatch({type: ActionKind.UpdateLinkToken, payload: link});
         }
     }, [user]);
 
