@@ -12,7 +12,7 @@ public class PlaidItem {
     private final List<String> availableProducts;
     private final List<String> accounts;
     private final String dateCreated;
-    private final Map<String, String> metaData; // Remaining metadata. Rarely used.
+    private final String metaData; // Remaining metadata. Rarely used.
 
     public PlaidItem (Builder builder) {
         this.user = builder.getUser();
@@ -67,7 +67,7 @@ public class PlaidItem {
         return dateCreated;
     }
 
-    public Map<String, String> getMetaData() {
+    public String getMetaData() {
         return metaData;
     }
 
@@ -83,7 +83,7 @@ public class PlaidItem {
         private List<String> availableProducts;
         private List<String> accounts;
         private String dateCreated;
-        private Map<String, String> metaData; // Remaining metadata. Rarely used.
+        private String metaData; // Remaining metadata. Rarely used.
 
         public PlaidItem build() {
             validateItem();
@@ -148,11 +148,11 @@ public class PlaidItem {
             return this;
         }
 
-        public Map<String, String> getMetaData() {
+        public String getMetaData() {
             return metaData;
         }
 
-        public Builder setMetaData(Map<String, String> metaData) {
+        public Builder setMetaData(String metaData) {
             this.metaData = metaData;
             return this;
         }

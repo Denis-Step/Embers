@@ -1,9 +1,7 @@
 package dynamo;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.amazonaws.services.dynamodbv2.xspec.S;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,7 @@ public class PlaidItemDAO {
     private List<String> availableProducts;
     private List<String> accounts;
     private String dateCreated;
-    private Map<String, String> metaData; // Remaining metadata. Rarely used.
+    private String metaData; // Remaining metadata. Rarely used.
 
 
     @DynamoDBHashKey(attributeName = "User")
@@ -76,11 +74,11 @@ public class PlaidItemDAO {
     }
 
     @DynamoDBAttribute(attributeName = "Metadata")
-    public Map<String, String> getMetaData() {
+    public String getMetaData() {
         return metaData;
     }
 
-    public void setMetaData(Map<String, String> metaData) {
+    public void setMetaData(String metaData) {
         this.metaData = metaData;
     }
 

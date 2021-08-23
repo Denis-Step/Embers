@@ -47,7 +47,7 @@ function linkReducer(state: State, action: Action): State {
 }
 
 // Helper function to build object to send request for a new item.
-const buildItemInfo = (metadata: PlaidLinkOnSuccessMetadata,
+const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
                            user: string,
                            publicToken: string,
                            products: string[]): PlaidItemCreationInfo => {
@@ -57,7 +57,7 @@ const buildItemInfo = (metadata: PlaidLinkOnSuccessMetadata,
     const institutionName = metadata.institution?.name || "UNNAMED";
 
     // {ACCNAME}-{ACC_ID}
-    const accounts = metadata.accounts.map((account) => account.name + "-" + account.id);
+    const accounts = metadata.accounts?.map((account) => account.name + "-" + account.id) || [];
 
     return {
         user: user,
@@ -66,7 +66,7 @@ const buildItemInfo = (metadata: PlaidLinkOnSuccessMetadata,
         availableProducts: products,
         accounts: accounts,
         dateCreated: new Date().toISOString(),
-        metaData: metadata
+        metaData: JSON.stringify(metadata)
     };
 }
 
@@ -77,12 +77,17 @@ const LinkAccount = () => {
 
     useEffect( () => {
 
+        const sendInfoBack = async (infoToSend: PlaidItemCreationInfo) => {
+            console.log('infoToSend', infoToSend);
+            const response = await requestItemCreation(infoToSend);
+            console.log(response)
+        }
+
         // Send info back when publicToken is generated.
         if (state.publicToken && state.metaData) {
             const {metaData, user, publicToken, products} = state;
             const infoToSend = buildItemInfo(metaData, user, publicToken, products)
-
-            requestItemCreation(infoToSend).then ((response) => console.log(response));
+            sendInfoBack(infoToSend);
         }
 
     }, [state])
@@ -103,9 +108,10 @@ const LinkAccount = () => {
     // onSuccess callback for LinkFlow to initiate item creation server-side.
     const onLinkSuccess = useCallback(async (public_token: string,
                                              metadata: PlaidLinkOnSuccessMetadata) => {
+        console.log('on link success called', public_token, metadata);
         dispatch({
             type: ActionKind.UpdatePublicToken,
-            payload: {publicToken: public_token, metadata: metadata}
+            payload: {publicToken: public_token, metaData: metadata}
         });
     }, [])
 

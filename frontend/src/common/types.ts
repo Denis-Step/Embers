@@ -15,5 +15,5 @@ export interface PlaidItemCreationInfo {
     availableProducts: string[];
     accounts: string[];
     dateCreated: Date | string;
-    metaData: PlaidLinkOnSuccessMetadata
+    metaData: string; // Stringfied metadata.
 }

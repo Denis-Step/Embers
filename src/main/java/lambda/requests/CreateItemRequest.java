@@ -13,7 +13,7 @@ public class CreateItemRequest {
     private List<String> availableProducts;
     private List<String> accounts;
     private String dateCreated;
-    private Map<String, String> metaData; // Remaining metadata. Rarely used.
+    private String metaData; // Remaining metadata. Rarely used.
 
     public String getUser() {
         return user;
@@ -47,11 +47,11 @@ public class CreateItemRequest {
         this.dateCreated = dateCreated;
     }
 
-    public Map<String, String> getMetaData() {
+    public String getMetaData() {
         return metaData;
     }
 
-    public void setMetaData(Map<String, String> metaData) {
+    public void setMetaData(String metaData) {
         this.metaData = metaData;
     }
 
