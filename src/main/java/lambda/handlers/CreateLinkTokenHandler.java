@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerPlaidComponent;
 import lambda.requests.CreateLinkTokenRequest;
-import plaid.LinkGrabber;
+import plaid.clients.LinkGrabber;
 
 import java.util.List;
 

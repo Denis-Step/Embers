@@ -1,13 +1,23 @@
 package dynamo;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.amazonaws.services.dynamodbv2.xspec.S;
+import dagger.DaggerAwsComponent;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @DynamoDBTable(tableName="PlaidItems")
 public class PlaidItemDAO {
+    public static final String TABLE_NAME = "PlaidItems";
     // Primary Key:
     private String user;
     private String institutionId;
@@ -89,5 +99,40 @@ public class PlaidItemDAO {
 
     public void setAccounts(List<String> accounts) {
         this.accounts = accounts;
+    }
+
+    public static class ItemNotFoundException extends Exception {
+        public ItemNotFoundException(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
+    public static List<String> queryAccessTokens(String user, String institution) {
+        AmazonDynamoDB dynamoDB = DaggerAwsComponent.create().buildDynamoClient();
+
+        QueryRequest queryRequest = new QueryRequest(TABLE_NAME);
+
+        queryRequest.setKeyConditionExpression(String.format("#U = :name"));
+        queryRequest.addExpressionAttributeNamesEntry("#U", "User");
+        queryRequest.addExpressionAttributeValuesEntry(":name", new AttributeValue(user));
+
+        //queryRequest.setKeyConditionExpression(String.format("begins_with ( InstitutionID, :%s )", institution));
+
+        QueryResult result = dynamoDB.query(queryRequest);
+        return result.getItems().stream()
+                .map( item -> item.get("AccessToken").toString()) // toString to make sure item is a string. Needed by Dynamo.
+                .collect(Collectors.toList());
+
+    }
+
+    public static String queryAccessTokens(String user, DynamoDBMapper dynamoDBMapper) throws ItemNotFoundException {
+        PlaidItemDAO queryItemDao = new PlaidItemDAO();
+        queryItemDao.setUser(user);
+        dynamoDBMapper.load(queryItemDao);
+        PlaidItemDAO resultItemDao =  dynamoDBMapper.load(PlaidItemDAO.class, user);
+        if (resultItemDao == null) {
+            throw new ItemNotFoundException("Item not found for:" + user);
+        }
+        return resultItemDao.getAccessToken();
     }
 }

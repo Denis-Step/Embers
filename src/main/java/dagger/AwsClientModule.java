@@ -12,10 +12,10 @@ import javax.inject.Singleton;
 @Module
 public interface AwsClientModule {
 
-   @Provides
+    @Provides
     @Singleton
     static AWSCredentialsProvider provideAwsCredentials() {
-        return new EnvironmentVariableCredentialsProvider();
+        return new ProfileCredentialsProvider();
     }
 
     @Provides

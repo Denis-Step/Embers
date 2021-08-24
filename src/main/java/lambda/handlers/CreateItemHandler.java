@@ -8,12 +8,11 @@ import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
 import dynamo.PlaidItemDAO;
 import lambda.requests.CreateItemRequest;
-import plaid.ItemRequester;
-import plaid.PlaidItem;
+import plaid.clients.ItemRequester;
+import plaid.entities.PlaidItem;
 import plaid.responses.PublicTokenExchangeResponse;
 
 import java.io.IOException;
-import java.time.Instant;
 
 public class CreateItemHandler implements RequestHandler<CreateItemRequest, String> {
     DynamoDBMapper dynamoDBMapper;

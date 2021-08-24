@@ -1,6 +1,4 @@
-package plaid;
-
-import com.plaid.client.response.TransactionsGetResponse;
+package plaid.entities;
 
 import java.util.Optional;
 

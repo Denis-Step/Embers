@@ -1,4 +1,4 @@
-package plaid;
+package plaid.clients;
 
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.LinkTokenCreateRequest;

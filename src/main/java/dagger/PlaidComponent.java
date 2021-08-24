@@ -1,11 +1,8 @@
 package dagger;
 
 import com.plaid.client.PlaidClient;
-import plaid.ItemRequester;
-import plaid.LinkGrabber;
-import dagger.PlaidClientModule;
-import dagger.PlaidCredentialsModule;
-import plaid.TransactionsGrabber;
+import plaid.clients.ItemRequester;
+import plaid.clients.LinkGrabber;
 
 import javax.inject.Singleton;
 

@@ -1,7 +1,6 @@
 package lambda.requests;
 
 import java.util.List;
-import java.util.Map;
 
 // LambdaRequest with result of calling link flow.
 public class CreateItemRequest {

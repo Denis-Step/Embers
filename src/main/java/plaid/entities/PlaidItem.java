@@ -1,7 +1,6 @@
-package plaid;
+package plaid.entities;
 
 import java.util.List;
-import java.util.Map;
 
 // Immutable class that represents response of item creation.
 public class PlaidItem {

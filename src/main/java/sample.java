@@ -1,28 +1,23 @@
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.plaid.client.PlaidClient;
-import com.plaid.client.request.LinkTokenCreateRequest;
-import com.plaid.client.response.LinkTokenCreateResponse;
-import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
 import dynamo.PlaidItemDAO;
-import plaid.*;
+import plaid.clients.ItemRequester;
 import plaid.responses.PublicTokenExchangeResponse;
-import retrofit2.Call;
-import retrofit2.Response;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class sample {
     private static final String SAMPLE_ACCESS_TOKEN = "access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b";
 
     public static void main(String[] args) throws  IOException{
-        testItemCreator();
+        testItemQuery();
 
+    }
+
+    public static void testItemQuery() {
+        List<String> tokens = PlaidItemDAO.queryAccessTokens("Derek", "Discover");
+        System.out.println(tokens);
     }
 
     public static void testItemCreator() throws IOException {
