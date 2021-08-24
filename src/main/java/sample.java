@@ -16,8 +16,7 @@ public class sample {
     }
 
     public static void testItemQuery() {
-        List<String> tokens = PlaidItemDAO.queryAccessTokens("Derek", "Discover");
-        System.out.println(tokens);
+        System.out.println(PlaidItemDAO.queryAccessTokens("Derek", "Disco").get(0));
     }
 
     public static void testItemCreator() throws IOException {
