@@ -1,18 +1,28 @@
 import com.plaid.client.PlaidClient;
 import dagger.DaggerPlaidComponent;
 import dynamo.PlaidItemDAO;
+import lambda.processors.LoadTransactionsProcessor;
 import plaid.clients.ItemRequester;
+import plaid.entities.Transaction;
 import plaid.responses.PublicTokenExchangeResponse;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 public class sample {
     private static final String SAMPLE_ACCESS_TOKEN = "access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b";
 
     public static void main(String[] args) throws  IOException{
-        testItemQuery();
+        testLoadTransactionsProcessor();
 
+    }
+
+    public static void  testLoadTransactionsProcessor() throws IOException {
+        LoadTransactionsProcessor processor = new LoadTransactionsProcessor();
+        List<Transaction> transactions = processor.pullFromPlaid("Derek", Date.from(Instant.parse("2020-08-01T10:15:30.00Z")) );
+        System.out.println(transactions);
     }
 
     public static void testItemQuery() {
