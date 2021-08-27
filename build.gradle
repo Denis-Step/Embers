@@ -18,6 +18,9 @@ dependencies {
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.47'
     implementation 'com.amazonaws:aws-lambda-java-events:3.1.0'
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-swf-build-tools
+    implementation 'com.amazonaws:aws-swf-build-tools:1.0'
+
     runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
 
     implementation group: 'com.plaid', name: 'plaid-java', version: '8.5.0'
@@ -51,6 +54,7 @@ task packageFat(type: Zip) {
     }
     dirMode = 0755
     fileMode = 0755
+
 }
 
 task packageLibs(type: Zip) {

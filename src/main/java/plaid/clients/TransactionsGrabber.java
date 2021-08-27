@@ -15,9 +15,8 @@ import java.util.stream.Collectors;
 
 /**
  * Gets Transactions. Abstracts away interacting with Plaid.
- * Still requires accessToken to make it re-usable for
+ * Still requires accessToken to make it re-usable.
  */
-// @TODO: Tx builder
 public class TransactionsGrabber {
     private final PlaidClient plaidClient;
     private final String accessToken;

@@ -23,6 +23,8 @@ public class PlaidItemDAO {
     private String dateCreated;
     private String metaData; // Remaining metadata. Rarely used.
 
+    private static final AmazonDynamoDB dynamoDB = DaggerAwsComponent.create().buildDynamoClient();
+
 
     @DynamoDBHashKey(attributeName = "User")
     public String getUser() {
@@ -103,7 +105,6 @@ public class PlaidItemDAO {
     }
 
     public static List<String> queryAccessTokens(String user, String institution) {
-        AmazonDynamoDB dynamoDB = DaggerAwsComponent.create().buildDynamoClient();
         QueryRequest queryRequest = createQueryRequest(user, institution);
         QueryResult result = dynamoDB.query(queryRequest);
 
@@ -113,7 +114,6 @@ public class PlaidItemDAO {
     }
 
     public static List<String> queryAccessTokens(String user) {
-        AmazonDynamoDB dynamoDB = DaggerAwsComponent.create().buildDynamoClient();
         QueryRequest queryRequest = createQueryRequest(user);
         QueryResult result = dynamoDB.query(queryRequest);
 
