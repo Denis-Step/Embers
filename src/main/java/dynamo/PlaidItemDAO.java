@@ -107,18 +107,26 @@ public class PlaidItemDAO {
         }
     }
 
-    public List<PlaidItem> queryAccessTokens(String user, String institutionId) {
+    public List<PlaidItem> query(String user, String institutionId) {
         DynamoDBQueryExpression<PlaidItemDAO> queryExpression = createQueryRequest(user, institutionId);
         List<PlaidItemDAO> plaidItemDAOList = dynamoDBMapper.query(PlaidItemDAO.class, queryExpression);
 
-        System.out.println(plaidItemDAOList);
+        return plaidItemDAOList.stream()
+                .map(dao -> dao.createItem())
+                .collect(Collectors.toList());
+    }
+
+    public List<PlaidItem> query(String user) {
+        DynamoDBQueryExpression<PlaidItemDAO> queryExpression = createQueryRequest(user);
+        List<PlaidItemDAO> plaidItemDAOList = dynamoDBMapper.query(PlaidItemDAO.class, queryExpression);
+
         return plaidItemDAOList.stream()
                 .map(dao -> dao.createItem())
                 .collect(Collectors.toList());
     }
 
     private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user, String institutionId) {
-        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        Map<String, AttributeValue> eav = new HashMap<>();
         eav.put(":name", new AttributeValue().withS(user));
         eav.put(":institution",new AttributeValue().withS(institutionId));
 
@@ -127,56 +135,16 @@ public class PlaidItemDAO {
                 .addExpressionAttributeNamesEntry("#U", "User")
                 .withExpressionAttributeValues(eav);
         return queryExpression;
-    };
-
-    /*public List<String> queryAccessTokens(String user, String institution) {
-        QueryRequest queryRequest = createQueryRequest(user, institution);
-        QueryResult result = dynamoDB.query(queryRequest);
-
-        return result.getItems().stream()
-                .map( item -> item.get("AccessToken").getS())
-                .collect(Collectors.toList());
     }
 
-    public List<String> queryAccessTokens(String user) {
-        QueryRequest queryRequest = createQueryRequest(user);
-        QueryResult result = dynamoDB.query(queryRequest);
+    private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user) {
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":name", new AttributeValue().withS(user));
 
-        return result.getItems().stream()
-                .map( item -> item.get("AccessToken").getS())
-                .collect(Collectors.toList());
-
+        DynamoDBQueryExpression<PlaidItemDAO> queryExpression = new DynamoDBQueryExpression<PlaidItemDAO>()
+                .withKeyConditionExpression("#U = :name")
+                .addExpressionAttributeNamesEntry("#U", "User")
+                .withExpressionAttributeValues(eav);
+        return queryExpression;
     }
-
-    private QueryRequest createQueryRequest(String user, String institution) {
-        QueryRequest queryRequest = new QueryRequest(TABLE_NAME);
-
-        // Query Expression
-        queryRequest.setKeyConditionExpression(String.format("#U = :name AND begins_with ( InstitutionID, :sortkeyval )"));
-
-        // Add partition key. User is a reserved word, so must be aliased to #U.
-        queryRequest.addExpressionAttributeNamesEntry("#U", "User");
-        queryRequest.addExpressionAttributeValuesEntry(":name", new AttributeValue(user));
-
-        // Add sort key.
-        queryRequest.addExpressionAttributeValuesEntry(":sortkeyval", new AttributeValue(institution));
-
-        return queryRequest;
-    }
-
-    // No sort key, no institution name provided needs diff query.
-    private static QueryRequest createQueryRequest(String user) {
-        QueryRequest queryRequest = new QueryRequest(TABLE_NAME);
-
-        // Query Expression
-        queryRequest.setKeyConditionExpression(String.format("#U = :name"));
-
-        // Add partition key. User is a reserved word, so must be aliased to #U.
-        queryRequest.addExpressionAttributeNamesEntry("#U", "User");
-        queryRequest.addExpressionAttributeValuesEntry(":name", new AttributeValue(user));
-
-        return queryRequest;
-    }
-
-     */
 }
