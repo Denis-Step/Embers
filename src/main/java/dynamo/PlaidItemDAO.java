@@ -6,7 +6,12 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import dagger.DaggerAwsComponent;
+import plaid.entities.PlaidItem;
+
+import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -23,80 +28,72 @@ public class PlaidItemDAO {
     private String dateCreated;
     private String metaData; // Remaining metadata. Rarely used.
 
-    private static final AmazonDynamoDB dynamoDB = DaggerAwsComponent.create().buildDynamoClient();
+    private DynamoDBMapper dynamoDBMapper;
 
+    public PlaidItemDAO() {
+        dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();
+    }
+
+    public PlaidItemDAO(PlaidItem plaidItem) {
+        this();
+        this.setUser(plaidItem.getUser()); // Set partition key.
+        this.setInstitutionId(plaidItem.getInstitutionId()); // Set sort key.
+        this.setID(plaidItem.getID());
+        this.setAccessToken(plaidItem.getAccessToken());
+        this.setAvailableProducts(plaidItem.getAvailableProducts());
+        this.setAccounts(plaidItem.getAccounts());
+        this.setDateCreated(plaidItem.getDateCreated());
+        this.setMetaData(plaidItem.getMetaData());
+    }
 
     @DynamoDBHashKey(attributeName = "User")
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
+    public String getUser() { return user; }
+    public void setUser(String user) { this.user = user; }
 
     @DynamoDBRangeKey(attributeName = "InstitutionID")
-    public String getInstitutionId() {
-        return institutionId;
-    }
-
-    public void setInstitutionId(String institutionId) {
-        this.institutionId = institutionId;
-    }
+    public String getInstitutionId() { return institutionId; }
+    public void setInstitutionId(String institutionId) { this.institutionId = institutionId; }
 
     @DynamoDBAttribute(attributeName = "AccessToken")
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
+    public String getAccessToken() { return accessToken; }
+    public void setAccessToken(String accessToken) { this.accessToken = accessToken; }
 
     @DynamoDBAttribute(attributeName = "ID")
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
+    public String getID() { return ID; }
+    public void setID(String ID) { this.ID = ID; }
 
     @DynamoDBAttribute(attributeName = "AvailableProducts")
-    public List<String> getAvailableProducts() {
-        return availableProducts;
-    }
-
-    public void setAvailableProducts(List<String> availableProducts) {
-        this.availableProducts = availableProducts;
-    }
+    public List<String> getAvailableProducts() { return availableProducts; }
+    public void setAvailableProducts(List<String> availableProducts) { this.availableProducts = availableProducts; }
 
     @DynamoDBAttribute(attributeName = "DateCreated")
-    public String getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(String dateCreated) {
-        this.dateCreated = dateCreated;
-    }
+    public String getDateCreated() { return dateCreated; }
+    public void setDateCreated(String dateCreated) { this.dateCreated = dateCreated; }
 
     @DynamoDBAttribute(attributeName = "Metadata")
-    public String getMetaData() {
-        return metaData;
-    }
-
-    public void setMetaData(String metaData) {
-        this.metaData = metaData;
-    }
+    public String getMetaData() { return metaData; }
+    public void setMetaData(String metaData) { this.metaData = metaData; }
 
     @DynamoDBAttribute(attributeName = "Accounts")
-    public List<String> getAccounts() {
-        return accounts;
+    public List<String> getAccounts() { return accounts; }
+    public void setAccounts(List<String> accounts) { this.accounts = accounts; }
+
+    public PlaidItem createItem() {
+        PlaidItemDAO itemInfo = this;
+
+        return PlaidItem.getBuilder()
+                .setID(itemInfo.getID())
+                .setAccessToken(itemInfo.getAccessToken())
+                .setUser(itemInfo.getUser())
+                .setDateCreated(itemInfo.getDateCreated())
+                .setAvailableProducts(itemInfo.getAvailableProducts())
+                .setAccounts(itemInfo.getAccounts())
+                .setInstitutionId(itemInfo.getInstitutionId())
+                .setMetaData(itemInfo.getMetaData())
+                .build();
     }
 
-    public void setAccounts(List<String> accounts) {
-        this.accounts = accounts;
-    }
+    // Exceptions
 
     public static class ItemNotFoundException extends Exception {
         public ItemNotFoundException(String errorMessage) {
@@ -104,7 +101,35 @@ public class PlaidItemDAO {
         }
     }
 
-    public static List<String> queryAccessTokens(String user, String institution) {
+    public static class MultipleItemsFoundException extends Exception {
+        public MultipleItemsFoundException(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
+    public List<PlaidItem> queryAccessTokens(String user, String institutionId) {
+        DynamoDBQueryExpression<PlaidItemDAO> queryExpression = createQueryRequest(user, institutionId);
+        List<PlaidItemDAO> plaidItemDAOList = dynamoDBMapper.query(PlaidItemDAO.class, queryExpression);
+
+        System.out.println(plaidItemDAOList);
+        return plaidItemDAOList.stream()
+                .map(dao -> dao.createItem())
+                .collect(Collectors.toList());
+    }
+
+    private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user, String institutionId) {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":name", new AttributeValue().withS(user));
+        eav.put(":institution",new AttributeValue().withS(institutionId));
+
+        DynamoDBQueryExpression<PlaidItemDAO> queryExpression = new DynamoDBQueryExpression<PlaidItemDAO>()
+                .withKeyConditionExpression("#U = :name AND begins_with ( InstitutionID, :institution )")
+                .addExpressionAttributeNamesEntry("#U", "User")
+                .withExpressionAttributeValues(eav);
+        return queryExpression;
+    };
+
+    /*public List<String> queryAccessTokens(String user, String institution) {
         QueryRequest queryRequest = createQueryRequest(user, institution);
         QueryResult result = dynamoDB.query(queryRequest);
 
@@ -113,7 +138,7 @@ public class PlaidItemDAO {
                 .collect(Collectors.toList());
     }
 
-    public static List<String> queryAccessTokens(String user) {
+    public List<String> queryAccessTokens(String user) {
         QueryRequest queryRequest = createQueryRequest(user);
         QueryResult result = dynamoDB.query(queryRequest);
 
@@ -123,7 +148,7 @@ public class PlaidItemDAO {
 
     }
 
-    private static QueryRequest createQueryRequest(String user, String institution) {
+    private QueryRequest createQueryRequest(String user, String institution) {
         QueryRequest queryRequest = new QueryRequest(TABLE_NAME);
 
         // Query Expression
@@ -152,4 +177,6 @@ public class PlaidItemDAO {
 
         return queryRequest;
     }
+
+     */
 }

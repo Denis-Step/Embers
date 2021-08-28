@@ -30,7 +30,8 @@ public class LoadTransactionsProcessor {
         return pullFromPlaid(user, startDate, Date.from(Instant.now()));
     }
 
+    // @TODO: Fix
     private String getAccessToken(String user) {
-        return PlaidItemDAO.queryAccessTokens(user).get(0);
+        return new PlaidItemDAO().queryAccessTokens(user, "Discover").get(0).toString();
     }
 }

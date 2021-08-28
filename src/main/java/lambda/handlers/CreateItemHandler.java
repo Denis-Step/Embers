@@ -60,17 +60,6 @@ public class CreateItemHandler implements RequestHandler<CreateItemRequest, Stri
     }
 
     private PlaidItemDAO createItemsDao(PlaidItem plaidItem) {
-        PlaidItemDAO plaidItemDAO = new PlaidItemDAO();
-
-        plaidItemDAO.setUser(plaidItem.getUser()); // Set partition key.
-        plaidItemDAO.setInstitutionId(plaidItem.getInstitutionId()); // Set sort key.
-        plaidItemDAO.setID(plaidItem.getID());
-        plaidItemDAO.setAccessToken(plaidItem.getAccessToken());
-        plaidItemDAO.setAvailableProducts(plaidItem.getAvailableProducts());
-        plaidItemDAO.setAccounts(plaidItem.getAccounts());
-        plaidItemDAO.setDateCreated(plaidItem.getDateCreated());
-        plaidItemDAO.setMetaData(plaidItem.getMetaData());
-
-        return plaidItemDAO;
+        return new PlaidItemDAO(plaidItem);
     }
 }
