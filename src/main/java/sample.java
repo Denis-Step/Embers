@@ -15,11 +15,11 @@ public class sample {
     private static final String SAMPLE_ACCESS_TOKEN = "access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b";
 
     public static void main(String[] args) throws  IOException{
-        testItemQuery();
+        //testItemQuery();
 
     }
 
-    public static void  testLoadTransactionsProcessor() throws IOException {
+   /* public static void  testLoadTransactionsProcessor() throws IOException, LoadTransactionsProcessor.MultipleItemsFoundException {
         LoadTransactionsProcessor processor = new LoadTransactionsProcessor();
         List<Transaction> transactions = processor.pullFromPlaid("Derek", Date.from(Instant.parse("2020-08-01T10:15:30.00Z")) );
         System.out.println(transactions);
@@ -37,7 +37,7 @@ public class sample {
         System.out.println(response);
     }
 
-/*
+
     public static void testTransactionsGrabber() throws IOException {
         PlaidClient plaidClient = DaggerPlaidComponent.create().buildPLaidClient();
         TransactionsGrabber txGrabber = new  TransactionsGrabber(plaidClient, SAMPLE_ACCESS_TOKEN);

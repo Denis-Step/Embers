@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
 import dynamo.PlaidItemDAO;
+import lambda.processors.CreateItemProcessor;
 import lambda.requests.CreateItemRequest;
 import plaid.clients.ItemRequester;
 import plaid.entities.PlaidItem;
@@ -15,12 +16,10 @@ import plaid.responses.PublicTokenExchangeResponse;
 import java.io.IOException;
 
 public class CreateItemHandler implements RequestHandler<CreateItemRequest, String> {
-    DynamoDBMapper dynamoDBMapper;
-    ItemRequester itemRequester;
+    private final CreateItemProcessor processor;
 
     public CreateItemHandler() {
-        dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();
-        itemRequester = DaggerPlaidComponent.create().buildItemRequestor();
+        this.processor = new CreateItemProcessor();
     }
 
     @Override
@@ -29,37 +28,13 @@ public class CreateItemHandler implements RequestHandler<CreateItemRequest, Stri
         logger.log("Getting access token for" + event.getPublicToken());
 
         try {
-            PlaidItem plaidItem = createPlaidItem(event);
-            logger.log("Received item: " + plaidItem.toString());
-            dynamoDBMapper.save(createItemsDao(plaidItem));
-            logger.log("Saved item:" + plaidItem.getID());
-            return plaidItem.toString();
+            PlaidItem item = processor.createPlaidItem(event);
+            logger.log("Created item:" + item.getID());
+            return item.toString();
         } catch (IOException e){
             // Rethrow Exception to prevent Lambda from succeeding.
-            logger.log("Exception" + e.toString() + System.currentTimeMillis());
+            logger.log("Exception" + e.getMessage() + System.currentTimeMillis());
             throw new RuntimeException(String.format("Exception: %s", e.toString()));
         }
-
-    }
-
-    // Calls Plaid client to request a new Item and uses info from incoming request
-    // to build PlaidItem.
-    private PlaidItem createPlaidItem (CreateItemRequest createItemRequest) throws IOException {
-        PublicTokenExchangeResponse itemInfo = itemRequester.requestItem(createItemRequest.getPublicToken());
-
-        return PlaidItem.getBuilder()
-                .setID(itemInfo.getID())
-                .setAccessToken(itemInfo.getAccessToken())
-                .setUser(createItemRequest.getUser())
-                .setDateCreated(createItemRequest.getDateCreated())
-                .setAvailableProducts(createItemRequest.getAvailableProducts())
-                .setAccounts(createItemRequest.getAccounts())
-                .setInstitutionId(createItemRequest.getInstitutionId())
-                .setMetaData(createItemRequest.getMetaData())
-                .build();
-    }
-
-    private PlaidItemDAO createItemsDao(PlaidItem plaidItem) {
-        return new PlaidItemDAO(plaidItem);
     }
 }

@@ -46,6 +46,21 @@ public class PlaidItemDAO {
         this.setMetaData(plaidItem.getMetaData());
     }
 
+    public PlaidItem createItem() {
+        PlaidItemDAO itemInfo = this;
+
+        return PlaidItem.getBuilder()
+                .setID(itemInfo.getID())
+                .setAccessToken(itemInfo.getAccessToken())
+                .setUser(itemInfo.getUser())
+                .setDateCreated(itemInfo.getDateCreated())
+                .setAvailableProducts(itemInfo.getAvailableProducts())
+                .setAccounts(itemInfo.getAccounts())
+                .setInstitutionId(itemInfo.getInstitutionId())
+                .setMetaData(itemInfo.getMetaData())
+                .build();
+    }
+
     @DynamoDBHashKey(attributeName = "User")
     public String getUser() { return user; }
     public void setUser(String user) { this.user = user; }
@@ -78,35 +93,6 @@ public class PlaidItemDAO {
     public List<String> getAccounts() { return accounts; }
     public void setAccounts(List<String> accounts) { this.accounts = accounts; }
 
-    public PlaidItem createItem() {
-        PlaidItemDAO itemInfo = this;
-
-        return PlaidItem.getBuilder()
-                .setID(itemInfo.getID())
-                .setAccessToken(itemInfo.getAccessToken())
-                .setUser(itemInfo.getUser())
-                .setDateCreated(itemInfo.getDateCreated())
-                .setAvailableProducts(itemInfo.getAvailableProducts())
-                .setAccounts(itemInfo.getAccounts())
-                .setInstitutionId(itemInfo.getInstitutionId())
-                .setMetaData(itemInfo.getMetaData())
-                .build();
-    }
-
-    // Exceptions
-
-    public static class ItemNotFoundException extends Exception {
-        public ItemNotFoundException(String errorMessage) {
-            super(errorMessage);
-        }
-    }
-
-    public static class MultipleItemsFoundException extends Exception {
-        public MultipleItemsFoundException(String errorMessage) {
-            super(errorMessage);
-        }
-    }
-
     public List<PlaidItem> query(String user, String institutionId) {
         DynamoDBQueryExpression<PlaidItemDAO> queryExpression = createQueryRequest(user, institutionId);
         List<PlaidItemDAO> plaidItemDAOList = dynamoDBMapper.query(PlaidItemDAO.class, queryExpression);
@@ -123,6 +109,15 @@ public class PlaidItemDAO {
         return plaidItemDAOList.stream()
                 .map(dao -> dao.createItem())
                 .collect(Collectors.toList());
+    }
+
+    public void save(PlaidItem plaidItem){
+        PlaidItemDAO dao = new PlaidItemDAO(plaidItem);
+        dao.save();
+    }
+
+    private void save() {
+        this.dynamoDBMapper.save(this);
     }
 
     private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user, String institutionId) {
@@ -146,5 +141,13 @@ public class PlaidItemDAO {
                 .addExpressionAttributeNamesEntry("#U", "User")
                 .withExpressionAttributeValues(eav);
         return queryExpression;
+    }
+
+    // Exceptions
+
+    public static class ItemNotFoundException extends Exception {
+        public ItemNotFoundException(String errorMessage) {
+            super(errorMessage);
+        }
     }
 }
