@@ -1,0 +1,75 @@
+package lambda.processors;
+
+import dagger.DaggerPlaidComponent;
+import dynamo.PlaidItemDAO;
+import lambda.requests.CreateItemRequest;
+import lambda.requests.GetItemRequest;
+import plaid.clients.ItemGrabber;
+import plaid.entities.PlaidItem;
+
+import java.io.IOException;
+import java.util.List;
+
+// Params: Link --> User, InstitutionId,
+public class ItemProcessor {
+
+    private final ItemGrabber itemGrabber;
+    private final PlaidItemDAO plaidItemDAO;
+
+    public ItemProcessor() {
+        this.itemGrabber = DaggerPlaidComponent.create().buildItemGrabber();
+        this.plaidItemDAO = new PlaidItemDAO();
+    }
+
+    // Calls Plaid client to request a new Item and uses info from incoming request
+    // to build PlaidItem.
+    public PlaidItem createPlaidItem (CreateItemRequest createItemRequest) throws IOException {
+        PlaidItem item = itemGrabber.createItem(createItemRequest);
+        plaidItemDAO.save(item);
+        return item;
+    }
+
+    public List<PlaidItem> getItems(GetItemRequest itemRequest) {
+        if (itemRequest.getInstitution() == null) {
+            return plaidItemDAO.query(itemRequest.getUser());
+        } else {
+            return plaidItemDAO.query(itemRequest.getUser(), itemRequest.getInstitution());
+        }
+    }
+
+    // For when a specific Item is required, avoids having to check size farther up the stack.
+    // Requires institutionId to make this possible.
+    public PlaidItem getItem(GetItemRequest request) throws ItemException {
+        List<PlaidItem> plaidItems = plaidItemDAO.query(request.getUser(), request.getInstitution());
+
+        if (plaidItems.size() > 1) {
+            throw new MultipleItemsFoundException("Found " +
+                    plaidItems.size() +
+                    " items:" +
+                    plaidItems.toString());
+        }
+        if (plaidItems.size() < 1) {
+            throw new ItemNotFoundException("Item Not Found for User:" +
+                    request.getUser() +
+                    "And institution:" +
+                    request.getInstitution());
+        } else {
+            return plaidItems.get(0);
+        }
+    }
+
+    // Exceptions
+    public static class ItemException extends Exception {
+        public ItemException(String errorMessage) {super(errorMessage);}
+    }
+
+    public static class ItemNotFoundException extends ItemException {
+        public ItemNotFoundException(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
+    public static class MultipleItemsFoundException extends ItemException {
+        public MultipleItemsFoundException(String errorMessage) {super(errorMessage);}
+    }
+}

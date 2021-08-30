@@ -4,6 +4,9 @@ import java.util.Optional;
 
 // Wrapper on Plaid Transactions. Removes unnecessary info.
 public class Transaction {
+    private final String user;
+    private final String institutionName;
+    private final String accountId;
     private final Double amount;
 
     // This maps to Plaid "name"
@@ -12,7 +15,6 @@ public class Transaction {
     private final String merchantName;
     private final String date;
 
-    private final String accountId;
     private final String transactionId;
 
 
@@ -20,10 +22,12 @@ public class Transaction {
      * Transactions are instantiated here.
      */
     public Transaction (Builder builder) {
+        this.user = builder.user;
+        this.institutionName = builder.institutionName;
         this.amount = builder.amount;
         this.description = builder.description;
         this.originalDescription = Optional.ofNullable(builder.originalDescription);
-        this.merchantName = builder.merchantName;;
+        this.merchantName = builder.merchantName;
         this.date = builder.date;
         this.accountId = builder.accountId;
         this.transactionId = builder.transactionId;
@@ -32,6 +36,10 @@ public class Transaction {
     public static Builder getBuilder() {
         return new Builder();
     }
+
+    public String getUser() { return user; }
+
+    public String getInstitutionName() { return institutionName; }
 
     public Double getAmount() {
         return this.amount;
@@ -78,6 +86,8 @@ public class Transaction {
     // A Transaction should NEVER be modified after creation.
     public static class Builder{
 
+        private String user;
+        private String institutionName;
         private Double amount;
         private String description;
         private String originalDescription;
@@ -93,9 +103,26 @@ public class Transaction {
             return new Transaction(this);
         }
 
-
         private void validateTransaction() {
             // Leave empty for now.
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public Builder setUser(String user) {
+            this.user = user;
+            return this;
+        }
+
+        public String getInstitutionName() {
+            return institutionName;
+        }
+
+        public Builder setInstitutionName(String institutionName) {
+            this.institutionName = institutionName;
+            return this;
         }
 
         public Double getAmount() {

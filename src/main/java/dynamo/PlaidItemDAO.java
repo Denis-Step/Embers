@@ -98,7 +98,7 @@ public class PlaidItemDAO {
         List<PlaidItemDAO> plaidItemDAOList = dynamoDBMapper.query(PlaidItemDAO.class, queryExpression);
 
         return plaidItemDAOList.stream()
-                .map(dao -> dao.createItem())
+                .map(PlaidItemDAO::createItem)
                 .collect(Collectors.toList());
     }
 
@@ -107,7 +107,7 @@ public class PlaidItemDAO {
         List<PlaidItemDAO> plaidItemDAOList = dynamoDBMapper.query(PlaidItemDAO.class, queryExpression);
 
         return plaidItemDAOList.stream()
-                .map(dao -> dao.createItem())
+                .map(PlaidItemDAO::createItem)
                 .collect(Collectors.toList());
     }
 
@@ -125,29 +125,19 @@ public class PlaidItemDAO {
         eav.put(":name", new AttributeValue().withS(user));
         eav.put(":institution",new AttributeValue().withS(institutionId));
 
-        DynamoDBQueryExpression<PlaidItemDAO> queryExpression = new DynamoDBQueryExpression<PlaidItemDAO>()
+        return new DynamoDBQueryExpression<PlaidItemDAO>()
                 .withKeyConditionExpression("#U = :name AND begins_with ( InstitutionID, :institution )")
                 .addExpressionAttributeNamesEntry("#U", "User")
                 .withExpressionAttributeValues(eav);
-        return queryExpression;
     }
 
     private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user) {
         Map<String, AttributeValue> eav = new HashMap<>();
         eav.put(":name", new AttributeValue().withS(user));
 
-        DynamoDBQueryExpression<PlaidItemDAO> queryExpression = new DynamoDBQueryExpression<PlaidItemDAO>()
+        return new DynamoDBQueryExpression<PlaidItemDAO>()
                 .withKeyConditionExpression("#U = :name")
                 .addExpressionAttributeNamesEntry("#U", "User")
                 .withExpressionAttributeValues(eav);
-        return queryExpression;
-    }
-
-    // Exceptions
-
-    public static class ItemNotFoundException extends Exception {
-        public ItemNotFoundException(String errorMessage) {
-            super(errorMessage);
-        }
     }
 }

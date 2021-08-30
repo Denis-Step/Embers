@@ -7,8 +7,9 @@ public class GetTransactionsRequest {
 
     private String user;
     private String institutionName;
-    private String accountId;
-    private String date;
+    private String accountId; //Nullable
+    private String startDate;
+    private String endDate;
 
     public String getInstitutionName() {
         return institutionName;
@@ -26,14 +27,6 @@ public class GetTransactionsRequest {
         this.accountId = accountId;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
     public String getUser() {
         return user;
     }
@@ -41,4 +34,10 @@ public class GetTransactionsRequest {
     public void setUser(String user) {
         this.user = user;
     }
+
+    public String getStartDate() { return startDate; }
+    public void setStartDate(String startDate) { this.startDate = startDate; }
+
+    public String getEndDate() { return endDate; }
+    public void setEndDate(String endDate) { this.endDate = endDate; }
 }

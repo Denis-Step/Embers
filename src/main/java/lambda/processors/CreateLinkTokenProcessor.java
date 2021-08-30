@@ -18,11 +18,7 @@ public class CreateLinkTokenProcessor {
     }
 
     public String createLinkToken(CreateLinkTokenRequest event) throws IOException {
-        String user = event.getUser();
-        List<String> products = event.getProducts();
-
-        String linkToken = linkGrabber.getLinkToken(user, products);
-        return linkToken;
+        return linkGrabber.getLinkToken(event);
     }
 
 }

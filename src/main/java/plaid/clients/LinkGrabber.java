@@ -3,6 +3,7 @@ package plaid.clients;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
+import lambda.requests.CreateLinkTokenRequest;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -23,10 +24,9 @@ public class LinkGrabber {
         this.plaidClient = plaidClient;
     }
 
-    public String getLinkToken(String user, List<String> products) throws IOException {
-        LinkTokenCreateRequest linkTokenCreateRequest = getLinkTokenCreateRequest(user, products);
-
-        Call<LinkTokenCreateResponse> call =  plaidClient.service().linkTokenCreate(linkTokenCreateRequest);
+    public String getLinkToken(CreateLinkTokenRequest request) throws IOException {
+        LinkTokenCreateRequest linkTokenCreateRequest = createLinkTokenCreateRequest(request.getUser(), request.getProducts());
+        Call<LinkTokenCreateResponse> call = plaidClient.service().linkTokenCreate(linkTokenCreateRequest);
         Response<LinkTokenCreateResponse> resp = call.execute();
 
         if (resp.isSuccessful()) {
@@ -38,7 +38,7 @@ public class LinkGrabber {
     }
 
     // Only serve English requests. Differ only on users and products supported for the item.
-    private LinkTokenCreateRequest getLinkTokenCreateRequest(String user, List<String> products) {
+    private LinkTokenCreateRequest createLinkTokenCreateRequest(String user, List<String> products) {
         return new LinkTokenCreateRequest(new LinkTokenCreateRequest.User(user),
                 "PlaidJava",
                 products,
