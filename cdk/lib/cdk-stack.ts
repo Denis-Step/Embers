@@ -28,7 +28,7 @@ export class LambdaStack extends cdk.Stack {
   private readonly sourceBucket: s3.IBucket;
   public readonly linkLambda: lambda.Function;
 
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // An S3 bucket already exists, so we have to use a static method
@@ -44,6 +44,12 @@ export class LambdaStack extends cdk.Stack {
 
       // Code supports local build steps, S3 buckets, and inlining.
       code: lambda.Code.fromBucket(this.sourceBucket, "JavaPlaid-1.0.zip"),
+      environment: {
+        "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
+        "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
+        "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
+
+      },
       timeout: Duration.seconds(300),
     })
 
@@ -99,4 +105,6 @@ export class LambdaStack extends cdk.Stack {
     and it is unclear what the best practice is, if the BP has even established yet. The resources
     are still quite new. The constructs can interact with each other in unforeseeable ways. Be cautious
     with unit testing and manual testing inside staging environments.
+
+    - Can deploy stacks separately, with --all, or integrate into one single enclosing Stack.
  */
