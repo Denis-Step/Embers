@@ -1,18 +1,19 @@
 package lambda.requests;
 
+import dynamo.PlaidTransactionDAO;
 import plaid.entities.Transaction;
 
 import java.util.List;
 
 public class SendTransactionsMessageRequest {
-    private List<Transaction> transactions;
+    private List<PlaidTransactionDAO> transactions;
     private String receiverNumber;
 
-    public List<Transaction> getTransactions() {
+    public List<PlaidTransactionDAO> getTransactions() {
         return transactions;
     }
 
-    public void setTransactions(List<Transaction> transactions) {
+    public void setTransactions(List<PlaidTransactionDAO> transactions) {
         this.transactions = transactions;
     }
 

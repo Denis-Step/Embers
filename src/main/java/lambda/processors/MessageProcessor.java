@@ -1,5 +1,6 @@
 package lambda.processors;
 
+import dynamo.PlaidTransactionDAO;
 import lambda.requests.SendTransactionsMessageRequest;
 import plaid.entities.Transaction;
 import twilio.MessageClient;
@@ -30,11 +31,11 @@ public class MessageProcessor {
     }
 
     public static class TransactionSummary{
-        Double netBalance;
-        int numTransactions;
+        public Double netBalance = 0.00;
+        int numTransactions = 0;
 
-        public TransactionSummary(List<Transaction> transactionList) {
-            for (Transaction transaction: transactionList) {
+        public TransactionSummary(List<PlaidTransactionDAO> transactionList) {
+            for (PlaidTransactionDAO transaction: transactionList) {
                 netBalance += transaction.getAmount();
                 numTransactions += 1;
             }

@@ -16,6 +16,8 @@ public class SendMessageHandler implements RequestHandler<SendTransactionsMessag
 
     @Override
     public String handleRequest(SendTransactionsMessageRequest request, Context context) {
+        context.getLogger().log(request.toString());
+        context.getLogger().log(request.getTransactions().toString());
         return this.messageProcessor.sendMessage(request);
     }
 
