@@ -3,18 +3,21 @@ package lambda.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import dagger.DaggerPlaidComponent;
 import lambda.processors.ItemProcessor;
 import lambda.requests.CreateItemRequest;
 import plaid.entities.PlaidItem;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
 public class CreateItemHandler implements RequestHandler<CreateItemRequest, String> {
     private final ItemProcessor processor;
 
-    public CreateItemHandler() {
-        this.processor = new ItemProcessor();
-    }
+    public CreateItemHandler() {this.processor = DaggerPlaidComponent.create().buildItemProcessor();}
+
+    @Inject
+    public CreateItemHandler(ItemProcessor processor) {this.processor = processor;}
 
     @Override
     public String handleRequest(CreateItemRequest event, Context context) {

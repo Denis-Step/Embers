@@ -20,8 +20,10 @@ import java.util.List;
 public class LoadTransactionsHandler implements RequestHandler<GetTransactionsRequest, List<Transaction>> {
     private final TransactionProcessor processor;
 
-    public LoadTransactionsHandler() {
-        this.processor = new TransactionProcessor();
+    public LoadTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildTransactionProcessor(); }
+
+    public LoadTransactionsHandler(TransactionProcessor processor) {
+        this.processor = processor;
     }
 
     @Override

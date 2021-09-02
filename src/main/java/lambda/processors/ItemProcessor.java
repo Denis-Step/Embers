@@ -7,6 +7,7 @@ import lambda.requests.GetItemRequest;
 import plaid.clients.ItemGrabber;
 import plaid.entities.PlaidItem;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 
@@ -16,9 +17,10 @@ public class ItemProcessor {
     private final ItemGrabber itemGrabber;
     private final PlaidItemDAO plaidItemDAO;
 
-    public ItemProcessor() {
-        this.itemGrabber = DaggerPlaidComponent.create().buildItemGrabber();
-        this.plaidItemDAO = new PlaidItemDAO();
+    @Inject
+    public ItemProcessor(ItemGrabber itemGrabber, PlaidItemDAO plaidItemDAO) {
+        this.itemGrabber = itemGrabber;
+        this.plaidItemDAO = plaidItemDAO;
     }
 
     // Calls Plaid client to request a new Item and uses info from incoming request

@@ -26,14 +26,11 @@ public class PlaidTransactionDAO {
     private String merchantName;
     private String date;
 
-    private String transactionId;
+    private static final DynamoDBMapper dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();;
 
-    private final DynamoDBMapper dynamoDBMapper;
-
-    public PlaidTransactionDAO() { dynamoDBMapper = DaggerAwsComponent.create().buildDynamo(); }
+    public PlaidTransactionDAO() {}
 
     public PlaidTransactionDAO(Transaction transaction) {
-        this();
         this.setUser(transaction.getUser()); // Partition key
         this.setInstitutionNameAccountIdTransactionId(transaction.getInstitutionName() +
                 "-" +
@@ -73,10 +70,6 @@ public class PlaidTransactionDAO {
     @DynamoDBRangeKey(attributeName = "InstitutionNameAccountId")
     public String getInstitutionNameAccountIdTransactionId() { return institutionNameAccountIdTransactionId; }
     public void setInstitutionNameAccountIdTransactionId(String institutionNameAccountIdTransactionId) { this.institutionNameAccountIdTransactionId = institutionNameAccountIdTransactionId; }
-
-    /*@DynamoDBAttribute(attributeName = "TransactionId")
-    public String getTransactionId() { return transactionId; }
-    public void setTransactionId(String transactionId) { this.transactionId = transactionId; } */
 
     @DynamoDBAttribute(attributeName = "Amount")
     public Double getAmount() { return amount; }
@@ -165,13 +158,12 @@ public class PlaidTransactionDAO {
     public String toString() {
         return "PlaidTransactionDAO{" +
                 "user='" + user + '\'' +
-                ", institutionNameAccountId='" + institutionNameAccountIdTransactionId + '\'' +
+                ", institutionNameAccountIdTransactionId='" + institutionNameAccountIdTransactionId + '\'' +
                 ", amount=" + amount +
                 ", description='" + description + '\'' +
                 ", originalDescription='" + originalDescription + '\'' +
                 ", merchantName='" + merchantName + '\'' +
                 ", date='" + date + '\'' +
-                ", transactionId='" + transactionId + '\'' +
                 ", dynamoDBMapper=" + dynamoDBMapper +
                 '}';
     }

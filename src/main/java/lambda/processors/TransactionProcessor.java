@@ -8,6 +8,7 @@ import plaid.clients.TransactionsGrabber;
 import plaid.entities.PlaidItem;
 import plaid.entities.Transaction;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
@@ -19,9 +20,10 @@ public class TransactionProcessor {
     private final PlaidTransactionDAO transactionDAO;
     private final ItemProcessor itemProcessor;
 
-    public TransactionProcessor() {
-        this.transactionDAO = new PlaidTransactionDAO();
-        this.itemProcessor = new ItemProcessor();
+    @Inject
+    public TransactionProcessor(PlaidTransactionDAO transactionDAO, ItemProcessor itemProcessor) {
+        this.transactionDAO = transactionDAO;
+        this.itemProcessor = itemProcessor;
     }
 
     // First get item, then pull Tx from Plaid for that item.

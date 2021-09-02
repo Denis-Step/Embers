@@ -3,16 +3,20 @@ package lambda.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import dagger.DaggerPlaidComponent;
 import lambda.processors.CreateLinkTokenProcessor;
 import lambda.requests.CreateLinkTokenRequest;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
 public class CreateLinkTokenHandler implements RequestHandler<CreateLinkTokenRequest, String> {
     private final CreateLinkTokenProcessor processor;
 
-    public CreateLinkTokenHandler() {
-        this.processor = new CreateLinkTokenProcessor();
+    public CreateLinkTokenHandler() {this.processor = DaggerPlaidComponent.create().buildLinkTokenProcessor();}
+
+    public CreateLinkTokenHandler(CreateLinkTokenProcessor processor) {
+        this.processor = processor;
     }
 
     @Override

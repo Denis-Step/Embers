@@ -28,14 +28,11 @@ public class PlaidItemDAO {
     private String dateCreated;
     private String metaData; // Remaining metadata. Rarely used.
 
-    private DynamoDBMapper dynamoDBMapper;
+    private static final DynamoDBMapper dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();
 
-    public PlaidItemDAO() {
-        dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();
-    }
+    public PlaidItemDAO() { }
 
     public PlaidItemDAO(PlaidItem plaidItem) {
-        this();
         this.setUser(plaidItem.getUser()); // Set partition key.
         this.setInstitutionId(plaidItem.getInstitutionId()); // Set sort key.
         this.setID(plaidItem.getID());
