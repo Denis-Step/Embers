@@ -5,5 +5,4 @@ import {JPPipelineStack} from "../lib/pipeline";
 
 
 const app = new cdk.App();
-new LambdaStack(app, 'JavaPlaidStack');
 new JPPipelineStack(app, "JPrepo");
