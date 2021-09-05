@@ -7,20 +7,6 @@ import * as cdk from '@aws-cdk/core';
 import {Runtime} from "inspector";
 import {Duration} from "@aws-cdk/core";
 
-/*export class CdkStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-
-    const queue = new sqs.Queue(this, 'CdkQueue', {
-      visibilityTimeout: cdk.Duration.seconds(300)
-    });
-
-    const topic = new sns.Topic(this, 'CdkTopic');
-
-    topic.addSubscription(new subs.SqsSubscription(queue));
-  }
-}*/
-
 export class LambdaStack extends cdk.Stack {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
