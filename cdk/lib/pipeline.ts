@@ -44,7 +44,7 @@ export class JPPipelineStack extends cdk.Stack{
         // Now, we can add stages. The stages consume Stacks. This allows per-stage
         // stack deployment (useful for alarms and monitoring).
 
-        this.pipeline.addStage(new BuildStage(this, 'Build'));
+        this.pipeline.addStage(new BuildStage(this, 'SourceBuild'));
         this.pipeline.addStage(new DefaultPipelineStage(this, 'Beta'));
         this.pipeline.addStage(new DefaultPipelineStage(this, 'Prod'));
 
