@@ -6,22 +6,18 @@ import * as s3 from "@aws-cdk/aws-s3";
 
 export class BuildStack extends Stack {
     public readonly project: codebuild.Project;
-    public readonly repo: codecommit.Repository;
+    public readonly source: codebuild.Source;
     public readonly outputBucket: s3.Bucket;
 
     constructor(scope: Construct, id: string,  props?: StackProps) {
         super(scope, id, props);
 
-        // Offers SNS and CodeStar notifications.
-        this.repo = new codecommit.Repository(this, 'JavaPlaidRepo', {
-            repositoryName: 'JavaPlaid',
-            description: 'Repository for JavaPlaid transactions project'
-        })
-        const source = codebuild.Source.codeCommit({repository: this.repo, branchOrRef: 'cdk'});
+        const repo = codecommit.Repository.fromRepositoryName(this, 'JavaPlaidRepo', 'JavaPlaid');
+        this.source = codebuild.Source.codeCommit({repository: repo, branchOrRef: 'cdk'});
         this.outputBucket = new s3.Bucket(this, 'builtcodebucket');
 
         this.project = new codebuild.Project(this, 'JP', {
-            source,
+            source: this.source,
             artifacts:  codebuild.Artifacts.s3({
                 bucket: this.outputBucket,
                 includeBuildId: true,
