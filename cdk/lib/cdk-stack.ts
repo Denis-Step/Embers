@@ -56,13 +56,36 @@ export class LambdaStack extends cdk.Stack {
     // individually.
     this.restApi = new apigw.RestApi(this, 'PlaidLinkApi');
 
+    // We define the JSON Schema for the transformed valid response
+    /*const responseModel = this.restApi.addModel('ResponseModel', {
+      contentType: 'application/json',
+      modelName: 'ResponseModel',
+      schema: {
+        schema: apigw.JsonSchemaVersion.DRAFT4,
+        title: 'LinkTokenRequest',
+        type: apigw.JsonSchemaType.OBJECT,
+        properties: {
+          user: { type: apigw.JsonSchemaType.STRING },
+          products: { type: api.JsonSchemaType.STRING }
+        }
+      }
+    }); */
+
     // Let's do the integration for linkTokens:
     const postLinkTokenIntegration = new apigw.LambdaIntegration(this.linkLambda, {
       proxy: false,
       allowTestInvoke: true,
-      passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      requestTemplates: {
+        // You can define a mapping that will build a payload for your integration, based
+        //  on the integration parameters that you have specified
+        // Check: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+        'application/json': JSON.stringify({ user: "$util.escapeJavaScript($input.json('$.user')",
+          products: "$util.escapeJavaScript($input.json('$.products'))" })
+      },
       integrationResponses: [
         {
+
           // Successful response from the Lambda function, no filter defined
           statusCode: "200",
           responseTemplates: {
@@ -80,8 +103,22 @@ export class LambdaStack extends cdk.Stack {
             'method.response.header.Access-Control-Allow-Heades': "'Content-Type,Authorization'",
             'method.response.header.Access-Control-Allow-Methods': "'OPTIONS, POST'"
           }
-        }],
-
+        },
+        {
+          // For errors, we check if the error message is not empty, get the error data
+          selectionPattern: '(\n|.)+',
+          // We will set the response status code to 200
+          statusCode: "400",
+          responseTemplates: {
+            'application/json': JSON.stringify({ state: 'error', message: "$util.escapeJavaScript($input.path('$.errorMessage'))" })
+          },
+          responseParameters: {
+            'method.response.header.Content-Type': "'application/json'",
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+            'method.response.header.Access-Control-Allow-Credentials': "'true'"
+          }
+        }
+        ],
     });
     const linkResource = this.restApi.root.addResource("linktoken");
     linkResource.addMethod('OPTIONS');
