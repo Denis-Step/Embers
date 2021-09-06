@@ -9,13 +9,8 @@ export class DefaultPipelineStage extends Stage {
     constructor(scope: Construct, id: string, props?: StageProps) {
         super(scope, id, props);
 
-        // Trigger CodeBuild.
-        const buildStack = new BuildStack(this, 'BuildStack');
+        const lambdaStack = new LambdaStack(this, 'plaidService');
 
-        const lambdaStack = new LambdaStack(this, 'plaidService', {
-            sourceBucket: buildStack.outputBucket
-        });
-
-        this.stacks = [buildStack, lambdaStack];
+        this.stacks = [lambdaStack];
     }
 }

@@ -5,26 +5,24 @@ import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import {Runtime} from "inspector";
-import {Duration} from "@aws-cdk/core";
-
-interface LambdaStackProps extends cdk.StackProps {
-  sourceBucket: s3.Bucket;
-}
+import {Duration, StackProps} from "@aws-cdk/core";
 
 export class LambdaStack extends cdk.Stack {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.
   public readonly linkLambda: lambda.Function;
+  public readonly itemLambda: lambda.Function;
+  private readonly sourceBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props: LambdaStackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     // An S3 bucket already exists, so we have to use a static method
     // on the Bucket class to avoid instantiating a new bucket.
-    /*this.sourceBucket = s3.Bucket.fromBucketAttributes(this, 'JPSourceBucket', {
+    this.sourceBucket = s3.Bucket.fromBucketAttributes(this, 'JPSourceBucket', {
       bucketArn: "arn:aws:s3:::javaplaid-lambda/JavaPlaid-1.0.zip"
-    })*/
+    })
 
     // Be careful not to shadow vanilla JS Function type.
     this.linkLambda = new lambda.Function(this, 'LinkTokenLambda', {
@@ -32,7 +30,7 @@ export class LambdaStack extends cdk.Stack {
       handler: "lambda.handlers.CreateLinkTokenHandler",
 
       // Code supports local build steps, S3 buckets, and inlining.
-      code: lambda.Code.fromBucket(props.sourceBucket, "SourceCode/build/distributions/JavaPlaid-1.0.zip"),
+      code: lambda.Code.fromBucket(this.sourceBucket, "JavaPlaid-1.0.zip"),
       environment: {
         "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
         "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
@@ -41,6 +39,18 @@ export class LambdaStack extends cdk.Stack {
       },
       timeout: Duration.seconds(300),
     })
+
+    this.itemLambda = new lambda.Function(this, 'ItemLambda', {
+      runtime: lambda.Runtime.JAVA_8_CORRETTO,
+      handler: "lambda.handlers.CreateItemHandler",
+      code: lambda.Code.fromBucket(this.sourceBucket, "JavaPlaid-1.0.zip"),
+      environment: {
+        "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
+        "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
+        "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
+      },
+      timeout: Duration.seconds(300)
+    });
 
   }
 
