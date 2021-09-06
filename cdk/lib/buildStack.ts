@@ -13,7 +13,7 @@ export class BuildStack extends Stack {
         super(scope, id, props);
 
         const repo = codecommit.Repository.fromRepositoryName(this, 'JavaPlaidRepo', 'JavaPlaid');
-        this.source = codebuild.Source.codeCommit({repository: repo, branchOrRef: 'cdk'});
+        this.source = codebuild.Source.codeCommit({repository: repo, branchOrRef: 'cdk2'});
         this.outputBucket = new s3.Bucket(this, 'builtcodebucket');
 
         this.project = new codebuild.Project(this, 'JP', {
@@ -31,11 +31,10 @@ export class BuildStack extends Stack {
                         commands: [
                             'gradle packageFat',
                         ],
-                    },
+                    }},
                     artifacts: {
                         files: ['build/distribution/JavaPlaid-1.0.zip']
                     }
-                },
             }),
         })
 

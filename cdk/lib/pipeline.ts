@@ -36,6 +36,7 @@ export class JPPipelineStack extends cdk.Stack{
                     'npm ci', // Special npm command for installing in test envs.
                     'npm run build',
                     'npx cdk synth',
+                    'gradle packageFat'
                 ],
                 primaryOutputDirectory: 'cdk/cdk.out' // Set this if it's not at the top level.
             })
