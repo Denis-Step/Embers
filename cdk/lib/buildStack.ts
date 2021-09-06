@@ -22,7 +22,7 @@ export class BuildStack extends Stack {
                 bucket: this.outputBucket,
                 includeBuildId: true,
                 packageZip: true,
-                path: 'javaplaid.zip',
+                path: 'build/distributions/JavaPlaid-1.0.zip',
             }),
             buildSpec: codebuild.BuildSpec.fromObject({
                 version: '0.2',

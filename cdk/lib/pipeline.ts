@@ -62,6 +62,8 @@ export class JPPipelineStack extends cdk.Stack{
         *   - Protip: Can include multiple output dirs. This is useful for multiple stacks
         *   if you'd like to avoid building them all into a single template artifact.
         *
+        * Rollback: Still have to manually delete stuck stacks.
+        *
         * Synth: Cloud assembly step. Can use multiple output directories.
         * Can use different language-specific builds.
         *
