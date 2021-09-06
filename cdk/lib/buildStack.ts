@@ -20,9 +20,9 @@ export class BuildStack extends Stack {
             source: this.source,
             artifacts:  codebuild.Artifacts.s3({
                 bucket: this.outputBucket,
-                includeBuildId: true,
-                packageZip: true,
-                path: 'build/distributions/JavaPlaid-1.0.zip',
+                identifier: 'LambdaCodeSourceBucket',
+                includeBuildId: false,
+                packageZip: false,
             }),
             buildSpec: codebuild.BuildSpec.fromObject({
                 version: '0.2',
@@ -32,6 +32,9 @@ export class BuildStack extends Stack {
                             'gradle packageFat',
                         ],
                     },
+                    artifacts: {
+                        files: ['build/distribution/JavaPlaid-1.0.zip']
+                    }
                 },
             }),
         })

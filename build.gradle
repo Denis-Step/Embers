@@ -48,8 +48,6 @@ test {
     useJUnitPlatform()
 }
 
-
-
 task packageFat(type: Zip) {
     from compileJava
     from processResources
