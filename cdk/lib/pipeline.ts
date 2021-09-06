@@ -25,7 +25,7 @@ export class JPPipelineStack extends cdk.Stack{
         this.outputBucket = new s3.Bucket(this, 'builtcodebucket');
 
         // We'll be using the 'cdb' branch in our repo for the cloud assembly.
-        const sourceCode = CodePipelineSource.codeCommit(this.repo, 'cdk');
+        const sourceCode = CodePipelineSource.codeCommit(this.repo, 'cdk2');
 
         this.pipeline = new CodePipeline(this, 'JPPipeline', {
             selfMutation: true, // Can be turned off to ensure stability.
