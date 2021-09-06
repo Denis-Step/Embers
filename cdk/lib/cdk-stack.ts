@@ -73,16 +73,15 @@ export class LambdaStack extends cdk.Stack {
 
     // Let's do the integration for linkTokens:
     const postLinkTokenIntegration = new apigw.LambdaIntegration(this.linkLambda, {
-      proxy: false,
       allowTestInvoke: true,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
-      requestTemplates: {
+      /*requestTemplates: {
         // You can define a mapping that will build a payload for your integration, based
         //  on the integration parameters that you have specified
         // Check: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
         'application/json': JSON.stringify({ user: "$util.escapeJavaScript($input.json('$.user')",
           products: "$util.escapeJavaScript($input.json('$.products'))" })
-      },
+      }, */
       integrationResponses: [
         {
 
@@ -104,7 +103,7 @@ export class LambdaStack extends cdk.Stack {
             'method.response.header.Access-Control-Allow-Methods': "'OPTIONS, POST'"
           }
         },
-        {
+        /*{
           // For errors, we check if the error message is not empty, get the error data
           selectionPattern: '(\n|.)+',
           // We will set the response status code to 200
@@ -117,7 +116,7 @@ export class LambdaStack extends cdk.Stack {
             'method.response.header.Access-Control-Allow-Origin': "'*'",
             'method.response.header.Access-Control-Allow-Credentials': "'true'"
           }
-        }
+        } */
         ],
     });
     const linkResource = this.restApi.root.addResource("linktoken");
