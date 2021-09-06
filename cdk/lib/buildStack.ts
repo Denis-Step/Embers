@@ -33,7 +33,7 @@ export class BuildStack extends Stack {
                         ],
                     }},
                     artifacts: {
-                        files: ['build/distribution/JavaPlaid-1.0.zip']
+                        files: ['build/distributions/JavaPlaid-1.0.zip']
                     }
             }),
         })
