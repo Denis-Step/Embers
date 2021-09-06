@@ -61,6 +61,26 @@ export class LambdaStack extends cdk.Stack {
       proxy: false,
       allowTestInvoke: true,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+      integrationResponses: [
+        {
+          // Successful response from the Lambda function, no filter defined
+          statusCode: "200",
+          responseTemplates: {
+            // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+            'application/json': JSON.stringify('$util.escapeJavaScript($input.body)') // Just return the accessToken string.
+          },
+          responseParameters: {
+            // We can map response parameters
+            // - Destination parameters (the key) are the response parameters (used in mappings)
+            // - Source parameters (the value) are the integration response parameters or expressions
+            // Do this for CORS.
+            'method.response.header.Content-Type': "'application/json'",
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+            'method.response.header.Access-Control-Allow-Credentials': "'true'",
+            'method.response.header.Access-Control-Allow-Heades': "'Content-Type,Authorization'",
+            'method.response.header.Access-Control-Allow-Methods': "'OPTIONS, POST'"
+          }
+        }],
 
     });
     const linkResource = this.restApi.root.addResource("linktoken");
@@ -79,6 +99,9 @@ export class LambdaStack extends cdk.Stack {
 
     - Can be configured to use resources across stacks to avoid 500-resource
     stack limit.
+
+  CORS: CORS does not work out-the-box as it's supposed to. Requires manual setting
+  of headers on methods.
 
   Assets: This construct takes local dirs and uploads them to S3. Essentially
  syntactic sugar for using an S3 bucket in your app.
