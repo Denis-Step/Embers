@@ -1,16 +1,15 @@
-import * as sns from '@aws-cdk/aws-sns';
 import * as s3 from "@aws-cdk/aws-s3";
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as subs from '@aws-cdk/aws-sns-subscriptions';
-import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
-import {Runtime} from "inspector";
-import {Duration, StackProps} from "@aws-cdk/core";
+import {Duration, StackProps} from '@aws-cdk/core';
+import * as apigw from '@aws-cdk/aws-apigateway';
+import {PassthroughBehavior} from '@aws-cdk/aws-apigateway';
 
 export class LambdaStack extends cdk.Stack {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.
+  public restApi: apigw.RestApi;
   public readonly linkLambda: lambda.Function;
   public readonly itemLambda: lambda.Function;
   private readonly sourceBucket: s3.IBucket;
@@ -52,12 +51,34 @@ export class LambdaStack extends cdk.Stack {
       timeout: Duration.seconds(300)
     });
 
+    // There are great constructs for a Proxy integration. Here,
+    // we need multiple resources and so will configure them
+    // individually.
+    this.restApi = new apigw.RestApi(this, 'PlaidLinkApi');
+
+    // Let's do the integration for linkTokens:
+    const postLinkTokenIntegration = new apigw.LambdaIntegration(this.linkLambda, {
+      proxy: false,
+      allowTestInvoke: true,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+
+    });
+    const linkResource = this.restApi.root.addResource("linktoken");
+    linkResource.addMethod('OPTIONS');
+    linkResource.addMethod("POST", postLinkTokenIntegration);
+
   }
 
 }
 
 /* Useful:
+  https://awscdk.io/packages/@aws-cdk/aws-apigateway@1.25.0/#/
   https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-lambda.FunctionOptions.html
+
+  ApiGateway: V2 has experimental features and is for HTTP API's currently.
+
+    - Can be configured to use resources across stacks to avoid 500-resource
+    stack limit.
 
   Assets: This construct takes local dirs and uploads them to S3. Essentially
  syntactic sugar for using an S3 bucket in your app.
