@@ -56,26 +56,6 @@ export class LambdaStack extends cdk.Stack {
     // individually.
     this.restApi = new apigw.RestApi(this, 'PlaidLinkApi');
 
-    // We define the JSON Schema for the transformed valid response
-    const linkTokenRequestModel = this.restApi.addModel('RequestModel', {
-      contentType: 'application/json',
-      modelName: 'ResponseModel',
-      schema: {
-        schema: apigw.JsonSchemaVersion.DRAFT4,
-        title: 'LinkTokenRequest',
-        type: apigw.JsonSchemaType.OBJECT,
-        properties: {
-          user: { type: apigw.JsonSchemaType.STRING },
-          products: { type: apigw.JsonSchemaType.STRING }
-        }
-      }
-    });
-
-    /*const validator = this.restApi.addRequestValidator('DefaultValidator', {
-      validateRequestBody: true,
-      validateRequestParameters: true
-    }); */
-
     // Let's do the integration for linkTokens:
     const postLinkTokenIntegration = new apigw.LambdaIntegration(this.linkLambda, {
       proxy: false,
@@ -114,7 +94,7 @@ export class LambdaStack extends cdk.Stack {
             'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization'",
           }
         },
-        ],
+      ],
     });
     const linkResource = this.restApi.root.addResource("linktoken");
     linkResource.addMethod('OPTIONS');
@@ -129,6 +109,45 @@ export class LambdaStack extends cdk.Stack {
       }]
     });
 
+
+    // Now we'll integrate the postItem lambda:
+    const postItemIntegration = new apigw.LambdaIntegration(this.itemLambda, {
+      proxy: false,
+      allowTestInvoke: true,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH, integrationResponses: [
+        {
+
+          // Successful response from the Lambda function, no filter defined
+          statusCode: "200",
+          responseTemplates: {
+            // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+            'application/json': JSON.stringify('$util.escapeJavaScript($input.body)') // Just return the accessToken string.
+          },
+          responseParameters: {
+            // We can map response parameters
+            // - Destination parameters (the key) are the response parameters (used in mappings)
+            // - Source parameters (the value) are the integration response parameters or expressions
+            // Do this for CORS.
+            // WARNING: DOES NOT SUPPORT ALL HEADERS.
+            'method.response.header.Content-Type': "'application/json'",
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization'",
+          }
+        },
+      ],
+    })
+    const itemResource = this.restApi.root.addResource("items")
+    itemResource.addMethod('OPTIONS');
+    itemResource.addMethod('POST', postItemIntegration, {
+      methodResponses: [{
+        statusCode: "200",
+        responseParameters: {
+          'method.response.header.Content-Type': true,
+          'method.response.header.Access-Control-Allow-Origin': true,
+          'method.response.header.Access-Control-Allow-Headers': true,
+        }
+      }]
+    })
   }
 
 }
