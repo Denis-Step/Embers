@@ -81,20 +81,20 @@ export class LambdaStack extends cdk.Stack {
       proxy: false,
       allowTestInvoke: true,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-     /*requestParameters: {
+     requestParameters: {
         // You can define mapping parameters from your method to your integration
         // - Destination parameters (the key) are the integration parameters (used in mappings)
         // - Source parameters (the value) are the source request parameters or expressions
         // @see: https://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
-        'integration.request.user': 'method.request.body.user',
-        'integration.request.user'
-      }
+       /* 'integration.request.user': 'method.request.body.user',
+        'integration.request.user' */
+      },
       requestTemplates: {
         // You can define a mapping that will build a payload for your integration, based
         //  on the integration parameters that you have specified
         // Check: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
-        'application/json': "$util.parseJson($input.body)"
-      }, */
+        //'application/json': "$util.parseJson($input.body)"
+      },
       integrationResponses: [
         {
 
