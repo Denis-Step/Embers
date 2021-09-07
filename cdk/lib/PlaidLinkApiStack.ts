@@ -5,51 +5,19 @@ import {Duration, StackProps} from '@aws-cdk/core';
 import * as apigw from '@aws-cdk/aws-apigateway';
 import {PassthroughBehavior} from '@aws-cdk/aws-apigateway';
 
-export class LambdaStack extends cdk.Stack {
+export interface PlaidLinkApiProps extends StackProps {
+  linkLambda: lambda.Function;
+  itemLambda: lambda.Function;
+}
+
+export class PlaidLinkApiStack extends cdk.Stack {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.
   public restApi: apigw.RestApi;
-  public readonly linkLambda: lambda.Function;
-  public readonly itemLambda: lambda.Function;
-  private readonly sourceBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props?: StackProps) {
+  constructor(scope: cdk.Construct, id: string, props: PlaidLinkApiProps) {
     super(scope, id, props);
-
-    // An S3 bucket already exists, so we have to use a static method
-    // on the Bucket class to avoid instantiating a new bucket.
-    this.sourceBucket = s3.Bucket.fromBucketAttributes(this, 'JPSourceBucket', {
-      bucketArn: "arn:aws:s3:::javaplaid-lambda/JavaPlaid-1.0.zip"
-    })
-
-    // Be careful not to shadow vanilla JS Function type.
-    this.linkLambda = new lambda.Function(this, 'LinkTokenLambda', {
-      runtime: lambda.Runtime.JAVA_8_CORRETTO,
-      handler: "lambda.handlers.CreateLinkTokenHandler",
-
-      // Code supports local build steps, S3 buckets, and inlining.
-      code: lambda.Code.fromBucket(this.sourceBucket, "JavaPlaid-1.0.zip"),
-      environment: {
-        "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
-        "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
-        "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
-
-      },
-      timeout: Duration.seconds(300),
-    })
-
-    this.itemLambda = new lambda.Function(this, 'ItemLambda', {
-      runtime: lambda.Runtime.JAVA_8_CORRETTO,
-      handler: "lambda.handlers.CreateItemHandler",
-      code: lambda.Code.fromBucket(this.sourceBucket, "JavaPlaid-1.0.zip"),
-      environment: {
-        "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
-        "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
-        "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
-      },
-      timeout: Duration.seconds(300)
-    });
 
     // There are great constructs for a Proxy integration. Here,
     // we need multiple resources and so will configure them
@@ -57,23 +25,10 @@ export class LambdaStack extends cdk.Stack {
     this.restApi = new apigw.RestApi(this, 'PlaidLinkApi');
 
     // Let's do the integration for linkTokens:
-    const postLinkTokenIntegration = new apigw.LambdaIntegration(this.linkLambda, {
+    const postLinkTokenIntegration = new apigw.LambdaIntegration(props.linkLambda, {
       proxy: false,
       allowTestInvoke: true,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
-      /*requestParameters: {
-        // You can define mapping parameters from your method to your integration
-        // - Destination parameters (the key) are the integration parameters (used in mappings)
-        // - Source parameters (the value) are the source request parameters or expressions
-        // @see: https://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
-        'integration.request.body': 'method.request.body'
-      },
-      requestTemplates: {
-        // You can define a mapping that will build a payload for your integration, based
-        //  on the integration parameters that you have specified
-        // Check: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
-        'application/json': JSON.stringify( '$util.escapeJavaScript($input.body)' )
-      }, */
       integrationResponses: [
         {
 
@@ -111,7 +66,7 @@ export class LambdaStack extends cdk.Stack {
 
 
     // Now we'll integrate the postItem lambda:
-    const postItemIntegration = new apigw.LambdaIntegration(this.itemLambda, {
+    const postItemIntegration = new apigw.LambdaIntegration(props.itemLambda, {
       proxy: false,
       allowTestInvoke: true,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH, integrationResponses: [

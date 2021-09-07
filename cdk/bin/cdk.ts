@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import * as cdk from '@aws-cdk/core';
-import {JPPipelineStack} from "../lib/pipeline";
-import {LambdaStack} from "../lib/cdk-stack";
+import {JPPipelineStack} from "../lib/PipelineStack";
 
+/* ENTRY POINT */
 
 const app = new cdk.App();
-new LambdaStack(app, "JPrepo");
+const pipeline = new JPPipelineStack(app, 'JPPipeline');

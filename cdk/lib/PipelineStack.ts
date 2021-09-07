@@ -1,17 +1,12 @@
 import * as cdk from '@aws-cdk/core';
 import * as codecommit from '@aws-cdk/aws-codecommit';
-import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import {SimpleSynthAction, CodePipeline, CodePipelineSource, ShellStep} from "@aws-cdk/pipelines";
-import {DefaultPipelineStage} from "./stage";
+import {CodePipeline, CodePipelineSource, ShellStep} from "@aws-cdk/pipelines";
+import {DefaultPipelineStage} from "./DefaultStageStack";
 import * as s3 from "@aws-cdk/aws-s3";
-import {Pipeline} from "@aws-cdk/aws-codepipeline";
-import {BuildStage} from "./buildstage";
 
 export class JPPipelineStack extends cdk.Stack{
     public readonly pipeline: CodePipeline;
     public readonly repo: codecommit.Repository;
-    public readonly outputBucket: s3.Bucket;
 
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
@@ -21,8 +16,6 @@ export class JPPipelineStack extends cdk.Stack{
             repositoryName: 'JavaPlaid',
             description: 'Repository for JavaPlaid transactions project'
         })
-
-        this.outputBucket = new s3.Bucket(this, 'builtcodebucket');
 
         // We'll be using the 'cdb' branch in our repo for the cloud assembly.
         const sourceCode = CodePipelineSource.codeCommit(this.repo, 'cdk2');
