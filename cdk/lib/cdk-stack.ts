@@ -80,20 +80,20 @@ export class LambdaStack extends cdk.Stack {
     const postLinkTokenIntegration = new apigw.LambdaIntegration(this.linkLambda, {
       proxy: false,
       allowTestInvoke: true,
-      passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-      requestParameters: {
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      /*requestParameters: {
         // You can define mapping parameters from your method to your integration
         // - Destination parameters (the key) are the integration parameters (used in mappings)
         // - Source parameters (the value) are the source request parameters or expressions
         // @see: https://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
-        'integration.request.body.payload': 'method.request.body'
+        'integration.request.body': 'method.request.body'
       },
       requestTemplates: {
         // You can define a mapping that will build a payload for your integration, based
         //  on the integration parameters that you have specified
         // Check: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
-        'application/json': JSON.stringify( "$util.escapeJavaScript($input.body.payload)" )
-      },
+        'application/json': JSON.stringify( '$util.escapeJavaScript($input.body)' )
+      }, */
       integrationResponses: [
         {
 
@@ -108,32 +108,26 @@ export class LambdaStack extends cdk.Stack {
             // - Destination parameters (the key) are the response parameters (used in mappings)
             // - Source parameters (the value) are the integration response parameters or expressions
             // Do this for CORS.
+            // WARNING: DOES NOT SUPPORT ALL HEADERS.
             'method.response.header.Content-Type': "'application/json'",
             'method.response.header.Access-Control-Allow-Origin': "'*'",
-            'method.response.header.Access-Control-Allow-Credentials': "'true'",
-            'method.response.header.Access-Control-Allow-Heades': "'Content-Type,Authorization'",
-            'method.response.header.Access-Control-Allow-Methods': "'OPTIONS, POST'"
+            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization'",
           }
         },
-        {
-          // For errors, we check if the error message is not empty, get the error data
-          selectionPattern: '(\n|.)+',
-          // We will set the response status code to 200
-          statusCode: "400",
-          responseTemplates: {
-            'application/json': JSON.stringify({ state: 'error', message: "$util.escapeJavaScript($input.path('$.errorMessage'))" })
-          },
-          responseParameters: {
-            'method.response.header.Content-Type': "'application/json'",
-            'method.response.header.Access-Control-Allow-Origin': "'*'",
-            'method.response.header.Access-Control-Allow-Credentials': "'true'"
-          }
-        }
         ],
     });
     const linkResource = this.restApi.root.addResource("linktoken");
     linkResource.addMethod('OPTIONS');
-    linkResource.addMethod("POST", postLinkTokenIntegration);
+    linkResource.addMethod("POST", postLinkTokenIntegration, {
+      methodResponses: [{
+        statusCode: "200",
+        responseParameters: {
+          'method.response.header.Content-Type': true,
+          'method.response.header.Access-Control-Allow-Origin': true,
+          'method.response.header.Access-Control-Allow-Headers': true,
+        }
+      }]
+    });
 
   }
 
