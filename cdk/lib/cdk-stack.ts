@@ -100,10 +100,10 @@ export class LambdaStack extends cdk.Stack {
 
           // Successful response from the Lambda function, no filter defined
           statusCode: "200",
-          /*responseTemplates: {
+          responseTemplates: {
             // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
             'application/json': JSON.stringify('$util.escapeJavaScript($input.body)') // Just return the accessToken string.
-          }, */
+          },
           responseParameters: {
             // We can map response parameters
             // - Destination parameters (the key) are the response parameters (used in mappings)
