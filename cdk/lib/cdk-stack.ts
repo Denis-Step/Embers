@@ -57,7 +57,7 @@ export class LambdaStack extends cdk.Stack {
     this.restApi = new apigw.RestApi(this, 'PlaidLinkApi');
 
     // We define the JSON Schema for the transformed valid response
-    /*const responseModel = this.restApi.addModel('ResponseModel', {
+    const linkTokenRequestModel = this.restApi.addModel('RequestModel', {
       contentType: 'application/json',
       modelName: 'ResponseModel',
       schema: {
@@ -66,16 +66,21 @@ export class LambdaStack extends cdk.Stack {
         type: apigw.JsonSchemaType.OBJECT,
         properties: {
           user: { type: apigw.JsonSchemaType.STRING },
-          products: { type: api.JsonSchemaType.STRING }
+          products: { type: apigw.JsonSchemaType.STRING }
         }
       }
+    });
+
+    /*const validator = this.restApi.addRequestValidator('DefaultValidator', {
+      validateRequestBody: true,
+      validateRequestParameters: true
     }); */
 
     // Let's do the integration for linkTokens:
     const postLinkTokenIntegration = new apigw.LambdaIntegration(this.linkLambda, {
-      proxy: true,
+      proxy: false,
       allowTestInvoke: true,
-      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
      /*requestParameters: {
         // You can define mapping parameters from your method to your integration
         // - Destination parameters (the key) are the integration parameters (used in mappings)
@@ -89,16 +94,16 @@ export class LambdaStack extends cdk.Stack {
         //  on the integration parameters that you have specified
         // Check: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
         'application/json': "$util.parseJson($input.body)"
-      },
+      }, */
       integrationResponses: [
         {
 
           // Successful response from the Lambda function, no filter defined
           statusCode: "200",
-          responseTemplates: {
+          /*responseTemplates: {
             // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
             'application/json': JSON.stringify('$util.escapeJavaScript($input.body)') // Just return the accessToken string.
-          },
+          }, */
           responseParameters: {
             // We can map response parameters
             // - Destination parameters (the key) are the response parameters (used in mappings)
@@ -125,7 +130,7 @@ export class LambdaStack extends cdk.Stack {
             'method.response.header.Access-Control-Allow-Credentials': "'true'"
           }
         }
-        ], */
+        ],
     });
     const linkResource = this.restApi.root.addResource("linktoken");
     linkResource.addMethod('OPTIONS');
