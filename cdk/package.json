@@ -25,6 +25,7 @@
     "@aws-cdk/aws-codecommit": "^1.121.0",
     "@aws-cdk/aws-codepipeline": "^1.121.0",
     "@aws-cdk/aws-codepipeline-actions": "^1.121.0",
+    "@aws-cdk/aws-s3-assets": "^1.121.0",
     "@aws-cdk/aws-sns": "^1.121.0",
     "@aws-cdk/aws-sns-subscriptions": "1.121.0",
     "@aws-cdk/aws-sqs": "1.121.0",

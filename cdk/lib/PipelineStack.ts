@@ -25,12 +25,12 @@ export class JPPipelineStack extends cdk.Stack{
             synth: new CodeBuildStep('CloudSynth', {
                 input: sourceCode,
                 commands: [
+                    'gradle packageFat',
+                    'cp build/distributions/JavaPlaid-1.0.zip cdk/lib',
                     'cd cdk',
                     'npm ci', // Special npm command for installing in test envs.
                     'npm run build',
                     'npx cdk synth',
-                    'cd ..',
-                    'gradle packageFat && cp -r cdk/cdk.out'
                 ],
                 primaryOutputDirectory: 'cdk/cdk.out' // Set this if it's not at the top level.
             })
