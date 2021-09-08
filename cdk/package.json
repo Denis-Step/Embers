@@ -8,7 +8,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "bundle": "cd .. && gradle packageFat && cp build/distributions/JavaPlaid-1.0.zip cdk/lib && cd cdk"
   },
   "devDependencies": {
     "aws-cdk": "^1.121.0",
