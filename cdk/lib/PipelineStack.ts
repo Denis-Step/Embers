@@ -16,7 +16,7 @@ export class JPPipelineStack extends cdk.Stack{
             description: 'Repository for JavaPlaid transactions project'
         })
 
-        // We'll be using the 'cdk3' branch in our repo for the cloud assembly.
+        // We'll be using the 'cdk2' branch in our repo for the cloud assembly.
         const sourceCode = CodePipelineSource.codeCommit(this.repo, 'cdk2');
 
         this.pipeline = new CodePipeline(this, 'JPPipeline', {
