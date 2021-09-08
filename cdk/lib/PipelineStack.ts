@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as codecommit from '@aws-cdk/aws-codecommit';
-import {CodePipeline, CodePipelineSource, ShellStep} from "@aws-cdk/pipelines";
+import {CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep} from "@aws-cdk/pipelines";
 import {DefaultPipelineStage} from "./DefaultStageStack";
 import * as s3 from "@aws-cdk/aws-s3";
 
@@ -22,13 +22,15 @@ export class JPPipelineStack extends cdk.Stack{
 
         this.pipeline = new CodePipeline(this, 'JPPipeline', {
             selfMutation: true, // Can be turned off to ensure stability.
-            synth: new ShellStep('CloudSynth', {
+            synth: new CodeBuildStep('CloudSynth', {
                 input: sourceCode,
                 commands: [
                     'cd cdk',
                     'npm ci', // Special npm command for installing in test envs.
                     'npm run build',
                     'npx cdk synth',
+                    'cd ..',
+                    'gradle packageFat && cp -r cdk/cdk.out'
                 ],
                 primaryOutputDirectory: 'cdk/cdk.out' // Set this if it's not at the top level.
             })
