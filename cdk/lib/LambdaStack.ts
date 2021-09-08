@@ -19,7 +19,7 @@ export class LambdaStack extends Stack {
             handler: "lambda.handlers.CreateLinkTokenHandler",
 
             // Code supports local build steps, S3 buckets, and inlining.
-            code: lambda.Code.fromAsset("cdk/cdk.out/JavaPlaid-1.0.zip");
+            code: lambda.Code.fromAsset("cdk/cdk.out/JavaPlaid-1.0.zip"),
             environment: {
                 "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
                 "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
