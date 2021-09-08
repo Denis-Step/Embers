@@ -1,11 +1,9 @@
 import * as lambda from "@aws-cdk/aws-lambda";
 import {Construct, Duration, Stack, StackProps} from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
-import {Asset} from "@aws-cdk/aws-s3-assets";
 import * as path from "path";
 
 export class LambdaStack extends Stack {
-    private readonly sourceBucket: s3.IBucket;
     public readonly linkLambda: lambda.Function;
     public readonly itemLambda: lambda.Function;
 
@@ -28,13 +26,13 @@ export class LambdaStack extends Stack {
         })
 
         this.itemLambda = new lambda.Function(this, 'ItemLambda', {
-        runtime: lambda.Runtime.JAVA_8_CORRETTO,
-        handler: "lambda.handlers.CreateItemHandler",
-        code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
-        environment: {
-            "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
-            "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
-            "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
+            runtime: lambda.Runtime.JAVA_8_CORRETTO,
+            handler: "lambda.handlers.CreateItemHandler",
+            code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
+            environment: {
+                "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
+                "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
+                "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
         },
         timeout: Duration.seconds(300)
     });

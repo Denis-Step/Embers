@@ -1,8 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as codecommit from '@aws-cdk/aws-codecommit';
-import {CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep} from "@aws-cdk/pipelines";
+import {CodeBuildStep, CodePipeline, CodePipelineSource} from "@aws-cdk/pipelines";
 import {DefaultPipelineStage} from "./DefaultStageStack";
-import * as s3 from "@aws-cdk/aws-s3";
 
 export class JPPipelineStack extends cdk.Stack{
     public readonly pipeline: CodePipeline;
@@ -17,7 +16,7 @@ export class JPPipelineStack extends cdk.Stack{
             description: 'Repository for JavaPlaid transactions project'
         })
 
-        // We'll be using the 'cdb' branch in our repo for the cloud assembly.
+        // We'll be using the 'cdk3' branch in our repo for the cloud assembly.
         const sourceCode = CodePipelineSource.codeCommit(this.repo, 'cdk2');
 
         this.pipeline = new CodePipeline(this, 'JPPipeline', {
@@ -42,24 +41,3 @@ export class JPPipelineStack extends cdk.Stack{
         this.pipeline.addStage(new DefaultPipelineStage(this, 'Prod'));
 
         }}
-
-        /*
-        * Input (Synth): First-class integration with CodeCommit, GitHub, & S3 Buckets.
-        *   - Uses a static method here instead of the repo instance variable we set up
-        * for clarity.
-        *
-        * ShellStep: Can include multiple sources. Useful for combining repos.
-        *   - Protip: This can be used to merge in GitHub repos even if your primary source is
-        *   CodeCommit.
-        *
-        *   - Protip: Can include multiple output dirs. This is useful for multiple stacks
-        *   if you'd like to avoid building them all into a single template artifact.
-        *
-        * Rollback: Still have to manually delete stuck stacks.
-        *
-        * Synth: Cloud assembly step. Can use multiple output directories.
-        * Can use different language-specific builds.
-        *
-        * Waves: These are just stages executed in parallel. This is not the same
-        * as an LPT wave. The wave terminology as used in LPT sometimes leaks out to
-        * CDK packages but they're unrelated.  */
