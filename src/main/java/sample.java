@@ -16,7 +16,7 @@ public class sample {
     public static void main(String[] args) throws  IOException, ItemProcessor.ItemException {
         //new MessageClient().sendMessage("+19175478272",  "Bankers HATE this 1 weird trick!!");
         MessageProcessor messageProcessor = DaggerTwilioComponent.create().buildMessageProcessor();
-        System.out.println(messageProcessor.sendMessage("+19175478272", "anothertest"));
+        System.out.println(messageProcessor.sendMessage("+12148865506", "This is your fazha"));
     }
 
     public static void testTransactionsProcessor() throws IOException, ItemProcessor.ItemException {

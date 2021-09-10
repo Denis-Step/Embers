@@ -20,4 +20,12 @@ public class GetItemRequest {
     public void setInstitution(String institution) {
         this.institution = institution;
     }
+
+    @Override
+    public String toString() {
+        return "GetItemRequest{" +
+                "user='" + user + '\'' +
+                ", institution='" + institution + '\'' +
+                '}';
+    }
 }

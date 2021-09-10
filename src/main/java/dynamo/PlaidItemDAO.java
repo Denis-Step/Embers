@@ -28,6 +28,8 @@ public class PlaidItemDAO {
     private String dateCreated;
     private String metaData; // Remaining metadata. Rarely used.
 
+    private boolean webHook;
+
     private static final DynamoDBMapper dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();
 
     public PlaidItemDAO() { }
@@ -41,6 +43,7 @@ public class PlaidItemDAO {
         this.setAccounts(plaidItem.getAccounts());
         this.setDateCreated(plaidItem.getDateCreated());
         this.setMetaData(plaidItem.getMetaData());
+        this.setWebHook(plaidItem.getWebhook());
     }
 
     public PlaidItem createItem() {
@@ -90,6 +93,10 @@ public class PlaidItemDAO {
     public List<String> getAccounts() { return accounts; }
     public void setAccounts(List<String> accounts) { this.accounts = accounts; }
 
+    @DynamoDBAttribute(attributeName = "Webhook")
+    public Boolean getWebHook() { return webHook; }
+    public void setWebHook(Boolean webHook) { this.webHook = webHook; }
+
     public List<PlaidItem> query(String user, String institutionId) {
         DynamoDBQueryExpression<PlaidItemDAO> queryExpression = createQueryRequest(user, institutionId);
         List<PlaidItemDAO> plaidItemDAOList = dynamoDBMapper.query(PlaidItemDAO.class, queryExpression);
@@ -137,4 +144,5 @@ public class PlaidItemDAO {
                 .addExpressionAttributeNamesEntry("#U", "User")
                 .withExpressionAttributeValues(eav);
     }
+
 }

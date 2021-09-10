@@ -45,7 +45,8 @@ public class ItemGrabber {
         if (resp.isSuccessful()) {
             return new PublicTokenExchangeResponse(
                     resp.body().getItemId(),
-                    resp.body().getAccessToken()
+                    resp.body().getAccessToken(),
+                    false
             );
         }
         else {

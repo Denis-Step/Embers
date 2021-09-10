@@ -12,16 +12,18 @@ public class PlaidItem {
     private final List<String> accounts;
     private final String dateCreated;
     private final String metaData; // Remaining metadata. Rarely used.
+    private final boolean webhook;
 
     public PlaidItem (Builder builder) {
-        this.user = builder.getUser();
-        this.institutionId = builder.getInstitutionId();
-        this.accessToken = builder.getAccessToken();
-        this.ID = builder.getID();
-        this.availableProducts = builder.getAvailableProducts();
-        this.accounts = builder.getAccounts();
-        this.dateCreated = builder.getDateCreated();
-        this.metaData = builder.getMetaData();
+        this.user = builder.user;
+        this.institutionId = builder.institutionId;
+        this.accessToken = builder.accessToken;
+        this.ID = builder.ID;
+        this.availableProducts = builder.availableProducts;
+        this.accounts = builder.accounts;
+        this.dateCreated = builder.dateCreated;
+        this.metaData = builder.metaData;
+        this.webhook = builder.webhook;
     }
 
     public static Builder getBuilder() {
@@ -74,6 +76,8 @@ public class PlaidItem {
         return accounts;
     }
 
+    public boolean getWebhook() { return webhook; }
+
     public static class Builder {
         private String user;
         private String institutionId;
@@ -83,6 +87,7 @@ public class PlaidItem {
         private List<String> accounts;
         private String dateCreated;
         private String metaData; // Remaining metadata. Rarely used.
+        private boolean webhook;
 
         public PlaidItem build() {
             validateItem();
@@ -92,45 +97,21 @@ public class PlaidItem {
         private void validateItem() {
             // Ignore for now.
         }
-
-        public String getUser() {
-            return user;
-        }
-
         public Builder setUser(String user) {
             this.user = user;
             return this;
         }
-
-        public String getInstitutionId() {
-            return institutionId;
-        }
-
         public Builder setInstitutionId(String institutionId) {
             this.institutionId = institutionId;
             return this;
         }
-
-        public String getAccessToken() {
-            return accessToken;
-        }
-
         public Builder setAccessToken(String accessToken) {
             this.accessToken = accessToken;
             return this;
         }
-
-        public String getID() {
-            return ID;
-        }
-
         public Builder setID(String ID) {
             this.ID = ID;
             return this;
-        }
-
-        public List<String> getAvailableProducts() {
-            return availableProducts;
         }
 
         public Builder setAvailableProducts(List<String> availableProducts) {
@@ -138,17 +119,9 @@ public class PlaidItem {
             return this;
         }
 
-        public String getDateCreated() {
-            return dateCreated;
-        }
-
         public Builder setDateCreated(String dateCreated) {
             this.dateCreated = dateCreated;
             return this;
-        }
-
-        public String getMetaData() {
-            return metaData;
         }
 
         public Builder setMetaData(String metaData) {
@@ -156,13 +129,13 @@ public class PlaidItem {
             return this;
         }
 
-        public List<String> getAccounts() {
-            return accounts;
-        }
-
         public Builder setAccounts(List<String> accounts) {
             this.accounts = accounts;
             return this;
+        }
+
+        public void setWebhook(boolean webhook) {
+            this.webhook = webhook;
         }
     }
 }
