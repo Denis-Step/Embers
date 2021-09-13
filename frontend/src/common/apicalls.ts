@@ -1,6 +1,18 @@
 import axios from "axios";
-import {BETA_ENDPOINT, ITEM_API_RESOURCE, LINK_API_RESOURCE, LINK_DEFAULT_PRODUCTS} from "./constants";
+import {config, CognitoIdentityCredentials} from "aws-sdk";
+import {BETA_ENDPOINT, ITEM_API_RESOURCE, LINK_API_RESOURCE, LINK_DEFAULT_PRODUCTS, IDENTITY_POOL_ID} from "./constants";
 import {PlaidItemCreationInfo} from "./types";
+
+export const getIamCredentials = (token: string) => {
+    config.credentials = new CognitoIdentityCredentials({
+        IdentityPoolId: IDENTITY_POOL_ID,
+        Logins: { // optional tokens, used for authenticated login
+            'accounts.google.com': token
+        }
+    });
+
+    return config.credentials;
+}
 
 // Get link token for plaid flow.
 export const getLinkToken = async (user: string,
