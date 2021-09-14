@@ -3,8 +3,8 @@ import {CognitoJwt} from "../common/types";
 
 
 interface AuthContextValue {
-    token: CognitoJwt | undefined;
-    setToken: React.Dispatch<React.SetStateAction<CognitoJwt | undefined>>
+    token: CognitoJwt;
+    setToken: React.Dispatch<React.SetStateAction<CognitoJwt>>
 }
 
 interface CognitoAuthContextProviderProps {
@@ -12,7 +12,7 @@ interface CognitoAuthContextProviderProps {
     children?: React.ReactNode;
 }
 
-export const AuthContext = React.createContext<AuthContextValue | {}>({});
+export const AuthContext = React.createContext<AuthContextValue | null>(null);
 
 // Redirect here.
 export const CognitoAuthContextProvider = (props: CognitoAuthContextProviderProps) => {

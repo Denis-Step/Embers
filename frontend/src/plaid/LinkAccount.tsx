@@ -1,9 +1,10 @@
-import React, {useCallback, useMemo, useReducer, useEffect} from 'react';
+import React, {useCallback, useMemo, useReducer, useEffect, useContext} from 'react';
 import {Button, FormControl, FormLabel, Input, FormHelperText} from "@chakra-ui/react"
 import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
 import {getLinkToken, requestItemCreation} from "../common/apicalls";
 import LinkFlow from "./LinkFlow";
 import {PlaidItemCreationInfo} from "../common/types";
+import {AuthContext} from "../contexts/cognitoAuthContext";
 
 
 // @TODO: Use discriminated unions to type reducer actions.
@@ -74,6 +75,7 @@ const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
 const LinkAccount = () => {
     // State for getLinkToken params.
     const [state, dispatch] = useReducer(linkReducer, initialState);
+    const authContext = useContext(AuthContext);
 
     useEffect( () => {
 
@@ -100,10 +102,10 @@ const LinkAccount = () => {
     // Handler for link token button.
     const updateLinkToken = useCallback(async () => {
         if (state.user) {
-            const link = await getLinkToken(state.user, state.products);
+            const link = await getLinkToken(state.user, authContext?.token.id_token!, state.products);
             dispatch({type: ActionKind.UpdateLinkToken, payload: link});
         }
-    }, [state.user, state.products]);
+    }, [state.user, state.products, authContext]);
 
     // onSuccess callback for LinkFlow to initiate item creation server-side.
     const onLinkSuccess = useCallback(async (public_token: string,

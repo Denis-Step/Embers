@@ -16,6 +16,7 @@ export const getIamCredentials = (token: string) => {
 
 // Get link token for plaid flow.
 export const getLinkToken = async (user: string,
+                             token: string,
                              products?: string[]): Promise<string> => {
 
     // Pass in default list of products if link is not passed.
@@ -23,7 +24,10 @@ export const getLinkToken = async (user: string,
     const endpoint = BETA_ENDPOINT + LINK_API_RESOURCE;
 
     const request = await axios.post(endpoint,
-        {user: user, products: products});
+        {user: user, products: products},
+        {headers: {
+            Authorization: token
+            }});
 
     return request.data;
 }
