@@ -1,14 +1,15 @@
 import React from 'react';
-import LinkAccount from "./plaid/LinkAccount";
 import { ChakraProvider } from "@chakra-ui/react"
-import {JPGoogleLogin} from "./auth/JPGoogleLogin";
+import {BrowserRouter} from "react-router-dom";
+import {TopRoutes} from "./TopRoutes";
 
 function App() {
   return (
       <ChakraProvider>
         <div className="App">
-          <LinkAccount />
-          <JPGoogleLogin />
+            <BrowserRouter>
+                <TopRoutes />
+            </BrowserRouter>
         </div>
       </ChakraProvider>
   );
