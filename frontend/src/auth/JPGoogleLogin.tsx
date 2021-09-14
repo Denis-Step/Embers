@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react';
-import {GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline} from "react-google-login";
+import React, {useContext, useEffect} from 'react';
+import {Spinner} from "@chakra-ui/react";
 import {useLocation, useRouteMatch} from "react-router";
-import {GOOGLE_AUTH_CLIENT_ID} from "../common/constants";
 import {getIamCredentials} from "../common/apicalls";
 import {CognitoJwt} from "../common/types";
+import {AuthContext} from "../contexts/cognitoAuthContext";
 
 const responseGoogle = (response: CognitoJwt) => {
     console.log(response);
@@ -44,16 +44,7 @@ export const JPGoogleLogin = () => {
 
     }, [routeMatch] )
 
-    if (window.location.hash.includes("access_token")) {
-        console.log(window.location.hash);
-    }
-
     return (
-        <GoogleLogin
-            clientId={GOOGLE_AUTH_CLIENT_ID}
-            buttonText="Login"
-            onFailure={responseGoogle}
-            cookiePolicy={'single_host_origin'}
-        />
+        <Spinner />
     );
 }
