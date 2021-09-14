@@ -4,14 +4,13 @@ import {
     Route,
 } from "react-router-dom";
 import LinkAccount from "./plaid/LinkAccount";
-import {CognitoAuthContextProvider} from "./contexts/cognitoAuthContext";
-import {JPGoogleLogin} from "./auth/JPGoogleLogin";
 import {AuthRedirect} from "./auth/AuthRedirect";
+import {AuthCheck} from "./auth/AuthCheck";
 
 export const TopRoutes = () => {
 
     return (
-        <CognitoAuthContextProvider>
+        <AuthCheck>
             <Switch>
                 <Route path="/googlelogin">
                     <AuthRedirect />
@@ -20,7 +19,7 @@ export const TopRoutes = () => {
                     <LinkAccount />
                 </Route>
             </Switch>
-        </CognitoAuthContextProvider>
+        </AuthCheck>
 
     )
 }
