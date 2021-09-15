@@ -4,7 +4,7 @@ import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
 import {getLinkToken, requestItemCreation} from "../common/apicalls";
 import LinkFlow from "./LinkFlow";
 import {PlaidItemCreationInfo} from "../common/types";
-import {AuthContext} from "../contexts/cognitoAuthContext";
+import {AuthContext, useAuth} from "../contexts/cognitoAuthContext";
 
 
 // @TODO: Use discriminated unions to type reducer actions.
@@ -75,7 +75,7 @@ const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
 const LinkAccount = () => {
     // State for getLinkToken params.
     const [state, dispatch] = useReducer(linkReducer, initialState);
-    const authContext = useContext(AuthContext);
+    const auth = useAuth();
 
     useEffect( () => {
 
@@ -102,10 +102,10 @@ const LinkAccount = () => {
     // Handler for link token button.
     const updateLinkToken = useCallback(async () => {
         if (state.user) {
-            const link = await getLinkToken(state.user, authContext?.token.id_token!, state.products);
+            const link = await getLinkToken(state.user, auth.token.id_token, state.products);
             dispatch({type: ActionKind.UpdateLinkToken, payload: link});
         }
-    }, [state.user, state.products, authContext]);
+    }, [state.user, state.products, auth]);
 
     // onSuccess callback for LinkFlow to initiate item creation server-side.
     const onLinkSuccess = useCallback(async (public_token: string,
