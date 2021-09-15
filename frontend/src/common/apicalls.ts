@@ -33,10 +33,13 @@ export const getLinkToken = async (user: string,
 }
 
 // To be called after LinkFlow completion.
-export const requestItemCreation = async (itemInfo: PlaidItemCreationInfo): Promise<String> => {
+export const requestItemCreation = async (itemInfo: PlaidItemCreationInfo, token: string): Promise<String> => {
     const endpoint = BETA_ENDPOINT + ITEM_API_RESOURCE;
     const request = await axios.post(endpoint,
-        itemInfo)
+        itemInfo, {
+        headers: {
+            Authorization: token
+        }})
 
     return request.data;
 }

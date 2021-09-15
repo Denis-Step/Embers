@@ -4,9 +4,8 @@ import org.immutables.value.Value;
 
 import java.util.List;
 
-// Immutable class that represents response of item creation.
 @Value.Immutable
-public abstract class PlaidItem {
+public abstract class LinkedItem {
     public abstract String user();
     public abstract String institutionId();
     public abstract String accessToken();

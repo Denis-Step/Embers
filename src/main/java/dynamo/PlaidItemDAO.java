@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import dagger.DaggerAwsComponent;
+import plaid.entities.ImmutablePlaidItem;
 import plaid.entities.PlaidItem;
 
 import javax.inject.Inject;
@@ -35,29 +36,29 @@ public class PlaidItemDAO {
     public PlaidItemDAO() { }
 
     public PlaidItemDAO(PlaidItem plaidItem) {
-        this.setUser(plaidItem.getUser()); // Set partition key.
-        this.setInstitutionId(plaidItem.getInstitutionId()); // Set sort key.
-        this.setID(plaidItem.getID());
-        this.setAccessToken(plaidItem.getAccessToken());
-        this.setAvailableProducts(plaidItem.getAvailableProducts());
-        this.setAccounts(plaidItem.getAccounts());
-        this.setDateCreated(plaidItem.getDateCreated());
-        this.setMetaData(plaidItem.getMetaData());
-        this.setWebHook(plaidItem.getWebhook());
+        this.setUser(plaidItem.user()); // Set partition key.
+        this.setInstitutionId(plaidItem.institutionId()); // Set sort key.
+        this.setID(plaidItem.ID());
+        this.setAccessToken(plaidItem.accessToken());
+        this.setAvailableProducts(plaidItem.availableProducts());
+        this.setAccounts(plaidItem.accounts());
+        this.setDateCreated(plaidItem.dateCreated());
+        this.setMetaData(plaidItem.metaData());
+        this.setWebHook(plaidItem.webhook());
     }
 
     public PlaidItem createItem() {
         PlaidItemDAO itemInfo = this;
 
-        return PlaidItem.getBuilder()
-                .setID(itemInfo.getID())
-                .setAccessToken(itemInfo.getAccessToken())
-                .setUser(itemInfo.getUser())
-                .setDateCreated(itemInfo.getDateCreated())
-                .setAvailableProducts(itemInfo.getAvailableProducts())
-                .setAccounts(itemInfo.getAccounts())
-                .setInstitutionId(itemInfo.getInstitutionId())
-                .setMetaData(itemInfo.getMetaData())
+        return ImmutablePlaidItem.builder()
+                .ID(itemInfo.getID())
+                .accessToken(itemInfo.getAccessToken())
+                .user(itemInfo.getUser())
+                .dateCreated(itemInfo.getDateCreated())
+                .availableProducts(itemInfo.getAvailableProducts())
+                .accounts(itemInfo.getAccounts())
+                .institutionId(itemInfo.getInstitutionId())
+                .metaData(itemInfo.getMetaData())
                 .build();
     }
 

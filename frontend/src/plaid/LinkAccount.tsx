@@ -81,7 +81,7 @@ const LinkAccount = () => {
 
         const sendInfoBack = async (infoToSend: PlaidItemCreationInfo) => {
             console.log('infoToSend', infoToSend);
-            const response = await requestItemCreation(infoToSend);
+            const response = await requestItemCreation(infoToSend, auth.token.id_token);
             console.log(response)
         }
 

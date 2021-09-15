@@ -26,7 +26,7 @@ public class CreateItemHandler implements RequestHandler<CreateItemRequest, Stri
 
         try {
             PlaidItem item = processor.createPlaidItem(event);
-            logger.log("Created item:" + item.getID());
+            logger.log("Created item:" + item.ID());
             return item.toString();
         } catch (IOException e){
             // Rethrow Exception to prevent Lambda from succeeding.

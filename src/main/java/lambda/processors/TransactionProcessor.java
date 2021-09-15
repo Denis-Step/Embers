@@ -31,7 +31,7 @@ public class TransactionProcessor {
     public List<Transaction> pullFromPlaid(GetTransactionsRequest transactionsRequest) throws IOException, ItemProcessor.ItemException {
 
         // Get access token and initialize txGrabber.
-        String accessToken = getItem(transactionsRequest.getUser(), transactionsRequest.getInstitutionName()).getAccessToken();
+        String accessToken = getItem(transactionsRequest.getUser(), transactionsRequest.getInstitutionName()).accessToken();
         TransactionsGrabber txGrabber = new TransactionsGrabber(accessToken);
 
         List<Transaction> transactions = txGrabber.requestTransactions(transactionsRequest);
