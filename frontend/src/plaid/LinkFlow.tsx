@@ -1,6 +1,5 @@
 import React, {useState, useCallback} from 'react';
 import {PlaidLinkOnSuccessMetadata, PlaidLinkOptions, usePlaidLink} from "react-plaid-link";
-import { Button } from "@chakra-ui/react"
 
 export interface LinkFlowProps {
     link_token: string,

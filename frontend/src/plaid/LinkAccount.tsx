@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useReducer, useEffect, useContext} from 'react';
-import {Button, FormControl, FormLabel, Input, FormHelperText} from "@chakra-ui/react"
+import {Button, Checkbox, FormControl, FormLabel, Input, FormHelperText, VStack} from "@chakra-ui/react"
 import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
 import {getLinkToken, requestItemCreation} from "../common/apicalls";
 import LinkFlow from "./LinkFlow";
@@ -11,7 +11,8 @@ import {AuthContext, useAuth} from "../contexts/cognitoAuthContext";
 enum ActionKind {
     UpdateUser = "UPDATEUSER",
     UpdateLinkToken = "UPDATELINKTOKEN",
-    UpdatePublicToken = "UPDATEPUBLICTOKEN"
+    UpdatePublicToken = "UPDATEPUBLICTOKEN",
+    UpdateWebhook = "UPDATEWEBHOOK"
 }
 
 type Action = {
@@ -25,6 +26,7 @@ type State = {
     linkToken?: string;
     publicToken?: string;
     metaData?: PlaidLinkOnSuccessMetadata;
+    webhook?: boolean
 }
 
 const initialState: State = {
@@ -43,6 +45,11 @@ function linkReducer(state: State, action: Action): State {
                 ...state,
                 publicToken: action.payload.publicToken,
                 metaData: action.payload.metaData
+            }
+        case ActionKind.UpdateWebhook:
+            return {
+                ...state,
+                webhook: !state.webhook
             }
     }
 }
@@ -99,6 +106,10 @@ const LinkAccount = () => {
         dispatch({type: ActionKind.UpdateUser, payload: input});
     };
 
+    const updateWebhook = (): void => {
+        dispatch({type: ActionKind.UpdateWebhook, payload: null});
+    }
+
     // Handler for link token button.
     const updateLinkToken = useCallback(async () => {
         if (state.user) {
@@ -131,16 +142,19 @@ const LinkAccount = () => {
 
     return (
         <div id="link-token-creation">
+            <VStack>
             <FormControl id="Link Params">
                 <FormLabel>Request Link Token</FormLabel>
                 <Input key="linkInput" type="user" value={state.user} placeholder="John" onChange={updateUser}/>
                 <FormHelperText>Username for Plaid.</FormHelperText>
             </FormControl>
+            <Checkbox size="sm" colorScheme="red" defaultIsChecked={false} />
             <Button colorScheme="teal"
                     size="md"
                     onClick={updateLinkToken}>
                 Get Link Token
             </Button>
+            </VStack>
             {linkFlow}
         </div>
     )
