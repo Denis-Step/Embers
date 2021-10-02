@@ -3,7 +3,6 @@ package plaid.clients;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
-import lambda.requests.CreateLinkTokenRequest;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -11,10 +10,12 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class LinkGrabber {
 
     public final PlaidClient plaidClient;
+    private static final Logger LOGGER = Logger.getLogger(LinkGrabber.class.getName());
 
     // Serve only US requests.
     public static final List<String> COUNTRY_CODES = Arrays.asList("US");
@@ -24,17 +25,28 @@ public class LinkGrabber {
         this.plaidClient = plaidClient;
     }
 
-    public String getLinkToken(CreateLinkTokenRequest request) throws IOException {
-        LinkTokenCreateRequest linkTokenCreateRequest = createLinkTokenCreateRequest(request.getUser(), request.getProducts());
-        Call<LinkTokenCreateResponse> call = plaidClient.service().linkTokenCreate(linkTokenCreateRequest);
-        Response<LinkTokenCreateResponse> resp = call.execute();
+    public String getLinkToken(String user, List<String> products) {
+        LinkTokenCreateRequest linkTokenCreateRequest = createLinkTokenCreateRequest(user, products);
+        return callLinkTokenRequest(linkTokenCreateRequest);
+    }
 
-        if (resp.isSuccessful()) {
+    public String getLinkToken(String user, List<String> products, String webhookUrl) {
+        LOGGER.info(user + products + webhookUrl);
+        LinkTokenCreateRequest linkTokenCreateRequest = createLinkTokenCreateRequest(user, products);
+        linkTokenCreateRequest = linkTokenCreateRequest.withWebhook(webhookUrl);
+        LOGGER.info(linkTokenCreateRequest.toString());
+
+        return callLinkTokenRequest(linkTokenCreateRequest);
+    }
+
+    private String callLinkTokenRequest(LinkTokenCreateRequest linkTokenCreateRequest) {
+        Call<LinkTokenCreateResponse> linkCall = plaidClient.service().linkTokenCreate(linkTokenCreateRequest);
+        try {
+            Response<LinkTokenCreateResponse> resp = linkCall.execute();
             return resp.body().getLinkToken();
-        } else {
-            throw new RuntimeException(resp.toString());
+        } catch (IOException ioException){
+            throw new RuntimeException(ioException.getStackTrace().toString());
         }
-
     }
 
     // Only serve English requests. Differ only on users and products supported for the item.

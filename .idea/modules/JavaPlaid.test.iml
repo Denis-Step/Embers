@@ -6,6 +6,7 @@
     <content url="file://$MODULE_DIR$/../../src/test">
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/test/generated_tests" isTestSource="true" generated="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -13,12 +14,14 @@
     <orderEntry type="library" name="Gradle: com.twilio.sdk:twilio:8.19.0" level="project" />
     <orderEntry type="library" name="Gradle: com.amazonaws:aws-lambda-java-core:1.2.1" level="project" />
     <orderEntry type="library" name="Gradle: com.amazonaws:aws-java-sdk-dynamodb:1.12.47" level="project" />
+    <orderEntry type="library" name="Gradle: com.amazonaws:aws-java-sdk-eventbridge:1.12.75" level="project" />
     <orderEntry type="library" name="Gradle: com.amazonaws:aws-lambda-java-events:3.1.0" level="project" />
     <orderEntry type="library" name="Gradle: com.plaid:plaid-java:8.5.0" level="project" />
     <orderEntry type="library" name="Gradle: com.google.dagger:dagger:2.4" level="project" />
     <orderEntry type="library" name="Gradle: org.immutables:value-annotations:2.7.3" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.12.3" level="project" />
     <orderEntry type="library" name="Gradle: javax.inject:javax.inject:1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.projectlombok:lombok:1.18.20" level="project" />
     <orderEntry type="library" name="Gradle: org.mockito:mockito-inline:2.13.0" level="project" />
     <orderEntry type="library" name="Gradle: org.mockito:mockito-core:2.13.0" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.jupiter:junit-jupiter-api:5.6.0" level="project" />
@@ -34,8 +37,8 @@
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.30" level="project" />
     <orderEntry type="library" name="Gradle: javax.xml.bind:jaxb-api:2.3.1" level="project" />
     <orderEntry type="library" name="Gradle: com.amazonaws:aws-java-sdk-s3:1.12.47" level="project" />
-    <orderEntry type="library" name="Gradle: com.amazonaws:aws-java-sdk-core:1.12.47" level="project" />
-    <orderEntry type="library" name="Gradle: com.amazonaws:jmespath-java:1.12.47" level="project" />
+    <orderEntry type="library" name="Gradle: com.amazonaws:aws-java-sdk-core:1.12.75" level="project" />
+    <orderEntry type="library" name="Gradle: com.amazonaws:jmespath-java:1.12.75" level="project" />
     <orderEntry type="library" name="Gradle: joda-time:joda-time:2.8.1" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.retrofit2:converter-gson:2.9.0" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.retrofit2:retrofit:2.9.0" level="project" />

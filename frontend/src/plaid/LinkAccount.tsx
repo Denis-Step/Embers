@@ -26,12 +26,13 @@ type State = {
     linkToken?: string;
     publicToken?: string;
     metaData?: PlaidLinkOnSuccessMetadata;
-    webhook?: boolean
+    webhook: boolean
 }
 
 const initialState: State = {
     user: "",
-    products: ["transactions"] // Default products. Not changed for now.
+    products: ["transactions"], // Default products. Not changed for now.
+    webhook: false
 };
 
 function linkReducer(state: State, action: Action): State {
@@ -49,7 +50,7 @@ function linkReducer(state: State, action: Action): State {
         case ActionKind.UpdateWebhook:
             return {
                 ...state,
-                webhook: !state.webhook
+                webhook: action.payload.webhook
             }
     }
 }
@@ -58,6 +59,7 @@ function linkReducer(state: State, action: Action): State {
 const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
                            user: string,
                            publicToken: string,
+                           webhook: boolean,
                            products: string[]): PlaidItemCreationInfo => {
 
     // No institutionId means Dummy string.
@@ -74,6 +76,7 @@ const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
         availableProducts: products,
         accounts: accounts,
         dateCreated: new Date().toISOString(),
+        webhook: webhook,
         metaData: JSON.stringify(metadata)
     };
 }
@@ -94,8 +97,8 @@ const LinkAccount = () => {
 
         // Send info back when publicToken is generated.
         if (state.publicToken && state.metaData) {
-            const {metaData, user, publicToken, products} = state;
-            const infoToSend = buildItemInfo(metaData, user, publicToken, products)
+            const {metaData, user, publicToken, webhook, products} = state;
+            const infoToSend = buildItemInfo(metaData, user, publicToken, webhook, products)
             sendInfoBack(infoToSend);
         }
 
@@ -106,17 +109,17 @@ const LinkAccount = () => {
         dispatch({type: ActionKind.UpdateUser, payload: input});
     };
 
-    const updateWebhook = (): void => {
-        dispatch({type: ActionKind.UpdateWebhook, payload: null});
-    }
+    const updateWebhook = useCallback( (): void => {
+        dispatch({type: ActionKind.UpdateWebhook, payload: {webhook: !state.webhook}});
+    }, [state.webhook])
 
     // Handler for link token button.
     const updateLinkToken = useCallback(async () => {
         if (state.user) {
-            const link = await getLinkToken(state.user, auth.token.id_token, state.products);
+            const link = await getLinkToken(state.user, auth.token.id_token, state.webhook,  state.products);
             dispatch({type: ActionKind.UpdateLinkToken, payload: link});
         }
-    }, [state.user, state.products, auth]);
+    }, [state.user, state.products, state.webhook, auth]);
 
     // onSuccess callback for LinkFlow to initiate item creation server-side.
     const onLinkSuccess = useCallback(async (public_token: string,
@@ -139,7 +142,6 @@ const LinkAccount = () => {
         },
         [state.linkToken, onLinkSuccess])
 
-
     return (
         <div id="link-token-creation">
             <VStack>
@@ -148,7 +150,8 @@ const LinkAccount = () => {
                 <Input key="linkInput" type="user" value={state.user} placeholder="John" onChange={updateUser}/>
                 <FormHelperText>Username for Plaid.</FormHelperText>
             </FormControl>
-            <Checkbox size="sm" colorScheme="red" defaultIsChecked={false} />
+            <Checkbox size="sm" colorScheme="red" defaultIsChecked={false} onChange = {
+                (e) => { updateWebhook() }}/>
             <Button colorScheme="teal"
                     size="md"
                     onClick={updateLinkToken}>

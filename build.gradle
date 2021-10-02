@@ -21,6 +21,7 @@ dependencies {
     implementation platform('software.amazon.awssdk:bom:2.15.0')
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.47'
+    implementation 'com.amazonaws:aws-java-sdk-eventbridge:1.12.75'
     implementation 'com.amazonaws:aws-lambda-java-events:3.1.0'
 
     runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
@@ -36,6 +37,12 @@ dependencies {
 
     annotationProcessor "org.immutables:value:2.7.3"
     implementation "org.immutables:value-annotations:2.7.3" // or implementation, or compileOnly
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.9'
 

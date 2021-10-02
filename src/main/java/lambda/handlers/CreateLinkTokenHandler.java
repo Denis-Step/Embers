@@ -22,7 +22,7 @@ public class CreateLinkTokenHandler implements RequestHandler<CreateLinkTokenReq
     @Override
     public String handleRequest(CreateLinkTokenRequest event, Context context) {
         LambdaLogger logger = context.getLogger();
-        logger.log("Getting link token for " + event.getUser());
+        logger.log("Getting link token for " + event.getUser() + " products " + event.getProducts() + " and webhook?: " + event.webhook);
 
         try {
             return processor.createLinkToken(event);

@@ -1,26 +1,18 @@
 package lambda.requests;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 // LambdaRequest
+@Data
+@NoArgsConstructor
 public class CreateLinkTokenRequest {
 
-    private String user;
-    private List<String> products;
+    public String user;
+    public List<String> products;
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public List<String> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<String> products) {
-        this.products = products;
-    }
+    // Nullable
+    public boolean webhook;
 }
