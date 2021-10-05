@@ -1,6 +1,5 @@
 package lambda.processors;
 
-import dynamo.PlaidItemDAO;
 import dynamo.PlaidTransactionDAO;
 import lambda.requests.GetItemRequest;
 import lambda.requests.GetTransactionsRequest;
@@ -10,8 +9,8 @@ import plaid.entities.Transaction;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.sql.Date;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 // Params: Link --> User, InstitutionId,
@@ -31,10 +30,30 @@ public class TransactionProcessor {
     public List<Transaction> pullFromPlaid(GetTransactionsRequest transactionsRequest) throws IOException, ItemProcessor.ItemException {
 
         // Get access token and initialize txGrabber.
-        String accessToken = getItem(transactionsRequest.getUser(), transactionsRequest.getInstitutionName()).accessToken();
-        TransactionsGrabber txGrabber = new TransactionsGrabber(accessToken);
+        String user = transactionsRequest.getUser();
+        String institutionName = transactionsRequest.getInstitutionName();
+        String accessToken = getItem(user, institutionName).accessToken();
 
-        List<Transaction> transactions = txGrabber.requestTransactions(transactionsRequest);
+        TransactionsGrabber txGrabber = new TransactionsGrabber(user, institutionName, accessToken);
+
+        List<Transaction> transactions;
+        if (transactionsRequest.startDate != null && transactionsRequest.endDate != null) {
+            transactions = txGrabber.requestTransactions(
+                    Date.from(Instant.parse(transactionsRequest.getStartDate())),
+                    Date.from(Instant.parse(transactionsRequest.getEndDate())));
+        }
+
+        if (transactionsRequest.endDate == null) {
+            transactions = txGrabber.requestTransactions(Date.from(Instant.parse(transactionsRequest.getStartDate())));
+        }
+
+        // @TODO: Add support for only end date and no start date.
+
+        else {
+            // Default 30 days.
+            transactions = txGrabber.requestTransactions();
+        }
+
         transactionDAO.save(transactions);
         return transactions;
     }

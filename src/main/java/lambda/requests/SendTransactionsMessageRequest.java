@@ -1,27 +1,17 @@
 package lambda.requests;
 
 import dynamo.PlaidTransactionDAO;
-import plaid.entities.Transaction;
-
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class SendTransactionsMessageRequest {
-    private List<PlaidTransactionDAO> transactions;
-    private String receiverNumber;
 
-    public List<PlaidTransactionDAO> getTransactions() {
-        return transactions;
-    }
+    public List<PlaidTransactionDAO> transactions;
 
-    public void setTransactions(List<PlaidTransactionDAO> transactions) {
-        this.transactions = transactions;
-    }
+    // Nullable
+    public String receiverNumber;
 
-    public String getReceiverNumber() {
-        return receiverNumber;
-    }
-
-    public void setReceiverNumber(String receiverNumber) {
-        this.receiverNumber = receiverNumber;
-    }
 }

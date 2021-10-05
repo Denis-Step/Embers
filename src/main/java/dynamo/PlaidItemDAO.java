@@ -59,6 +59,7 @@ public class PlaidItemDAO {
                 .accounts(itemInfo.getAccounts())
                 .institutionId(itemInfo.getInstitutionId())
                 .metaData(itemInfo.getMetaData())
+                .webhook(itemInfo.getWebHook())
                 .build();
     }
 

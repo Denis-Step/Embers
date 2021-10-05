@@ -11,7 +11,7 @@ import retrofit2.Response;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,70 +22,49 @@ import java.util.stream.Collectors;
  */
 public class TransactionsGrabber {
     private final PlaidClient plaidClient;
+    private final String user;
+    private final String institutionName;
     private final String accessToken;
+    private static final int DEFAULT_DATE_RANGE_DAYS = 30;
 
-    public TransactionsGrabber(String accessToken){
+    public TransactionsGrabber(String user, String institutionName, String accessToken){
         this.plaidClient = DaggerPlaidComponent.create().buildPLaidClient();
+        this.user = user;
+        this.institutionName = institutionName;
         this.accessToken = accessToken;
     }
 
-    public List<Transaction> requestTransactions(GetTransactionsRequest request) throws IOException {
-        Date startDate = Date.from(Instant.parse(request.getStartDate()));
-        Date endDate = Date.from(Instant.parse(request.getEndDate()));
-        TransactionsGetRequest transactionsGetRequest = getTransactionsRequest(accessToken, startDate, endDate);
-
-        Call<TransactionsGetResponse> call =  plaidClient.service().transactionsGet(transactionsGetRequest);
-        Response<TransactionsGetResponse> resp = call.execute();
-
-        if (resp.isSuccessful()) {
-
-            return resp.body().getTransactions().stream()
-                    .map(tx -> buildFromPlaid(request.getUser(), request.getInstitutionName(), tx))
-                    .collect(Collectors.toList());
-
-        } else {
-            throw new RuntimeException(resp.toString());
-        }
-    }
-
-   /*
     public List<Transaction> requestTransactions(Date startDate, Date endDate) throws IOException {
-        TransactionsGetRequest transactionsGetRequest = getTransactionsRequest(accessToken, startDate, endDate);
 
-        Call<TransactionsGetResponse> call =  plaidClient.service().transactionsGet(transactionsGetRequest);
-        Response<TransactionsGetResponse> resp = call.execute();
+        TransactionsGetRequest transactionsGetRequest = new TransactionsGetRequest(accessToken, startDate, endDate);
+        List<TransactionsGetResponse.Transaction> plaidTxs = callGetTransactionsRequest(transactionsGetRequest);
+
+        return plaidTxs.stream()
+                .map(tx -> buildFromPlaid(user, institutionName, tx))
+                .collect(Collectors.toList());
+
+    }
+
+    public List<Transaction> requestTransactions(Date startDate) throws IOException {
+        return requestTransactions(startDate, new Date(System.currentTimeMillis()));
+    }
+
+    public List<Transaction> requestTransactions() throws IOException {
+        Date startDate = Date.from(Instant.now().minus(DEFAULT_DATE_RANGE_DAYS, ChronoUnit.DAYS));
+        Date endDate = new Date(System.currentTimeMillis());
+        return requestTransactions(startDate, endDate);
+    }
+
+    private List<TransactionsGetResponse.Transaction> callGetTransactionsRequest(TransactionsGetRequest transactionsGetRequest)
+            throws IOException {
+
+        Call<TransactionsGetResponse> txCall = plaidClient.service().transactionsGet(transactionsGetRequest);
+        Response<TransactionsGetResponse> resp = txCall.execute();
 
         if (resp.isSuccessful()) {
-
-            return resp.body().getTransactions().stream()
-                    .map(tx -> buildFromPlaid(tx))
-                    .collect(Collectors.toList());
-
-        } else {
-            throw new RuntimeException(resp.toString());
-        }
+            return resp.body().getTransactions();
+        } else { throw new RuntimeException(resp.toString()); }
     }
-
-    // Expected to mostly be used through start Date only.
-    // Automatically makes end date now.
-    public List<Transaction> requestTransactions(Date startDate) throws IOException {
-        return requestTransactions(startDate, Date.from(Instant.now()));
-    }
-
-    private Transaction buildFromPlaid (TransactionsGetResponse.Transaction plaidTransaction) {
-        Transaction.Builder builder = new Transaction.Builder()
-                .setAmount(plaidTransaction.getAmount())
-                .setDescription(plaidTransaction.getName())
-                .setOriginalDescription(plaidTransaction.getOriginalDescription())
-                .setMerchantName(plaidTransaction.getMerchantName())
-                .setDate(plaidTransaction.getDate())
-                .setAccountId(plaidTransaction.getAccountId())
-                .setTransactionId(plaidTransaction.getTransactionId());
-
-        return builder.build();
-    }
-
-    */
 
     private Transaction buildFromPlaid (String user, String institution, TransactionsGetResponse.Transaction plaidTransaction) {
         return Transaction.getBuilder()
@@ -99,10 +78,6 @@ public class TransactionsGrabber {
                 .setUser(user)
                 .setInstitutionName(institution)
                 .build();
-    }
-
-    private TransactionsGetRequest getTransactionsRequest(String accessToken, Date startDate, Date endDate) {
-        return new TransactionsGetRequest(accessToken, startDate, endDate);
     }
 
 }

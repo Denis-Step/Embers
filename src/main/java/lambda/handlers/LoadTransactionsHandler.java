@@ -6,12 +6,14 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerAwsComponent;
 import dagger.DaggerPlaidComponent;
+import lambda.processors.ItemProcessor;
 import lambda.processors.TransactionProcessor;
 import lambda.requests.CreateLinkTokenRequest;
 import lambda.requests.GetTransactionsRequest;
 import plaid.clients.LinkGrabber;
 import plaid.entities.Transaction;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -44,10 +46,13 @@ public class LoadTransactionsHandler implements RequestHandler<GetTransactionsRe
                     event.getInstitutionName()
             );
             return transactions;
-        } catch (Exception e) {
+        } catch (ItemProcessor.ItemException e) {
             // Rethrow exception to prevent lambda from succeeding.
-            logger.log("Exception: " + e.getMessage());
-            throw new RuntimeException(String.format("Exception: %s", e.toString()));
+            logger.log("ItemException: " + e.getMessage());
+            throw new RuntimeException(String.format("Exception: %s", e.getStackTrace()));
+        } catch (IOException e) {
+            logger.log("IOException: " + e.getMessage());
+            throw new RuntimeException(String.format("Exception: %s", e.getStackTrace()));
         }
     }
 

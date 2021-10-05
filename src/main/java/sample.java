@@ -3,14 +3,10 @@ import dagger.DaggerTwilioComponent;
 import lambda.processors.ItemProcessor;
 import lambda.processors.MessageProcessor;
 import lambda.processors.TransactionProcessor;
-import lambda.requests.CreateLinkTokenRequest;
 import lambda.requests.GetTransactionsRequest;
-import lambda.requests.RequestInvocationHandler;
 import plaid.entities.Transaction;
 
 import java.io.IOException;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.List;
 
 public class sample {
