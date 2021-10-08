@@ -1,4 +1,4 @@
-package lambda.requests;
+package lambda.requests.link;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

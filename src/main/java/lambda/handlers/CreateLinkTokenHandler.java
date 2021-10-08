@@ -5,9 +5,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerPlaidComponent;
 import lambda.processors.CreateLinkTokenProcessor;
-import lambda.requests.CreateLinkTokenRequest;
+import lambda.requests.link.CreateLinkTokenRequest;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
 public class CreateLinkTokenHandler implements RequestHandler<CreateLinkTokenRequest, String> {

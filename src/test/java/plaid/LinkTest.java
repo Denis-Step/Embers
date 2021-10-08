@@ -3,7 +3,7 @@ package plaid;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
-import lambda.requests.CreateLinkTokenRequest;
+import lambda.requests.link.CreateLinkTokenRequest;
 import org.junit.jupiter.api.BeforeAll;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;

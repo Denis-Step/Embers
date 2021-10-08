@@ -39,7 +39,7 @@ public class PlaidTransactionDAO {
                 transaction.getTransactionId()); // Sort key
         this.setAmount(transaction.getAmount());
         this.setDescription(transaction.getDescription());
-        this.setOriginalDescription(transaction.getOriginalDescription().orElse("No Original Description"));
+        this.setOriginalDescription(transaction.getOriginalDescription());
         this.setMerchantName(transaction.getMerchantName());
         this.setDate(transaction.getDate());
     }

@@ -2,6 +2,7 @@ package lambda.processors;
 
 import dynamo.PlaidTransactionDAO;
 import lambda.requests.SendTransactionsMessageRequest;
+import plaid.entities.PlaidItem;
 import plaid.entities.Transaction;
 import twilio.MessageClient;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public class MessageProcessor {
 
     private final MessageClient messageClient;
+    private final String DEFAULT_NUMBER = "+19175478272";
 
     @Inject
     public MessageProcessor(MessageClient messageClient) {
@@ -27,15 +29,20 @@ public class MessageProcessor {
      */
     public String sendMessage(SendTransactionsMessageRequest request) {
         String messageBody = new TransactionSummary(request.getTransactions()).toString();
-        return this.sendMessage(request.getReceiverNumber(), messageBody);
+
+        if (request.getReceiverNumber() != null) {
+            return this.sendMessage(request.getReceiverNumber(), messageBody);
+        } else {
+            return this.sendMessage(DEFAULT_NUMBER, messageBody);
+        }
     }
 
     public static class TransactionSummary{
         public Double netBalance = 0.00;
         int numTransactions = 0;
 
-        public TransactionSummary(List<PlaidTransactionDAO> transactionList) {
-            for (PlaidTransactionDAO transaction: transactionList) {
+        public TransactionSummary(List<Transaction> transactionList) {
+            for (Transaction transaction: transactionList) {
                 netBalance += transaction.getAmount();
                 numTransactions += 1;
             }

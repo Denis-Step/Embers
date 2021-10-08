@@ -3,7 +3,7 @@ import dagger.DaggerTwilioComponent;
 import lambda.processors.ItemProcessor;
 import lambda.processors.MessageProcessor;
 import lambda.processors.TransactionProcessor;
-import lambda.requests.GetTransactionsRequest;
+import lambda.requests.transactions.GetTransactionsRequest;
 import plaid.entities.Transaction;
 
 import java.io.IOException;
@@ -32,6 +32,6 @@ public class sample {
         request.setEndDate("2020-08-31T10:15:30.00Z");
         request.setUser("Denny");
         request.setInstitutionName("Discover");
-        List<Transaction> transactions = processor.pullFromPlaid(request);
+        //List<Transaction> transactions = processor.pullNewTransactions(request);
     }
 }

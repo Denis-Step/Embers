@@ -1,15 +1,15 @@
 package lambda.processors;
 
 import dynamo.PlaidTransactionDAO;
-import lambda.requests.GetItemRequest;
-import lambda.requests.GetTransactionsRequest;
+import lambda.requests.items.GetItemRequest;
+import lambda.requests.transactions.GetTransactionsRequest;
 import plaid.clients.TransactionsGrabber;
 import plaid.entities.PlaidItem;
 import plaid.entities.Transaction;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.sql.Date;
+import java.util.Date;
 import java.time.Instant;
 import java.util.List;
 
@@ -27,48 +27,24 @@ public class TransactionProcessor {
 
     // First get item, then pull Tx from Plaid for that item.
     // NO FIELDS NULLABLE.
-    public List<Transaction> pullFromPlaid(GetTransactionsRequest transactionsRequest) throws IOException, ItemProcessor.ItemException {
+    public List<Transaction> pullNewTransactions(String user, String institution, Date startDate, Date endDate)
+            throws ItemProcessor.ItemException, IOException {
+        String accessToken = getItem(user, institution).accessToken();
 
-        // Get access token and initialize txGrabber.
-        String user = transactionsRequest.getUser();
-        String institutionName = transactionsRequest.getInstitutionName();
-        String accessToken = getItem(user, institutionName).accessToken();
+        TransactionsGrabber txGrabber = new TransactionsGrabber(user, institution, accessToken);
+        return txGrabber.requestTransactions(startDate, endDate);
+    }
 
-        TransactionsGrabber txGrabber = new TransactionsGrabber(user, institutionName, accessToken);
-
-        List<Transaction> transactions;
-        if (transactionsRequest.startDate != null && transactionsRequest.endDate != null) {
-            transactions = txGrabber.requestTransactions(
-                    Date.from(Instant.parse(transactionsRequest.getStartDate())),
-                    Date.from(Instant.parse(transactionsRequest.getEndDate())));
+    public List<Transaction> getTransactions(GetTransactionsRequest request) {
+        if (request.accountId != null) {
+           return this.transactionDAO.query(request.user, request.institutionName, request.accountId);
+        } else {
+            return this.transactionDAO.query(request.user, request.institutionName);
         }
-
-        if (transactionsRequest.endDate == null) {
-            transactions = txGrabber.requestTransactions(Date.from(Instant.parse(transactionsRequest.getStartDate())));
-        }
-
-        // @TODO: Add support for only end date and no start date.
-
-        else {
-            // Default 30 days.
-            transactions = txGrabber.requestTransactions();
-        }
-
-        transactionDAO.save(transactions);
-        return transactions;
     }
 
     private PlaidItem getItem(String user, String institution) throws ItemProcessor.ItemException {
-        GetItemRequest request = createGetItemRequest(user, institution);
-        return itemProcessor.getItem(request);
+        return itemProcessor.getItem(user, institution);
     }
-
-    private GetItemRequest createGetItemRequest(String user, String institution) {
-        GetItemRequest request = new GetItemRequest();
-        request.setUser(user);
-        request.setInstitution(institution);
-        return request;
-    }
-
 
 }

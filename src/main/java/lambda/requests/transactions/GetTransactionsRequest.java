@@ -1,4 +1,4 @@
-package lambda.requests;
+package lambda.requests.transactions;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +12,8 @@ public class GetTransactionsRequest {
 
     public String user;
     public String institutionName;
-    public String accountId; //Nullable
+    public String accountId; // Nullable
     public String startDate;
-    public String endDate;
+    public String endDate; // Nullable
 
 }

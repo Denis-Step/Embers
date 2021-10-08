@@ -1,4 +1,4 @@
-package lambda.requests;
+package lambda.requests.items;
 
 public class GetItemRequest {
 

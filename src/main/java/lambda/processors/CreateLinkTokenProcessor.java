@@ -1,6 +1,6 @@
 package lambda.processors;
 
-import lambda.requests.CreateLinkTokenRequest;
+import lambda.requests.link.CreateLinkTokenRequest;
 import plaid.clients.LinkGrabber;
 
 import javax.inject.Inject;

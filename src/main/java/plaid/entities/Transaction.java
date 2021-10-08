@@ -1,21 +1,26 @@
 package plaid.entities;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Optional;
 
 // Wrapper on Plaid Transactions. Removes unnecessary info.
+@Data
+@NoArgsConstructor
 public class Transaction {
-    private final String user;
-    private final String institutionName;
-    private final String accountId;
-    private final Double amount;
+    public  String user;
+    public  String institutionName;
+    public  String accountId;
+    public  Double amount;
 
     // This maps to Plaid "name"
-    private final String description;
-    private final Optional<String> originalDescription;
-    private final String merchantName;
-    private final String date;
+    public  String description;
+    public  String originalDescription;
+    public  String merchantName;
+    public  String date;
 
-    private final String transactionId;
+    public  String transactionId;
 
 
     /**
@@ -26,7 +31,7 @@ public class Transaction {
         this.institutionName = builder.institutionName;
         this.amount = builder.amount;
         this.description = builder.description;
-        this.originalDescription = Optional.ofNullable(builder.originalDescription);
+        this.originalDescription = builder.originalDescription;
         this.merchantName = builder.merchantName;
         this.date = builder.date;
         this.accountId = builder.accountId;
@@ -45,7 +50,7 @@ public class Transaction {
         return this.amount;
     }
 
-    public Optional<String> getOriginalDescription() {
+    public String getOriginalDescription() {
         return originalDescription;
     }
 
@@ -74,7 +79,7 @@ public class Transaction {
         return "Transaction{" +
                 "amount=" + amount +
                 ", description='" + description + '\'' +
-                ", originalDescription='" + originalDescription.orElse("no original description") + '\'' +
+                ", originalDescription='" + originalDescription + '\'' +
                 ", merchantName='" + merchantName + '\'' +
                 ", date='" + date + '\'' +
                 ", accountId='" + accountId + '\'' +

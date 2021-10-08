@@ -4,7 +4,6 @@ import com.plaid.client.PlaidClient;
 import com.plaid.client.request.TransactionsGetRequest;
 import com.plaid.client.response.TransactionsGetResponse;
 import dagger.DaggerPlaidComponent;
-import lambda.requests.GetTransactionsRequest;
 import plaid.entities.Transaction;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -25,7 +24,6 @@ public class TransactionsGrabber {
     private final String user;
     private final String institutionName;
     private final String accessToken;
-    private static final int DEFAULT_DATE_RANGE_DAYS = 30;
 
     public TransactionsGrabber(String user, String institutionName, String accessToken){
         this.plaidClient = DaggerPlaidComponent.create().buildPLaidClient();
@@ -43,16 +41,6 @@ public class TransactionsGrabber {
                 .map(tx -> buildFromPlaid(user, institutionName, tx))
                 .collect(Collectors.toList());
 
-    }
-
-    public List<Transaction> requestTransactions(Date startDate) throws IOException {
-        return requestTransactions(startDate, new Date(System.currentTimeMillis()));
-    }
-
-    public List<Transaction> requestTransactions() throws IOException {
-        Date startDate = Date.from(Instant.now().minus(DEFAULT_DATE_RANGE_DAYS, ChronoUnit.DAYS));
-        Date endDate = new Date(System.currentTimeMillis());
-        return requestTransactions(startDate, endDate);
     }
 
     private List<TransactionsGetResponse.Transaction> callGetTransactionsRequest(TransactionsGetRequest transactionsGetRequest)

@@ -1,9 +1,8 @@
 package lambda.processors;
 
-import dagger.DaggerPlaidComponent;
 import dynamo.PlaidItemDAO;
-import lambda.requests.CreateItemRequest;
-import lambda.requests.GetItemRequest;
+import lambda.requests.items.CreateItemRequest;
+import lambda.requests.items.GetItemRequest;
 import plaid.clients.ItemGrabber;
 import plaid.entities.PlaidItem;
 
@@ -55,6 +54,25 @@ public class ItemProcessor {
                     request.getUser() +
                     "And institution:" +
                     request.getInstitution());
+        } else {
+            return plaidItems.get(0);
+        }
+    }
+
+    public PlaidItem getItem(String user, String institution) throws ItemException {
+        List<PlaidItem> plaidItems = plaidItemDAO.query(user, institution);
+
+        if (plaidItems.size() > 1) {
+            throw new MultipleItemsFoundException("Found " +
+                    plaidItems.size() +
+                    " items:" +
+                    plaidItems.toString());
+        }
+        if (plaidItems.size() < 1) {
+            throw new ItemNotFoundException("Item Not Found for User:" +
+                    user +
+                    "And institution:" +
+                    institution);
         } else {
             return plaidItems.get(0);
         }

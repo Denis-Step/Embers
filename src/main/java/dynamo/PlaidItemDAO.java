@@ -28,7 +28,7 @@ public class PlaidItemDAO {
     private List<String> accounts;
     private String dateCreated;
     private String metaData; // Remaining metadata. Rarely used.
-
+    private String receiverNumber;
     private boolean webHook;
 
     private static final DynamoDBMapper dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();
@@ -45,6 +45,9 @@ public class PlaidItemDAO {
         this.setDateCreated(plaidItem.dateCreated());
         this.setMetaData(plaidItem.metaData());
         this.setWebHook(plaidItem.webhook());
+        if (plaidItem.receiverNumber().isPresent()) {
+            this.setReceiverNumber(plaidItem.receiverNumber().get());
+        };
     }
 
     public PlaidItem createItem() {
@@ -94,6 +97,10 @@ public class PlaidItemDAO {
     @DynamoDBAttribute(attributeName = "Accounts")
     public List<String> getAccounts() { return accounts; }
     public void setAccounts(List<String> accounts) { this.accounts = accounts; }
+
+    @DynamoDBAttribute(attributeName = "ReceiverNumber")
+    public String getReceiverNumber() { return receiverNumber; }
+    public void setReceiverNumber(String receiverNumber) { this.receiverNumber = receiverNumber; }
 
     @DynamoDBAttribute(attributeName = "Webhook")
     public Boolean getWebHook() { return webHook; }
