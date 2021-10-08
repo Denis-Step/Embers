@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerPlaidComponent;
-import lambda.processors.TransactionProcessor;
+import lambda.processors.LoadTransactionsProcessor;
 import lambda.requests.transactions.GetTransactionsRequest;
 import plaid.entities.Transaction;
 
@@ -14,11 +14,11 @@ import java.util.List;
 // Params: Link --> User, InstitutionId,
 // Transactions --> StartDate, EndDate?, InstitutionId, AccountName
 public class GetTransactionsHandler implements RequestHandler<GetTransactionsRequest, List<Transaction>> {
-    private final TransactionProcessor processor;
+    private final LoadTransactionsProcessor processor;
 
-    public GetTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildTransactionProcessor(); }
+    public GetTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildLoadTransactionsProcessor(); }
 
-    public GetTransactionsHandler(TransactionProcessor processor) {
+    public GetTransactionsHandler(LoadTransactionsProcessor processor) {
         this.processor = processor;
     }
 

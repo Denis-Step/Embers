@@ -119,6 +119,16 @@ public class PlaidTransactionDAO {
                 .collect(Collectors.toList());
     }
 
+    public List<Transaction> query(String user, String institutionName, String accountId, String transactionId) {
+        String sortKey = institutionName + "-" + accountId + "-" + transactionId;
+        DynamoDBQueryExpression<PlaidTransactionDAO> queryExpression = createQueryRequest(user, sortKey);
+        List<PlaidTransactionDAO> plaidTransactionDAOList = this.dynamoDBMapper.query(PlaidTransactionDAO.class, queryExpression);
+
+        return plaidTransactionDAOList.stream()
+                .map(PlaidTransactionDAO::createTransaction)
+                .collect(Collectors.toList());
+    }
+
     public void save(Transaction transaction) {
         PlaidTransactionDAO dao = new PlaidTransactionDAO(transaction);
         dao.save();

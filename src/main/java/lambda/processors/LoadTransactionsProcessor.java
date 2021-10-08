@@ -14,19 +14,18 @@ import java.time.Instant;
 import java.util.List;
 
 // Params: Link --> User, InstitutionId,
-// Transactions --> StartDate, EndDate?, InstitutionId, AccountName
-public class TransactionProcessor {
+// Transactions --> StartDate?, EndDate?, User, InstitutionId, AccountName
+public class LoadTransactionsProcessor {
     private final PlaidTransactionDAO transactionDAO;
     private final ItemProcessor itemProcessor;
 
     @Inject
-    public TransactionProcessor(PlaidTransactionDAO transactionDAO, ItemProcessor itemProcessor) {
+    public LoadTransactionsProcessor(PlaidTransactionDAO transactionDAO, ItemProcessor itemProcessor) {
         this.transactionDAO = transactionDAO;
         this.itemProcessor = itemProcessor;
     }
 
     // First get item, then pull Tx from Plaid for that item.
-    // NO FIELDS NULLABLE.
     public List<Transaction> pullNewTransactions(String user, String institution, Date startDate, Date endDate)
             throws ItemProcessor.ItemException, IOException {
         String accessToken = getItem(user, institution).accessToken();

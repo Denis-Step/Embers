@@ -4,14 +4,12 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerPlaidComponent;
 import lambda.processors.ItemProcessor;
-import lambda.processors.TransactionProcessor;
-import lambda.requests.transactions.GetTransactionsRequest;
+import lambda.processors.LoadTransactionsProcessor;
 import lambda.requests.transactions.PullNewTransactionsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import plaid.entities.Transaction;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -22,13 +20,13 @@ import java.util.List;
 // Params: Link --> User, InstitutionId,
 // Transactions --> StartDate, EndDate?, InstitutionId, AccountName
 public class LoadTransactionsHandler implements RequestHandler<PullNewTransactionsRequest, List<Transaction>> {
-    private final TransactionProcessor processor;
+    private final LoadTransactionsProcessor processor;
     private static final Logger LOGGER = LoggerFactory.getLogger(LoadTransactionsHandler.class);
     private static final int DEFAULT_DATE_RANGE_DAYS = 30;
 
-    public LoadTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildTransactionProcessor(); }
+    public LoadTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildLoadTransactionsProcessor(); }
 
-    public LoadTransactionsHandler(TransactionProcessor processor) {
+    public LoadTransactionsHandler(LoadTransactionsProcessor processor) {
         this.processor = processor;
     }
 

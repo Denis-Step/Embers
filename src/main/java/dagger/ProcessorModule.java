@@ -3,13 +3,8 @@ package dagger;
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
 import dynamo.PlaidTransactionDAO;
-import lambda.processors.CreateLinkTokenProcessor;
-import lambda.processors.ItemProcessor;
-import lambda.processors.TransactionProcessor;
 import plaid.clients.ItemGrabber;
 import plaid.clients.LinkGrabber;
-
-import javax.inject.Singleton;
 
 @Module
 public interface ProcessorModule {

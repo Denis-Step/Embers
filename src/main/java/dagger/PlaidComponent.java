@@ -3,7 +3,8 @@ package dagger;
 import com.plaid.client.PlaidClient;
 import lambda.processors.CreateLinkTokenProcessor;
 import lambda.processors.ItemProcessor;
-import lambda.processors.TransactionProcessor;
+import lambda.processors.LoadTransactionsProcessor;
+import lambda.processors.ReceiveTransactionsProcessor;
 import plaid.clients.ItemGrabber;
 import plaid.clients.LinkGrabber;
 
@@ -23,6 +24,7 @@ public interface PlaidComponent {
 
     CreateLinkTokenProcessor buildLinkTokenProcessor();
     ItemProcessor buildItemProcessor();
-    TransactionProcessor buildTransactionProcessor();
+    LoadTransactionsProcessor buildLoadTransactionsProcessor();
+    ReceiveTransactionsProcessor buildReceiveTransactionsProcessor();
 
 }
