@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
+
 @DynamoDBTable(tableName="PlaidItems")
 public class PlaidItemDAO {
     public static final String TABLE_NAME = "PlaidItems";
@@ -49,7 +50,7 @@ public class PlaidItemDAO {
     public PlaidItem createItem() {
         PlaidItemDAO itemInfo = this;
 
-        return ImmutablePlaidItem.builder()
+        ImmutablePlaidItem.Builder builder = ImmutablePlaidItem.builder()
                 .ID(itemInfo.getID())
                 .accessToken(itemInfo.getAccessToken())
                 .user(itemInfo.getUser())
@@ -58,8 +59,12 @@ public class PlaidItemDAO {
                 .accounts(itemInfo.getAccounts())
                 .institutionId(itemInfo.getInstitutionId())
                 .metaData(itemInfo.getMetaData())
-                .webhook(itemInfo.getWebHook())
-                .build();
+                .webhook(itemInfo.getWebHook());
+        if (!(this.receiverNumber == null)) {
+            return builder.build().withReceiverNumber(this.receiverNumber);
+        } else {
+            return builder.build();
+        }
     }
 
     @DynamoDBHashKey(attributeName = "User")

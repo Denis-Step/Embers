@@ -12,15 +12,14 @@ import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsResponse;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ReceiveTransactionsProcessor {
     private final TransactionDAO transactionDAO;
     private final EventBridgeClient eventBridge;
     private final ObjectMapper objectMapper;
+    private static final String EVENT_BUS_NAME = "TransactionsBus";
     private static final String EVENT_SOURCE_NAME = "transactions.receive";
     private static final String EVENT_DETAIL_NAME = "newTransaction";
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveTransactionsProcessor.class);
@@ -71,6 +70,7 @@ public class ReceiveTransactionsProcessor {
 
     private PutEventsRequestEntry transactionPutEvent(Transaction transaction) throws JsonProcessingException {
         return PutEventsRequestEntry.builder()
+                .eventBusName(EVENT_BUS_NAME)
                 .source(EVENT_SOURCE_NAME)
                 .detailType(EVENT_DETAIL_NAME)
                 .detail(objectMapper.writeValueAsString(transaction))
