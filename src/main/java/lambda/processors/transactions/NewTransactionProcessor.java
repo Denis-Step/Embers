@@ -37,9 +37,10 @@ public class NewTransactionProcessor {
         }
 
         String receiverNumber = item.receiverNumber().get();
-        LOGGER.info("Sending send message event for {} to {}", item.user(), receiverNumber);
+        String message = createMessage(transaction, receiverNumber);
+        LOGGER.info("Sending message {} for {} to {}", message, item.user(), receiverNumber);
 
-        PutEventsRequestEntry putEventsRequestEntry = messagePutEvent(createMessage(transaction));
+        PutEventsRequestEntry putEventsRequestEntry = messagePutEvent(message);
         PutEventsRequest putEventsRequest =  PutEventsRequest.builder().entries(putEventsRequestEntry).build();
         PutEventsResponse response = eventBridge.putEvents(putEventsRequest);
         LOGGER.info("PutEvents Response: {}", response);
@@ -47,17 +48,18 @@ public class NewTransactionProcessor {
 
     }
 
-    private String createMessage(Transaction transaction) {
-        return "{\"Message\": \"" +
+    private String createMessage(Transaction transaction, String receiverNumber) {
+        return "{\"message\": \"" +
                 "New Transaction: " +
                 transaction.description + " " +
                 "for " +
                 transaction.amount + " " +
                 "at " +
                 transaction.merchantName +
-                "on " +
-                transaction.institutionName +
-                "\"}";
+                " on " +
+                transaction.institutionName + "\"" + "," +
+                "\"receiverNumber\": " + "\"" + receiverNumber + "\"" +
+                " }";
     }
 
     private PutEventsRequestEntry messagePutEvent(String message) {
