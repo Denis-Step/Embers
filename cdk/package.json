@@ -9,10 +9,10 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "bundle": "cd .. && gradle packageFat && cp build/distributions/JavaPlaid-1.0.zip cdk/lib && cd cdk"
+    "bundle": "cd .. && gradle packageFat && cp build/distributions/JavaPlaid-1.0.zip cdk/lib/lambdas && cd cdk"
   },
   "devDependencies": {
-    "aws-cdk": "^1.121.0",
+    "aws-cdk": "^1.127.0",
     "@aws-cdk/assert": "1.116.0",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
@@ -22,15 +22,18 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@aws-cdk/aws-codebuild": "^1.121.0",
-    "@aws-cdk/aws-codecommit": "^1.121.0",
-    "@aws-cdk/aws-codepipeline": "^1.121.0",
-    "@aws-cdk/aws-codepipeline-actions": "^1.121.0",
-    "@aws-cdk/aws-s3-assets": "^1.121.0",
-    "@aws-cdk/aws-sns": "^1.121.0",
-    "@aws-cdk/aws-sns-subscriptions": "1.121.0",
-    "@aws-cdk/aws-sqs": "1.121.0",
-    "@aws-cdk/core": "^1.121.0",
-    "@aws-cdk/pipelines": "^1.121.0"
+    "@aws-cdk/aws-codebuild": "^1.127.0",
+    "@aws-cdk/aws-codecommit": "^1.127.0",
+    "@aws-cdk/aws-codepipeline": "^1.127.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.127.0",
+    "@aws-cdk/aws-dynamodb": "^1.127.0",
+    "@aws-cdk/aws-iam": "^1.127.0",
+    "@aws-cdk/aws-lambda": "^1.127.0",
+    "@aws-cdk/aws-s3-assets": "^1.127.0",
+    "@aws-cdk/aws-sns": "^1.127.0",
+    "@aws-cdk/aws-sns-subscriptions": "1.127.0",
+    "@aws-cdk/aws-sqs": "1.127.0",
+    "@aws-cdk/core": "^1.127.0",
+    "@aws-cdk/pipelines": "^1.127.0"
   }
 }
