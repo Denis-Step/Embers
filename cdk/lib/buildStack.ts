@@ -12,7 +12,7 @@ export class BuildStack extends Stack {
         super(scope, id, props);
 
         const repo = codecommit.Repository.fromRepositoryName(this, 'JavaPlaidRepo', 'JavaPlaid');
-        this.source = codebuild.Source.codeCommit({repository: repo, branchOrRef: 'cdk'});
+        this.source = codebuild.Source.codeCommit({repository: repo, branchOrRef: 'cdk3'});
         this.outputBucket = new s3.Bucket(this, 'builtcodebucket');
 
         this.project = new codebuild.Project(this, 'JP', {
