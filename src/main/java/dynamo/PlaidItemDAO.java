@@ -1,15 +1,11 @@
 package dynamo;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
-import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import dagger.DaggerAwsComponent;
 import plaid.entities.ImmutablePlaidItem;
 import plaid.entities.PlaidItem;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +102,25 @@ public class PlaidItemDAO {
     public Boolean getWebHook() { return webHook; }
     public void setWebHook(Boolean webHook) { this.webHook = webHook; }
 
+    public PlaidItem getItem(String user, String institution) throws ItemException {
+        List<PlaidItem> plaidItems = this.query(user, institution);
+
+        if (plaidItems.size() > 1) {
+            throw new MultipleItemsFoundException("Found " +
+                    plaidItems.size() +
+                    " items:" +
+                    plaidItems.toString());
+        }
+        if (plaidItems.size() < 1) {
+            throw new ItemNotFoundException("Item Not Found for User:" +
+                    user +
+                    "And institution:" +
+                    institution);
+        } else {
+            return plaidItems.get(0);
+        }
+    }
+
     public List<PlaidItem> query(String user, String institutionId) {
         DynamoDBQueryExpression<PlaidItemDAO> queryExpression = createQueryRequest(user, institutionId);
         List<PlaidItemDAO> plaidItemDAOList = dynamoDBMapper.query(PlaidItemDAO.class, queryExpression);
@@ -154,4 +169,18 @@ public class PlaidItemDAO {
                 .withExpressionAttributeValues(eav);
     }
 
+    // Exceptions
+    public static class ItemException extends Exception {
+        public ItemException(String errorMessage) {super(errorMessage);}
+    }
+
+    public static class ItemNotFoundException extends ItemException {
+        public ItemNotFoundException(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
+    public static class MultipleItemsFoundException extends ItemException {
+        public MultipleItemsFoundException(String errorMessage) {super(errorMessage);}
+    }
 }

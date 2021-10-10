@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerPlaidComponent;
-import lambda.processors.ItemProcessor;
+import lambda.processors.items.ItemProcessor;
 import lambda.requests.items.CreateItemRequest;
 import plaid.entities.PlaidItem;
 

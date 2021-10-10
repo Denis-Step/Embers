@@ -5,9 +5,9 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.eventbridge.AmazonEventBridge;
-import com.amazonaws.services.eventbridge.AmazonEventBridgeClient;
-import com.amazonaws.services.eventbridge.AmazonEventBridgeClientBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -17,7 +17,7 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    static AWSCredentialsProvider provideAwsCredentials() {
+    static AWSCredentialsProvider provideAWSCredentials() {
         return new DefaultAWSCredentialsProviderChain();
     }
 
@@ -39,11 +39,11 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    static AmazonEventBridge provideAmazonEventBridge(AWSCredentialsProvider awsCredentialsProvider) {
-        return AmazonEventBridgeClientBuilder
-                .standard()
-                .withCredentials(awsCredentialsProvider)
+    static EventBridgeClient provideAmazonEventBridge() {
+        return EventBridgeClient.builder()
+                .credentialsProvider( DefaultCredentialsProvider.create() )
                 .build();
+
     }
 
     @Provides
@@ -52,4 +52,8 @@ public interface AwsClientModule {
         return "https://mv6o8yjeo1.execute-api.us-east-2.amazonaws.com/Beta/";
     }
 
+    @Provides
+    static ObjectMapper provideObjectMapper() {
+        return new ObjectMapper();
+    }
 }

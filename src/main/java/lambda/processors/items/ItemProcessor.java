@@ -1,4 +1,4 @@
-package lambda.processors;
+package lambda.processors.items;
 
 import dynamo.PlaidItemDAO;
 import lambda.requests.items.CreateItemRequest;
@@ -40,17 +40,17 @@ public class ItemProcessor {
 
     // For when a specific Item is required, avoids having to check size farther up the stack.
     // Requires institutionId to make this possible.
-    public PlaidItem getItem(GetItemRequest request) throws ItemException {
+    public PlaidItem getItem(GetItemRequest request) throws PlaidItemDAO.ItemException {
         List<PlaidItem> plaidItems = plaidItemDAO.query(request.getUser(), request.getInstitution());
 
         if (plaidItems.size() > 1) {
-            throw new MultipleItemsFoundException("Found " +
+            throw new PlaidItemDAO.MultipleItemsFoundException("Found " +
                     plaidItems.size() +
                     " items:" +
                     plaidItems.toString());
         }
         if (plaidItems.size() < 1) {
-            throw new ItemNotFoundException("Item Not Found for User:" +
+            throw new PlaidItemDAO.ItemNotFoundException("Item Not Found for User:" +
                     request.getUser() +
                     "And institution:" +
                     request.getInstitution());
@@ -59,17 +59,17 @@ public class ItemProcessor {
         }
     }
 
-    public PlaidItem getItem(String user, String institution) throws ItemException {
+    public PlaidItem getItem(String user, String institution) throws PlaidItemDAO.ItemException {
         List<PlaidItem> plaidItems = plaidItemDAO.query(user, institution);
 
         if (plaidItems.size() > 1) {
-            throw new MultipleItemsFoundException("Found " +
+            throw new PlaidItemDAO.MultipleItemsFoundException("Found " +
                     plaidItems.size() +
                     " items:" +
                     plaidItems.toString());
         }
         if (plaidItems.size() < 1) {
-            throw new ItemNotFoundException("Item Not Found for User:" +
+            throw new PlaidItemDAO.ItemNotFoundException("Item Not Found for User:" +
                     user +
                     "And institution:" +
                     institution);
@@ -78,18 +78,4 @@ public class ItemProcessor {
         }
     }
 
-    // Exceptions
-    public static class ItemException extends Exception {
-        public ItemException(String errorMessage) {super(errorMessage);}
-    }
-
-    public static class ItemNotFoundException extends ItemException {
-        public ItemNotFoundException(String errorMessage) {
-            super(errorMessage);
-        }
-    }
-
-    public static class MultipleItemsFoundException extends ItemException {
-        public MultipleItemsFoundException(String errorMessage) {super(errorMessage);}
-    }
 }

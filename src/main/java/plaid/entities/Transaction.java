@@ -3,6 +3,7 @@ package plaid.entities;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 // Wrapper on Plaid Transactions. Removes unnecessary info.
@@ -88,7 +89,6 @@ public class Transaction {
     }
 
     // Builder helps maintain immutability of Transaction.
-    // A Transaction should NEVER be modified after creation.
     public static class Builder{
 
         private String user;

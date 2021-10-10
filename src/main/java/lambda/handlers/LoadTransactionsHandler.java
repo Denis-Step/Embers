@@ -3,8 +3,8 @@ package lambda.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerPlaidComponent;
-import lambda.processors.ItemProcessor;
-import lambda.processors.LoadTransactionsProcessor;
+import dynamo.PlaidItemDAO;
+import lambda.processors.transactions.LoadTransactionsProcessor;
 import lambda.requests.transactions.PullNewTransactionsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,14 +63,14 @@ public class LoadTransactionsHandler implements RequestHandler<PullNewTransactio
                     event.getInstitutionName()
             );
             return transactions;
-        } catch (ItemProcessor.ItemNotFoundException e) {
+        } catch (PlaidItemDAO.ItemNotFoundException e) {
             // Rethrow exception to prevent lambda from succeeding.
             LOGGER.info("ItemException: " + e.getMessage());
             throw new RuntimeException("No Item Found for User " + event.user);
-        } catch (ItemProcessor.MultipleItemsFoundException e) {
+        } catch (PlaidItemDAO.MultipleItemsFoundException e) {
             LOGGER.info("ItemException: " + e.getMessage());
             throw new RuntimeException("Multiple Items Found for User " + event.user);
-        } catch (ItemProcessor.ItemException e) {
+        } catch (PlaidItemDAO.ItemException e) {
             LOGGER.info("ItemException: " + e.getMessage());
             throw new RuntimeException("Unexpected ItemException for User " + event.user);
         }

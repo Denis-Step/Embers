@@ -1,6 +1,6 @@
 package dagger;
 
-import lambda.processors.MessageProcessor;
+import lambda.processors.messages.MessageProcessor;
 
 @Component(modules = {TwilioModule.class})
 public interface TwilioComponent {

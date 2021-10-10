@@ -4,8 +4,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerPlaidComponent;
-import lambda.processors.CreateLinkTokenProcessor;
-import lambda.requests.link.CreateLinkTokenRequest;
+import lambda.processors.items.CreateLinkTokenProcessor;
+import lambda.requests.items.CreateLinkTokenRequest;
 
 import java.io.IOException;
 

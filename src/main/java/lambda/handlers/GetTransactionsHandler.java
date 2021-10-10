@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerPlaidComponent;
-import lambda.processors.LoadTransactionsProcessor;
+import lambda.processors.transactions.LoadTransactionsProcessor;
 import lambda.requests.transactions.GetTransactionsRequest;
 import plaid.entities.Transaction;
 

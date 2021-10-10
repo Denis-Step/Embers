@@ -2,7 +2,7 @@ package dagger;
 
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
-import dynamo.PlaidTransactionDAO;
+import dynamo.TransactionDAO;
 import plaid.clients.ItemGrabber;
 import plaid.clients.LinkGrabber;
 
@@ -19,7 +19,7 @@ public interface ProcessorModule {
     static PlaidItemDAO providePlaidItemDao() {return new PlaidItemDAO();}
 
     @Provides
-    static PlaidTransactionDAO providePlaidTransactionDao() {return new PlaidTransactionDAO();}
+    static TransactionDAO providePlaidTransactionDao() {return new TransactionDAO();}
 
     /*@Provides
     @Singleton
@@ -36,6 +36,6 @@ public interface ProcessorModule {
     @Provides
     @Singleton
     static TransactionProcessor provideTransactionProcessor(ItemProcessor itemProcessor) {
-        return new TransactionProcessor(new PlaidTransactionDAO(), itemProcessor);
+        return new TransactionProcessor(new TransactionDAO(), itemProcessor);
     } */
 }

@@ -1,8 +1,8 @@
 import dagger.DaggerPlaidComponent;
 import dagger.DaggerTwilioComponent;
-import lambda.processors.ItemProcessor;
-import lambda.processors.LoadTransactionsProcessor;
-import lambda.processors.MessageProcessor;
+import dynamo.PlaidItemDAO;
+import lambda.processors.transactions.LoadTransactionsProcessor;
+import lambda.processors.messages.MessageProcessor;
 import lambda.requests.transactions.GetTransactionsRequest;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class sample {
         System.out.println(messageProcessor.sendMessage("+12148865506", "This is your fazha"));
     }
 
-    public static void testTransactionsProcessor() throws IOException, ItemProcessor.ItemException {
+    public static void testTransactionsProcessor() throws IOException, PlaidItemDAO.ItemException {
         LoadTransactionsProcessor processor = DaggerPlaidComponent.create().buildLoadTransactionsProcessor();
         GetTransactionsRequest request = new GetTransactionsRequest();
         request.setStartDate("2020-08-01T10:15:30.00Z");

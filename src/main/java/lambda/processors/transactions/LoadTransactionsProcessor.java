@@ -1,7 +1,8 @@
-package lambda.processors;
+package lambda.processors.transactions;
 
-import dynamo.PlaidTransactionDAO;
-import lambda.requests.items.GetItemRequest;
+import dynamo.PlaidItemDAO;
+import dynamo.TransactionDAO;
+import lambda.processors.items.ItemProcessor;
 import lambda.requests.transactions.GetTransactionsRequest;
 import plaid.clients.TransactionsGrabber;
 import plaid.entities.PlaidItem;
@@ -10,24 +11,23 @@ import plaid.entities.Transaction;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Date;
-import java.time.Instant;
 import java.util.List;
 
 // Params: Link --> User, InstitutionId,
 // Transactions --> StartDate?, EndDate?, User, InstitutionId, AccountName
 public class LoadTransactionsProcessor {
-    private final PlaidTransactionDAO transactionDAO;
+    private final TransactionDAO transactionDAO;
     private final ItemProcessor itemProcessor;
 
     @Inject
-    public LoadTransactionsProcessor(PlaidTransactionDAO transactionDAO, ItemProcessor itemProcessor) {
+    public LoadTransactionsProcessor(TransactionDAO transactionDAO, ItemProcessor itemProcessor) {
         this.transactionDAO = transactionDAO;
         this.itemProcessor = itemProcessor;
     }
 
     // First get item, then pull Tx from Plaid for that item.
     public List<Transaction> pullNewTransactions(String user, String institution, Date startDate, Date endDate)
-            throws ItemProcessor.ItemException, IOException {
+            throws PlaidItemDAO.ItemException, IOException {
         String accessToken = getItem(user, institution).accessToken();
 
         TransactionsGrabber txGrabber = new TransactionsGrabber(user, institution, accessToken);
@@ -42,7 +42,7 @@ public class LoadTransactionsProcessor {
         }
     }
 
-    private PlaidItem getItem(String user, String institution) throws ItemProcessor.ItemException {
+    private PlaidItem getItem(String user, String institution) throws PlaidItemDAO.ItemException {
         return itemProcessor.getItem(user, institution);
     }
 
