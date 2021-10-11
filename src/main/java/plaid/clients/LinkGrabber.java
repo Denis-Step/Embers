@@ -39,7 +39,12 @@ public class LinkGrabber {
         return callLinkTokenRequest(linkTokenCreateRequest);
     }
 
-    private String callLinkTokenRequest(LinkTokenCreateRequest linkTokenCreateRequest) {
+    /**
+     * Visible for testing.
+     * @param linkTokenCreateRequest
+     * @return
+     */
+    public String callLinkTokenRequest(LinkTokenCreateRequest linkTokenCreateRequest) {
         Call<LinkTokenCreateResponse> linkCall = plaidClient.service().linkTokenCreate(linkTokenCreateRequest);
         try {
             Response<LinkTokenCreateResponse> resp = linkCall.execute();

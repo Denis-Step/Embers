@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class ItemGrabber {
 
-    public final PlaidClient plaidClient;
+    private final PlaidClient plaidClient;
 
     @Inject
     public ItemGrabber(PlaidClient plaidClient) {
@@ -24,8 +24,8 @@ public class ItemGrabber {
     public PlaidItem createItem(CreateItemRequest createItemRequest) throws IOException {
         PublicTokenExchangeResponse itemInfo = requestItem(createItemRequest.getPublicToken());
 
-        return ImmutablePlaidItem.builder().
-                ID(itemInfo.getID())
+        return ImmutablePlaidItem.builder()
+                .ID(itemInfo.getID())
                 .accessToken(itemInfo.getAccessToken())
                 .user(createItemRequest.getUser())
                 .dateCreated(createItemRequest.getDateCreated())
@@ -33,6 +33,7 @@ public class ItemGrabber {
                 .accounts(createItemRequest.getAccounts())
                 .institutionId(createItemRequest.getInstitutionId())
                 .metaData(createItemRequest.getMetaData())
+                .webhook(createItemRequest.isWebhook())
                 .build();
     }
 

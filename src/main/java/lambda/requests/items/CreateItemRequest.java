@@ -13,6 +13,7 @@ public class CreateItemRequest {
     private List<String> accounts;
     private String dateCreated;
     private String metaData; // Remaining metadata. Rarely used.
+    private boolean webhook;
 
     public String getUser() {
         return user;
@@ -68,5 +69,13 @@ public class CreateItemRequest {
 
     public void setAccounts(List<String> accounts) {
         this.accounts = accounts;
+    }
+
+    public boolean isWebhook() {
+        return webhook;
+    }
+
+    public void setWebhook(boolean webhook) {
+        this.webhook = webhook;
     }
 }
