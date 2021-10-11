@@ -1,6 +1,6 @@
 import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import * as Cdk from '../lib/PlaidLinkApiStack';
+import * as Cdk from '../lib/PlaidLinkApi';
 
 /*test('SQS Queue Created', () => {
     const app = new cdk.App();

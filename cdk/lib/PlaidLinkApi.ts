@@ -10,7 +10,7 @@ export interface PlaidLinkApiProps extends StackProps {
   itemLambda: lambda.Function;
 }
 
-export class PlaidLinkApiStack extends cdk.Stack {
+export class PlaidLinkApi extends cdk.Stack {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.

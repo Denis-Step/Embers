@@ -1,15 +1,15 @@
 import * as lambda from "@aws-cdk/aws-lambda";
-import {Construct, Duration, Stack, StackProps} from "@aws-cdk/core";
+import {Construct, Duration} from "@aws-cdk/core";
 import * as path from "path";
 
-export class TransactionLambdas extends Stack {
+export class TransactionLambdas extends Construct {
     public readonly loadTransactionsLambda: lambda.Function;
     public readonly receiveTransactionsLambda: lambda.Function;
     public readonly newTransactionLambda: lambda.Function;
     public readonly getTransactionsLambda: lambda.Function;
 
-    constructor(scope: Construct, id: string, props?: StackProps) {
-        super(scope, id, props);
+    constructor(scope: Construct, id: string) {
+        super(scope, id);
 
         this.loadTransactionsLambda = new lambda.Function(this, 'LoadTransactions', {
             runtime: lambda.Runtime.JAVA_8_CORRETTO,

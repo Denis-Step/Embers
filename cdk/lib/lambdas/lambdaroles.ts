@@ -3,14 +3,15 @@ import {Construct, Stack, StackProps} from "@aws-cdk/core";
 import {ITable, Table} from "@aws-cdk/aws-dynamodb";
 import {PLAID_ITEMS_DDB_TABLE_ARN} from "../constants";
 
-export class ItemLambdaRoles extends Stack {
+export class ItemLambdaRoles extends Construct {
     private readonly itemTable: ITable;
     public createLinkTokenLambdaRole: Role;
     public createItemLambdaRole: IRole;
     public getItemLambdaRole: IRole;
 
-    constructor(scope: Construct, id: string, props?: StackProps) {
-        super(scope, id, props);
+    constructor(scope: Construct, id: string) {
+        super(scope, id);
+
         this.itemTable = Table.fromTableArn(this, "PlaidItemsTable", PLAID_ITEMS_DDB_TABLE_ARN);
 
         this.createLinkTokenLambdaRole = new Role(this, 'CreateLinkTokenLambdaRole', {

@@ -3,16 +3,16 @@ import {Construct, Duration, Stack, StackProps} from "@aws-cdk/core";
 import * as path from "path";
 import {ItemLambdaRoles} from "./lambdaroles";
 
-export class ItemLambdas extends Stack {
+export class ItemLambdas extends Construct {
     public readonly createLinkTokenLambda: lambda.Function;
     public readonly createItemLambda: lambda.Function;
     public readonly getItemLambda: lambda.Function;
     public roles: ItemLambdaRoles;
 
-    constructor(scope: Construct, id: string, props?: StackProps) {
-        super(scope, id, props);
+    constructor(scope: Construct, id: string) {
+        super(scope, id);
 
-        this.roles = new ItemLambdaRoles(this, 'ItemLambdaRoles');
+        this.roles = new ItemLambdaRoles(scope, 'ItemLambdaRoles');
 
         this.createLinkTokenLambda = new lambda.Function(this, 'LinkTokenLambda', {
             runtime: lambda.Runtime.JAVA_8_CORRETTO,

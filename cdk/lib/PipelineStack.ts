@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import {CodeBuildStep, CodePipeline, CodePipelineSource} from "@aws-cdk/pipelines";
-import {DefaultPipelineStage} from "./DefaultStageStack";
+import {DefaultPipelineStage} from "./DefaultPipelineStage";
 
 export class JPPipelineStack extends cdk.Stack{
     public readonly pipeline: CodePipeline;
