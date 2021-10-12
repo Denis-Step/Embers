@@ -25,6 +25,7 @@ export class NewTransactionEvents extends Construct {
         })
 
         this.newTransactionRule = new Rule(this, 'NewTransactionRule', {
+            eventBus: this.transactionsBus,
             description: "Invokes NewTransactionLambda with new Transaction info",
             ruleName: 'NewTransactionRule',
             targets: [new LambdaFunction(props.newTransactionLambda, {
@@ -54,7 +55,8 @@ export class MessageEvents extends Construct {
             eventBusName: 'SmsBus'
         })
 
-        this.newTransactionRule = new Rule(this, 'NewTransactionRule', {
+        this.newTransactionRule = new Rule(this, 'NewMessageRule', {
+            eventBus: this.messagesBus,
             description: "Invokes NewTransactionLambda with new Transaction info",
             ruleName: 'NewTransactionRule',
             targets: [new LambdaFunction(props.sendMessageLambda, {
