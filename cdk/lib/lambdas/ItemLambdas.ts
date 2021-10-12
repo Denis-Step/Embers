@@ -26,6 +26,7 @@ export class ItemLambdas extends Construct {
                 "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
 
             },
+            memorySize: 512,
             timeout: Duration.seconds(300),
             role: this.roles.createLinkTokenLambdaRole
         })
@@ -39,6 +40,7 @@ export class ItemLambdas extends Construct {
                 "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
                 "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
             },
+            memorySize: 512,
             timeout: Duration.seconds(300),
             role: this.roles.createItemLambdaRole
         });
@@ -52,6 +54,7 @@ export class ItemLambdas extends Construct {
                 "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
                 "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
             },
+            memorySize: 512,
             timeout: Duration.seconds(300),
             role: this.roles.getItemLambdaRole
         });
