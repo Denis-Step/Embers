@@ -49,7 +49,7 @@ export class TransactionLambdas extends Construct {
 
         this.newTransactionLambda = new lambda.Function(this, 'NewTransactionLambda', {
             runtime: lambda.Runtime.JAVA_8_CORRETTO,
-            handler: "lambda.handlers.ReceiveTransactionsHandler",
+            handler: "lambda.handlers.NewTransactionHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
             environment: {
                 "CLIENT_ID": "5eb13e97fd0ed40013cc0438",

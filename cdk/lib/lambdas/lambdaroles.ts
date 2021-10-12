@@ -87,6 +87,7 @@ export class TransactionLambdasRoles extends Construct {
 
         this.itemTable.grantReadWriteData(this.loadTransactionsLambdarole);
         this.itemTable.grantReadWriteData(this.receiveTransactionsLambdaRole)
+        this.itemTable.grantReadData(this.newTransactionLambdaRole);
         this.transactionTable.grantReadWriteData(this.receiveTransactionsLambdaRole);
     }
 }
