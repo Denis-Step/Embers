@@ -48,7 +48,7 @@ public class ReceiveTransactionsProcessor {
                                 .build();
 
                         PutEventsResponse result = eventBridge.putEvents(eventsRequest);
-                        LOGGER.info("Put Event with Result {}", result);
+                        LOGGER.info("Put Event {} with Result {}", eventsRequest.entries().toArray(), result);
                     } catch (JsonProcessingException e) {
                         LOGGER.info("Couldn't create event for {}", newTransaction);
                     }

@@ -19,7 +19,7 @@ import javax.inject.Inject;
 public class NewTransactionProcessor {
     private final PlaidItemDAO plaidItemDAO;
     private final EventBridgeClient eventBridge;
-    private static final String EVENT_BUS_NAME = "SmsEvents";
+    private static final String EVENT_BUS_NAME = "SmsBus";
     private static final String EVENT_SOURCE_NAME = "transactions.new";
     private static final String EVENT_DETAIL_NAME = "newMessage";
     private static final Logger LOGGER = LoggerFactory.getLogger(NewTransactionProcessor.class);

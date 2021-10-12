@@ -5,4 +5,4 @@ import {JPPipelineStack} from "../lib/PipelineStack";
 /* ENTRY POINT */
 
 const app = new cdk.App();
-new JPPipelineStack(app, 'JPPipeline');
+new JPPipelineStack(app, 'PipelineStack');

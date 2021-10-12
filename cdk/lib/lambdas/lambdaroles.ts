@@ -42,6 +42,7 @@ export class ItemLambdaRoles extends Construct {
 
 
 export class TransactionLambdasRoles extends Construct {
+    private readonly itemTable: ITable;
     private readonly transactionTable: ITable;
     public loadTransactionsLambdarole: Role;
     public receiveTransactionsLambdaRole: IRole;
@@ -50,6 +51,7 @@ export class TransactionLambdasRoles extends Construct {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
+        this.itemTable = Table.fromTableArn(this, "PlaidItemsTable", PLAID_ITEMS_DDB_TABLE_ARN);
         this.transactionTable = Table.fromTableArn(this, "TransactionsTable", TRANSACTIONS_DDB_TABLE_ARN);
 
         this.loadTransactionsLambdarole = new Role(this, 'CreateLinkTokenLambdaRole', {
@@ -66,6 +68,11 @@ export class TransactionLambdasRoles extends Construct {
             ]
         })
 
+        this.receiveTransactionsLambdaRole.addToPrincipalPolicy( new PolicyStatement({
+            resources: ["*"],
+            actions: ["events:PutEvents", "events:ListRules"]
+        }))
+
         this.newTransactionLambdaRole = new Role(this, 'GetItemLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
@@ -79,5 +86,21 @@ export class TransactionLambdasRoles extends Construct {
         }))
 
         this.transactionTable.grantReadWriteData(this.receiveTransactionsLambdaRole);
+    }
+}
+
+export class MessageLambdaRoles extends Construct {
+    public sendMessageLambdaRole: IRole;
+
+    constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        this.sendMessageLambdaRole = new Role(this, 'SendMessageLambdaRole', {
+            assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+            managedPolicies: [
+                ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
+            ]
+        })
+
     }
 }
