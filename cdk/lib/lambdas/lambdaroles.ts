@@ -85,6 +85,8 @@ export class TransactionLambdasRoles extends Construct {
             actions: ["events:PutEvents", "events:ListRules"]
         }))
 
+        this.itemTable.grantReadWriteData(this.loadTransactionsLambdarole);
+        this.itemTable.grantReadWriteData(this.receiveTransactionsLambdaRole)
         this.transactionTable.grantReadWriteData(this.receiveTransactionsLambdaRole);
     }
 }
