@@ -3,7 +3,7 @@ package dagger;
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
 import dynamo.TransactionDAO;
-import plaid.clients.ItemGrabber;
+import plaid.clients.ItemCreator;
 import plaid.clients.LinkGrabber;
 
 @Module
@@ -13,7 +13,7 @@ public interface ProcessorModule {
     static LinkGrabber provideLinkGrabber(PlaidClient plaidClient) {return new LinkGrabber(plaidClient);}
 
     @Provides
-    static ItemGrabber provideItemGrabber(PlaidClient plaidClient) {return new ItemGrabber(plaidClient);}
+    static ItemCreator provideItemGrabber(PlaidClient plaidClient) {return new ItemCreator(plaidClient);}
 
     @Provides
     static PlaidItemDAO providePlaidItemDao() {return new PlaidItemDAO();}
@@ -29,7 +29,7 @@ public interface ProcessorModule {
 
     @Provides
     @Singleton
-    static ItemProcessor provideItemProcessor(ItemGrabber itemGrabber) {
+    static ItemProcessor provideItemProcessor(ItemCreator itemGrabber) {
         return new ItemProcessor(itemGrabber, new PlaidItemDAO());
     }
 

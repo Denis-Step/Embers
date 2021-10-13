@@ -74,10 +74,6 @@ public class LoadTransactionsHandler implements RequestHandler<PullNewTransactio
             LOGGER.info("ItemException: " + e.getMessage());
             throw new RuntimeException("Unexpected ItemException for User " + event.user);
         }
-        catch (IOException e) {
-            LOGGER.info("IOException: " + e.getMessage());
-            throw new RuntimeException(String.format("Exception: %s", e.getStackTrace()));
-        }
     }
 
 

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import plaid.entities.PlaidItem;
 import plaid.responses.PublicTokenExchangeResponse;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -21,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ItemGrabberTest {
+public class ItemCreatorTest {
 
     @Mock
     private PlaidClient plaidClient;
@@ -29,28 +28,29 @@ public class ItemGrabberTest {
     @Mock
     private PlaidApiService mockService;
 
-    private ItemGrabber itemGrabber;
+    private ItemCreator itemCreator;
 
     private static final String PUBLIC_TOKEN = "Pub-1234-Token";
     private static final String ITEM_ID = "Item-1234";
     private static final String ACCESS_TOKEN = "Access-1234";
 
-    public ItemGrabberTest() throws IOException {
+    public ItemCreatorTest() throws IOException {
         this.plaidClient = mock(PlaidClient.class);
         mockService = mock(PlaidApiService.class);
         when(plaidClient.service()).thenReturn(mockService);
-        this.itemGrabber = new ItemGrabber(plaidClient);
+        this.itemCreator = new ItemCreator(plaidClient);
 
-        setup_Tests();
+        setup_Mocks();
     }
 
 
-    public void setup_Tests() throws IOException {
+    public void setup_Mocks() throws IOException {
         // Set up mocks.
         Call<ItemPublicTokenExchangeResponse> mockCall = mock(Call.class);
-        when(mockService.itemPublicTokenExchange(any())).thenReturn(mockCall);
         Response<ItemPublicTokenExchangeResponse> mockResponse = mock(Response.class);
         ItemPublicTokenExchangeResponse mockResponsebody = mock(ItemPublicTokenExchangeResponse.class);
+
+        when(mockService.itemPublicTokenExchange(any())).thenReturn(mockCall);
         when(mockCall.execute()).thenReturn(mockResponse);
         when(mockResponse.isSuccessful()).thenReturn(true);
         when(mockResponse.body()).thenReturn(mockResponsebody);
@@ -60,20 +60,18 @@ public class ItemGrabberTest {
 
     @Test
     public void test_requestItem() throws IOException {
-        PublicTokenExchangeResponse response = itemGrabber.requestItem(PUBLIC_TOKEN);
+        PublicTokenExchangeResponse response = itemCreator.requestItem(PUBLIC_TOKEN);
         verify(mockService.itemPublicTokenExchange(any())).execute();
     }
 
     @Test
-    public void test_getItem() throws IOException {
+    public void test_callItemPublicTokenExchangeRequest() {
         //PublicTokenExchangeResponse response = new PublicTokenExchangeResponse(ITEM_ID, ACCESS_TOKEN, false);
         CreateItemRequest createItemRequest = getSampleCreateItemRequest();
-        PlaidItem item = this.itemGrabber.createItem(createItemRequest);
+        PublicTokenExchangeResponse response = this.itemCreator.requestItem(createItemRequest.getPublicToken());
 
-        assert (item.user() == createItemRequest.getUser());
-        assert (item.institutionId() == createItemRequest.getInstitutionId());
-        assert (item.webhook() == createItemRequest.isWebhook());
-        assert (item.availableProducts().get(0) == createItemRequest.getAvailableProducts().get(0));
+        assert (response.getID() == ITEM_ID);
+        assert (response.getAccessToken() == ACCESS_TOKEN);
 
     }
 

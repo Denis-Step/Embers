@@ -27,7 +27,7 @@ public class LoadTransactionsProcessor {
 
     // First get item, then pull Tx from Plaid for that item.
     public List<Transaction> pullNewTransactions(String user, String institution, Date startDate, Date endDate)
-            throws PlaidItemDAO.ItemException, IOException {
+            throws PlaidItemDAO.ItemException {
         String accessToken = getItem(user, institution).accessToken();
 
         TransactionsGrabber txGrabber = new TransactionsGrabber(user, institution, accessToken);

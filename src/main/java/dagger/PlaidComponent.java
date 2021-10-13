@@ -8,7 +8,7 @@ import lambda.processors.transactions.LoadTransactionsProcessor;
 import lambda.processors.transactions.NewTransactionProcessor;
 import lambda.processors.transactions.ReceiveTransactionsProcessor;
 import lambda.processors.transactions.CreateSummaryMessageProcessor;
-import plaid.clients.ItemGrabber;
+import plaid.clients.ItemCreator;
 import plaid.clients.LinkGrabber;
 
 import javax.inject.Singleton;
@@ -25,14 +25,13 @@ public interface PlaidComponent {
 
     PlaidItemDAO buildPlaidItemDao();
 
+    ItemCreator buildItemGrabber();
     LinkGrabber buildPlaidGrabber();
-    ItemGrabber buildItemGrabber();
 
     CreateLinkTokenProcessor buildLinkTokenProcessor();
     ItemProcessor buildItemProcessor();
     LoadTransactionsProcessor buildLoadTransactionsProcessor();
     NewTransactionProcessor buildNewTransactionProcessor();
     ReceiveTransactionsProcessor buildReceiveTransactionsProcessor();
-    CreateSummaryMessageProcessor buildSummarizeTransactionsProcessor();
 
 }

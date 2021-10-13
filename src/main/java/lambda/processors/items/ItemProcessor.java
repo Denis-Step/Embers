@@ -3,8 +3,10 @@ package lambda.processors.items;
 import dynamo.PlaidItemDAO;
 import lambda.requests.items.CreateItemRequest;
 import lambda.requests.items.GetItemRequest;
-import plaid.clients.ItemGrabber;
+import plaid.clients.ItemCreator;
+import plaid.entities.ImmutablePlaidItem;
 import plaid.entities.PlaidItem;
+import plaid.responses.PublicTokenExchangeResponse;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -13,19 +15,19 @@ import java.util.List;
 // Params: Link --> User, InstitutionId,
 public class ItemProcessor {
 
-    private final ItemGrabber itemGrabber;
+    private final ItemCreator itemCreator;
     private final PlaidItemDAO plaidItemDAO;
 
     @Inject
-    public ItemProcessor(ItemGrabber itemGrabber, PlaidItemDAO plaidItemDAO) {
-        this.itemGrabber = itemGrabber;
+    public ItemProcessor(ItemCreator itemCreator, PlaidItemDAO plaidItemDAO) {
+        this.itemCreator = itemCreator;
         this.plaidItemDAO = plaidItemDAO;
     }
 
     // Calls Plaid client to request a new Item and uses info from incoming request
     // to build PlaidItem.
     public PlaidItem createPlaidItem (CreateItemRequest createItemRequest) throws IOException {
-        PlaidItem item = itemGrabber.createItem(createItemRequest);
+        PlaidItem item = createItem(createItemRequest);
         plaidItemDAO.save(item);
         return item;
     }
@@ -76,6 +78,22 @@ public class ItemProcessor {
         } else {
             return plaidItems.get(0);
         }
+    }
+
+    private PlaidItem createItem(CreateItemRequest createItemRequest) {
+        PublicTokenExchangeResponse itemInfo = this.itemCreator.requestItem(createItemRequest.getPublicToken());
+
+        return ImmutablePlaidItem.builder()
+                .ID(itemInfo.getID())
+                .accessToken(itemInfo.getAccessToken())
+                .user(createItemRequest.getUser())
+                .dateCreated(createItemRequest.getDateCreated())
+                .availableProducts(createItemRequest.getAvailableProducts())
+                .accounts(createItemRequest.getAccounts())
+                .institutionId(createItemRequest.getInstitutionId())
+                .metaData(createItemRequest.getMetaData())
+                .webhook(createItemRequest.isWebhook())
+                .build();
     }
 
 }

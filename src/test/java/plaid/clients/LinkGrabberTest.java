@@ -4,10 +4,12 @@ import com.plaid.client.PlaidApiService;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
+import com.plaid.client.response.TransactionsGetResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import plaid.entities.Transaction;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -26,7 +28,7 @@ public class LinkGrabberTest {
     private final PlaidClient plaidClient;
 
     @Mock
-    private PlaidApiService mockService;
+    private final PlaidApiService mockService;
 
     @Mock
     private final LinkGrabber linkGrabber;
@@ -45,7 +47,7 @@ public class LinkGrabberTest {
         when(plaidClient.service()).thenReturn(mockService);
         this.linkGrabber = new LinkGrabber(plaidClient);
 
-        setup_Tests();
+        setup_Mocks();
     }
 
     @Test
@@ -67,15 +69,17 @@ public class LinkGrabberTest {
         assert (linkToken == LINK_TOKEN);
     }
 
-    public void setup_Tests() throws IOException {
+    private void setup_Mocks() throws IOException {
         // Set up mocks.
         Call<LinkTokenCreateResponse> mockCall = mock(Call.class);
-        when(mockService.linkTokenCreate(any())).thenReturn(mockCall);
         Response<LinkTokenCreateResponse> mockResponse = mock(Response.class);
-        LinkTokenCreateResponse mockResponsebody = mock(LinkTokenCreateResponse.class);
+        LinkTokenCreateResponse mockResponseBody = mock(LinkTokenCreateResponse.class);
+
+        when(mockService.linkTokenCreate(any())).thenReturn(mockCall);
         when(mockCall.execute()).thenReturn(mockResponse);
         when(mockResponse.isSuccessful()).thenReturn(true);
-        when(mockResponse.body()).thenReturn(mockResponsebody);
-        when(mockResponsebody.getLinkToken()).thenReturn(LINK_TOKEN);
+        when(mockResponse.body()).thenReturn(mockResponseBody);
+        when(mockResponseBody.getLinkToken()).thenReturn(LINK_TOKEN);
     }
+
 }

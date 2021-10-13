@@ -8,12 +8,10 @@ import java.util.Optional;
 public class PublicTokenExchangeResponse {
     private final String ID;
     private final String accessToken;
-    private boolean webhook = false;
 
-    public PublicTokenExchangeResponse(String ID, String accessToken, boolean webhook) {
+    public PublicTokenExchangeResponse(String ID, String accessToken) {
         this.ID = ID;
         this.accessToken = accessToken;
-        this.webhook = webhook;
     }
 
     public String getID() {
@@ -23,6 +21,4 @@ public class PublicTokenExchangeResponse {
     public String getAccessToken() {
         return accessToken;
     }
-
-    public boolean isWebhook() { return webhook; }
 }

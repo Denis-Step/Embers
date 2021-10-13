@@ -8,6 +8,7 @@ import plaid.entities.Transaction;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -25,6 +26,14 @@ public class TransactionsGrabber {
     private final String institutionName;
     private final String accessToken;
 
+    @Inject
+    public TransactionsGrabber(PlaidClient plaidClient, String user, String institutionName, String accessToken){
+        this.plaidClient = plaidClient;
+        this.user = user;
+        this.institutionName = institutionName;
+        this.accessToken = accessToken;
+    }
+
     public TransactionsGrabber(String user, String institutionName, String accessToken){
         this.plaidClient = DaggerPlaidComponent.create().buildPLaidClient();
         this.user = user;
@@ -32,7 +41,7 @@ public class TransactionsGrabber {
         this.accessToken = accessToken;
     }
 
-    public List<Transaction> requestTransactions(Date startDate, Date endDate) throws IOException {
+    public List<Transaction> requestTransactions(Date startDate, Date endDate) {
 
         TransactionsGetRequest transactionsGetRequest = new TransactionsGetRequest(accessToken, startDate, endDate);
         List<TransactionsGetResponse.Transaction> plaidTxs = callGetTransactionsRequest(transactionsGetRequest);
@@ -43,15 +52,22 @@ public class TransactionsGrabber {
 
     }
 
-    private List<TransactionsGetResponse.Transaction> callGetTransactionsRequest(TransactionsGetRequest transactionsGetRequest)
-            throws IOException {
+    public List<TransactionsGetResponse.Transaction> callGetTransactionsRequest
+            (TransactionsGetRequest transactionsGetRequest) {
 
-        Call<TransactionsGetResponse> txCall = plaidClient.service().transactionsGet(transactionsGetRequest);
-        Response<TransactionsGetResponse> resp = txCall.execute();
+        try {
 
-        if (resp.isSuccessful()) {
-            return resp.body().getTransactions();
-        } else { throw new RuntimeException(resp.toString()); }
+            Call<TransactionsGetResponse> txCall = plaidClient.service().transactionsGet(transactionsGetRequest);
+            Response<TransactionsGetResponse> resp = txCall.execute();
+            if (resp.isSuccessful()) {
+                return resp.body().getTransactions();
+            } else {
+                throw new RuntimeException("Couldn't fetch transactions for " + transactionsGetRequest.clientId);
+            }
+
+        } catch (IOException ioException) {
+            throw new RuntimeException(ioException.getCause());
+        }
     }
 
     private Transaction buildFromPlaid (String user, String institution, TransactionsGetResponse.Transaction plaidTransaction) {
