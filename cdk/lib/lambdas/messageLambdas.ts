@@ -14,7 +14,7 @@ export class MessageLambdas extends Construct {
         super(scope, id);
         this.roles = new MessageLambdaRoles(this, 'MessageLambdaRoles');
 
-        this.sendMessageLambda = new lambda.Function(this, 'GetTransactionsLambda', {
+        this.sendMessageLambda = new lambda.Function(this, 'SendMessageLambda', {
             runtime: lambda.Runtime.JAVA_8_CORRETTO,
             handler: "lambda.handlers.SendMessageHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
