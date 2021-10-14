@@ -1,6 +1,6 @@
 package lambda.processors.transactions;
 
-import plaid.entities.Transaction;
+import external.plaid.entities.Transaction;
 
 import javax.inject.Inject;
 import java.util.List;

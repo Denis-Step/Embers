@@ -7,9 +7,8 @@ import lambda.processors.items.ItemProcessor;
 import lambda.processors.transactions.LoadTransactionsProcessor;
 import lambda.processors.transactions.NewTransactionProcessor;
 import lambda.processors.transactions.ReceiveTransactionsProcessor;
-import lambda.processors.transactions.CreateSummaryMessageProcessor;
-import plaid.clients.ItemCreator;
-import plaid.clients.LinkGrabber;
+import external.plaid.clients.ItemCreator;
+import external.plaid.clients.LinkGrabber;
 
 import javax.inject.Singleton;
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dynamo.TransactionDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import plaid.entities.Transaction;
+import external.plaid.entities.Transaction;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;

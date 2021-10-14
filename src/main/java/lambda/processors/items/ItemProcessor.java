@@ -3,10 +3,10 @@ package lambda.processors.items;
 import dynamo.PlaidItemDAO;
 import lambda.requests.items.CreateItemRequest;
 import lambda.requests.items.GetItemRequest;
-import plaid.clients.ItemCreator;
-import plaid.entities.ImmutablePlaidItem;
-import plaid.entities.PlaidItem;
-import plaid.responses.PublicTokenExchangeResponse;
+import external.plaid.clients.ItemCreator;
+import external.plaid.entities.ImmutablePlaidItem;
+import external.plaid.entities.PlaidItem;
+import external.plaid.responses.PublicTokenExchangeResponse;
 
 import javax.inject.Inject;
 import java.io.IOException;

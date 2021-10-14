@@ -1,7 +1,7 @@
 package lambda.processors.items;
 
 import lambda.requests.items.CreateLinkTokenRequest;
-import plaid.clients.LinkGrabber;
+import external.plaid.clients.LinkGrabber;
 
 import javax.inject.Inject;
 import java.io.IOException;

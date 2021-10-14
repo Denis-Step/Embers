@@ -1,6 +1,4 @@
-package plaid.responses;
-
-import java.util.Optional;
+package external.plaid.responses;
 
 // Immutable result of exchanging public token for new item.
 // Needs to be used with information in linkToken response

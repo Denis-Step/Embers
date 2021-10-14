@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerPlaidComponent;
 import dynamo.PlaidItemDAO;
 import lambda.processors.transactions.NewTransactionProcessor;
-import plaid.entities.Transaction;
+import external.plaid.entities.Transaction;
 
 public class NewTransactionHandler implements RequestHandler<Transaction, String> {
     private final NewTransactionProcessor newTransactionProcessor;

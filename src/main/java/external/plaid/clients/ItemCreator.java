@@ -1,13 +1,9 @@
-package plaid.clients;
+package external.plaid.clients;
 
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.ItemPublicTokenExchangeRequest;
 import com.plaid.client.response.ItemPublicTokenExchangeResponse;
-import com.plaid.client.response.LinkTokenCreateResponse;
-import lambda.requests.items.CreateItemRequest;
-import plaid.entities.ImmutablePlaidItem;
-import plaid.entities.PlaidItem;
-import plaid.responses.PublicTokenExchangeResponse;
+import external.plaid.responses.PublicTokenExchangeResponse;
 import retrofit2.Call;
 import retrofit2.Response;
 

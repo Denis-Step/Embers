@@ -1,10 +1,7 @@
-package plaid.entities;
+package external.plaid.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.Optional;
 
 // Wrapper on Plaid Transactions. Removes unnecessary info.
 @Data

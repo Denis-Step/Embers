@@ -1,13 +1,11 @@
 package lambda.processors.transactions;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dagger.DaggerPlaidComponent;
 import dynamo.PlaidItemDAO;
+import messages.TransactionSmsMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import plaid.entities.PlaidItem;
-import plaid.entities.Transaction;
+import external.plaid.entities.PlaidItem;
+import external.plaid.entities.Transaction;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
@@ -19,15 +17,19 @@ import javax.inject.Inject;
 public class NewTransactionProcessor {
     private final PlaidItemDAO plaidItemDAO;
     private final EventBridgeClient eventBridge;
+    private final TransactionSmsMessageConverter converter;
     private static final String EVENT_BUS_NAME = "SmsBus";
     private static final String EVENT_SOURCE_NAME = "transactions.new";
     private static final String EVENT_DETAIL_NAME = "newMessage";
     private static final Logger LOGGER = LoggerFactory.getLogger(NewTransactionProcessor.class);
 
     @Inject
-    public NewTransactionProcessor(PlaidItemDAO plaidItemDAO, EventBridgeClient eventBridge) {
+    public NewTransactionProcessor(PlaidItemDAO plaidItemDAO,
+                                   EventBridgeClient eventBridge,
+                                   TransactionSmsMessageConverter converter) {
         this.plaidItemDAO = plaidItemDAO;
         this.eventBridge = eventBridge;
+        this.converter = converter;
     }
 
     public String process(Transaction transaction) throws PlaidItemDAO.ItemException {
@@ -50,14 +52,7 @@ public class NewTransactionProcessor {
 
     private String createMessage(Transaction transaction, String receiverNumber) {
         return "{\"message\": \"" +
-                "New Transaction: " +
-                transaction.description + " " +
-                "for " +
-                transaction.amount + " " +
-                "at " +
-                transaction.merchantName +
-                " on " +
-                transaction.institutionName + "\"" + "," +
+                converter.createNewTransactionMessage(transaction) + "," +
                 "\"receiverNumber\": " + "\"" + receiverNumber + "\"" +
                 " }";
     }

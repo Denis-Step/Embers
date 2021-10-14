@@ -1,17 +1,15 @@
-package plaid.clients;
+package external.plaid.clients;
 
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.TransactionsGetRequest;
 import com.plaid.client.response.TransactionsGetResponse;
 import dagger.DaggerPlaidComponent;
-import plaid.entities.Transaction;
+import external.plaid.entities.Transaction;
 import retrofit2.Call;
 import retrofit2.Response;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;

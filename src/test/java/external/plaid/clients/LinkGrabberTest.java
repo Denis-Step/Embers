@@ -1,15 +1,13 @@
-package plaid.clients;
+package external.plaid.clients;
 
 import com.plaid.client.PlaidApiService;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
-import com.plaid.client.response.TransactionsGetResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import plaid.entities.Transaction;
 import retrofit2.Call;
 import retrofit2.Response;
 

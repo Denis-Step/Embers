@@ -14,7 +14,7 @@ export const getIamCredentials = (token: string) => {
     return config.credentials;
 }
 
-// Get link token for plaid flow.
+// Get link token for clients.plaid flow.
 export const getLinkToken = async (user: string,
                              token: string,
                              webhook: boolean,

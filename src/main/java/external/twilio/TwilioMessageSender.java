@@ -1,13 +1,11 @@
-package twilio;
+package external.twilio;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 
-import javax.inject.Inject;
-
-public class MessageClient {
-    // Find your Account Sid and Token at twilio.com/user/account
+public class TwilioMessageSender {
+    // Find your Account Sid and Token at clients.twilio.com/user/account
     private final String ACCOUNT_SID = "AC68520309e3f9449e42697f9d37436a98";
     private final String AUTH_TOKEN = "1b779c06887f5838dd9efe08103d8454";
 
@@ -15,12 +13,12 @@ public class MessageClient {
 
     private String senderNumber;
 
-    public MessageClient() {
+    public TwilioMessageSender() {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
         this.senderNumber = DEFAULT_SENDER;
     }
 
-    public MessageClient(String senderNumber) {
+    public TwilioMessageSender(String senderNumber) {
         this();
         this.senderNumber = senderNumber;
     }

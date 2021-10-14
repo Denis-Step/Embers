@@ -4,12 +4,11 @@ import dynamo.PlaidItemDAO;
 import dynamo.TransactionDAO;
 import lambda.processors.items.ItemProcessor;
 import lambda.requests.transactions.GetTransactionsRequest;
-import plaid.clients.TransactionsGrabber;
-import plaid.entities.PlaidItem;
-import plaid.entities.Transaction;
+import external.plaid.clients.TransactionsGrabber;
+import external.plaid.entities.PlaidItem;
+import external.plaid.entities.Transaction;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 

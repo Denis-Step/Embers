@@ -1,4 +1,4 @@
-package plaid.entities;
+package external.plaid.entities;
 
 import org.immutables.value.Value;
 

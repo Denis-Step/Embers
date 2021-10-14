@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerPlaidComponent;
 import lambda.processors.transactions.ReceiveTransactionsProcessor;
-import plaid.entities.Transaction;
+import external.plaid.entities.Transaction;
 
 import java.util.List;
 

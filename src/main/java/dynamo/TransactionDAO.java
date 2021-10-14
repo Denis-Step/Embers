@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dagger.DaggerAwsComponent;
-import plaid.entities.Transaction;
+import external.plaid.entities.Transaction;
 
 import java.util.HashMap;
 import java.util.List;

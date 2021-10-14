@@ -8,9 +8,8 @@ import lambda.processors.transactions.LoadTransactionsProcessor;
 import lambda.requests.transactions.PullNewTransactionsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import plaid.entities.Transaction;
+import external.plaid.entities.Transaction;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;

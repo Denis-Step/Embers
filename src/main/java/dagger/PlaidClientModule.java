@@ -1,6 +1,7 @@
 package dagger;
 
 import com.plaid.client.PlaidClient;
+import messages.TransactionSmsMessageConverter;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -16,6 +17,11 @@ public interface PlaidClientModule {
                 .clientIdAndSecret(clientId, clientSecret)
                 .developmentBaseUrl()
                 .build();
+    }
+
+    @Provides
+    static TransactionSmsMessageConverter provideTransactionSmsMessageConverter() {
+        return new TransactionSmsMessageConverter();
     }
 
 }

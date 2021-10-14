@@ -3,8 +3,8 @@ package dynamo;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dagger.DaggerAwsComponent;
-import plaid.entities.ImmutablePlaidItem;
-import plaid.entities.PlaidItem;
+import external.plaid.entities.ImmutablePlaidItem;
+import external.plaid.entities.PlaidItem;
 
 import java.util.HashMap;
 import java.util.List;

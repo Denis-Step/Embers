@@ -3,8 +3,8 @@ package dagger;
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
 import dynamo.TransactionDAO;
-import plaid.clients.ItemCreator;
-import plaid.clients.LinkGrabber;
+import external.plaid.clients.ItemCreator;
+import external.plaid.clients.LinkGrabber;
 
 @Module
 public interface ProcessorModule {

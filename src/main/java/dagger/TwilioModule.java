@@ -1,10 +1,15 @@
 package dagger;
 
-import twilio.MessageClient;
+import external.twilio.TwilioMessageSender;
+import messages.MessageClient;
+import messages.TransactionSmsMessageConverter;
+import messages.TwilioMessageClient;
 
 @Module
 public interface TwilioModule {
 
     @Provides
-    static MessageClient provideMessageClient() {return new MessageClient(); }
+    static TwilioMessageSender provideTwilioMessageSender() {return new TwilioMessageSender(); }
+
+    @Binds abstract MessageClient provideMessageClient(TwilioMessageClient twilioMessageClient );
 }

@@ -6,7 +6,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerPlaidComponent;
 import lambda.processors.transactions.LoadTransactionsProcessor;
 import lambda.requests.transactions.GetTransactionsRequest;
-import plaid.entities.Transaction;
+import external.plaid.entities.Transaction;
 
 import java.util.List;
 

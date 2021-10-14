@@ -6,7 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerPlaidComponent;
 import lambda.processors.items.ItemProcessor;
 import lambda.requests.items.GetItemRequest;
-import plaid.entities.PlaidItem;
+import external.plaid.entities.PlaidItem;
 
 import java.util.List;
 
