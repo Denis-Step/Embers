@@ -52,7 +52,7 @@ public class NewTransactionProcessor {
 
     private String createMessage(Transaction transaction, String receiverNumber) {
         return "{\"message\": \"" +
-                converter.createNewTransactionMessage(transaction) + "," +
+                converter.createNewTransactionMessage(transaction) + "\"" + "," +
                 "\"receiverNumber\": " + "\"" + receiverNumber + "\"" +
                 " }";
     }
