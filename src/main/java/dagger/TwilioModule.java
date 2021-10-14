@@ -2,7 +2,6 @@ package dagger;
 
 import external.twilio.TwilioMessageSender;
 import messages.MessageClient;
-import messages.TransactionSmsMessageConverter;
 import messages.TwilioMessageClient;
 
 @Module

@@ -1,6 +1,5 @@
 package lambda.processors.messages;
 
-import external.twilio.TwilioMessageSender;
 import messages.MessageClient;
 
 import javax.inject.Inject;

@@ -28,7 +28,6 @@ public class LinkGrabberTest {
     @Mock
     private final PlaidApiService mockService;
 
-    @Mock
     private final LinkGrabber linkGrabber;
 
     private final String USER = "SAMPLE";

@@ -1,15 +1,17 @@
 package messages;
 
 import external.plaid.entities.Transaction;
-import messages.responses.MessageResponse;
 
-import javax.inject.Inject;
-
+/**
+ * Converts Transactions & related objects to SMS.
+ * Not static for a reason, this may take configuration
+ * in the constructor in the future.
+ */
 public class TransactionSmsMessageConverter {
 
     public String createNewTransactionMessage(Transaction transaction) {
         return
-        "New Transaction: " +
+                "New Transaction: " +
                 transaction.description + " " +
                 "for " +
                 transaction.amount + " " +
