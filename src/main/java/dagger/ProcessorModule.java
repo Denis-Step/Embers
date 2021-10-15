@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
 import dynamo.TransactionDAO;
+import events.impl.SmsEbClient;
 import events.impl.TransactionsEbClient;
 import external.plaid.clients.ItemCreator;
 import external.plaid.clients.LinkGrabber;
@@ -14,6 +15,7 @@ import javax.inject.Named;
 @Module
 public interface ProcessorModule {
     static final String TRANSACTIONS_EVENT_BUS_NAME = "TransactionsBus";
+    static final String SMS_EVENT_BUS_NAME = "SmsBus";
 
     @Provides
     static LinkGrabber provideLinkGrabber(PlaidClient plaidClient) {return new LinkGrabber(plaidClient);}
@@ -35,6 +37,12 @@ public interface ProcessorModule {
     static TransactionsEbClient provideTransactionsEbClient(EventBridgeClient eventBridgeClient,
                                                             @Named("DEFAULT_MAPPER") ObjectMapper objectMapper) {
         return new TransactionsEbClient(eventBridgeClient, TRANSACTIONS_EVENT_BUS_NAME, objectMapper);
+    }
+
+    @Provides
+    static SmsEbClient provideSmsEbClient(EventBridgeClient eventBridgeClient,
+                                          @Named("DEFAULT_MAPPER") ObjectMapper objectMapper) {
+        return new SmsEbClient(eventBridgeClient, SMS_EVENT_BUS_NAME, objectMapper);
     }
 
     /*@Provides

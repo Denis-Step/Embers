@@ -1,6 +1,10 @@
 package lambda.processors.transactions;
 
+import com.twilio.rest.api.v2010.account.Message;
 import dynamo.PlaidItemDAO;
+import events.impl.SmsEbClient;
+import messages.ImmutableSmsMessage;
+import messages.SmsMessage;
 import messages.TransactionSmsMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,55 +18,44 @@ import software.amazon.awssdk.services.eventbridge.model.PutEventsResponse;
 import javax.inject.Inject;
 
 
+/**
+ * Triggered by a new transaction.
+ */
 public class NewTransactionProcessor {
     private final PlaidItemDAO plaidItemDAO;
-    private final EventBridgeClient eventBridge;
+    private final SmsEbClient smsEbClient;
     private final TransactionSmsMessageConverter converter;
-    private static final String EVENT_BUS_NAME = "SmsBus";
-    private static final String EVENT_SOURCE_NAME = "transactions.new";
-    private static final String EVENT_DETAIL_NAME = "newMessage";
     private static final Logger LOGGER = LoggerFactory.getLogger(NewTransactionProcessor.class);
 
     @Inject
     public NewTransactionProcessor(PlaidItemDAO plaidItemDAO,
-                                   EventBridgeClient eventBridge,
+                                   SmsEbClient smsEbClient,
                                    TransactionSmsMessageConverter converter) {
         this.plaidItemDAO = plaidItemDAO;
-        this.eventBridge = eventBridge;
+        this.smsEbClient = smsEbClient;
         this.converter = converter;
     }
 
     public String process(Transaction transaction) throws PlaidItemDAO.ItemException {
         PlaidItem item = plaidItemDAO.getItem(transaction.getUser(), transaction.getInstitutionName());
         if (!item.receiverNumber().isPresent()) {
-            return "No receiver number set up for this user";
+            throw new PlaidItemDAO.ItemException("No receiver number found for this user");
         }
 
         String receiverNumber = item.receiverNumber().get();
-        String message = createMessage(transaction, receiverNumber);
-        LOGGER.info("Sending message {} for {} to {}", message, item.user(), receiverNumber);
+        SmsMessage smsMessage = createMessage(transaction, receiverNumber);
+        LOGGER.info("Created message {} for {} to {}", smsMessage.message(), item.user(), receiverNumber);
 
-        PutEventsRequestEntry putEventsRequestEntry = messagePutEvent(message);
-        PutEventsRequest putEventsRequest =  PutEventsRequest.builder().entries(putEventsRequestEntry).build();
-        PutEventsResponse response = eventBridge.putEvents(putEventsRequest);
-        LOGGER.info("PutEvents Response: {}", response);
-        return response.toString();
+        this.smsEbClient.createNewSmsEvent(smsMessage);
+        return smsMessage.toString();
 
     }
 
-    private String createMessage(Transaction transaction, String receiverNumber) {
-        return "{\"message\": \"" +
-                converter.createNewTransactionMessage(transaction) + "\"" + "," +
-                "\"receiverNumber\": " + "\"" + receiverNumber + "\"" +
-                " }";
-    }
-
-    private PutEventsRequestEntry messagePutEvent(String message) {
-        return PutEventsRequestEntry.builder()
-                .eventBusName(EVENT_BUS_NAME)
-                .source(EVENT_SOURCE_NAME)
-                .detailType(EVENT_DETAIL_NAME)
-                .detail(message)
+    private SmsMessage createMessage(Transaction transaction, String receiverNumber) {
+        String messageText =  this.converter.createNewTransactionMessage(transaction);
+        return ImmutableSmsMessage.builder()
+                .message(messageText)
+                .receiverNumber(receiverNumber)
                 .build();
     }
 }
