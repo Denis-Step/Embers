@@ -3,7 +3,7 @@ package messages;
 import messages.responses.MessageResponse;
 
 /**
- * Allow different implementations of clients (such as SNS and Twilio).
+ * Allow different implementations of clients (such as SNS-sms and Twilio).
  */
 public interface MessageClient {
 

@@ -1,15 +1,10 @@
 package lambda.processors.transactions;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dynamo.TransactionDAO;
+import events.impl.TransactionsEbClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import external.plaid.entities.Transaction;
-import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
-import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
-import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
-import software.amazon.awssdk.services.eventbridge.model.PutEventsResponse;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -17,18 +12,13 @@ import java.util.stream.Collectors;
 
 public class ReceiveTransactionsProcessor {
     private final TransactionDAO transactionDAO;
-    private final EventBridgeClient eventBridge;
-    private final ObjectMapper objectMapper;
-    private static final String EVENT_BUS_NAME = "TransactionsBus";
-    private static final String EVENT_SOURCE_NAME = "transactions.receive";
-    private static final String EVENT_DETAIL_NAME = "newTransaction";
+    private final TransactionsEbClient transactionsEbClient;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveTransactionsProcessor.class);
 
     @Inject
-    public ReceiveTransactionsProcessor(TransactionDAO transactionDAO, EventBridgeClient eventBridge, ObjectMapper objectMapper) {
+    public ReceiveTransactionsProcessor(TransactionDAO transactionDAO, TransactionsEbClient transactionsEbClient) {
         this.transactionDAO = transactionDAO;
-        this.eventBridge = eventBridge;
-        this.objectMapper = objectMapper;
+        this.transactionsEbClient = transactionsEbClient;
     }
 
     /**
@@ -41,18 +31,7 @@ public class ReceiveTransactionsProcessor {
                 .filter(tx -> !(transactionExistsInDdb(tx)))
                 .map(newTransaction -> {
                     transactionDAO.save(newTransaction);
-
-                    try {
-                        PutEventsRequest eventsRequest = PutEventsRequest.builder()
-                                .entries(transactionPutEvent(newTransaction))
-                                .build();
-
-                        PutEventsResponse result = eventBridge.putEvents(eventsRequest);
-                        LOGGER.info("Put Event {} with Result {}", eventsRequest.entries().toArray(), result);
-                    } catch (JsonProcessingException e) {
-                        LOGGER.info("Couldn't create event for {}", newTransaction);
-                    }
-
+                    this.transactionsEbClient.createNewTransactionEvent(newTransaction);
                     return newTransaction;
                 })
                 .collect(Collectors.toList());
@@ -66,15 +45,6 @@ public class ReceiveTransactionsProcessor {
         LOGGER.info(transaction.toString());
         LOGGER.info(queryResult.toString());
         return !queryResult.isEmpty();
-    }
-
-    private PutEventsRequestEntry transactionPutEvent(Transaction transaction) throws JsonProcessingException {
-        return PutEventsRequestEntry.builder()
-                .eventBusName(EVENT_BUS_NAME)
-                .source(EVENT_SOURCE_NAME)
-                .detailType(EVENT_DETAIL_NAME)
-                .detail(objectMapper.writeValueAsString(transaction))
-                .build();
     }
 
 }
