@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
@@ -45,28 +44,14 @@ public class NewTransactionDAO {
         this.table = transactionDynamoDbTable;
     }
 
-    public static NewTransactionDAO fromTransaction(Transaction transaction) {
-        NewTransactionDAO newTransactionDAO = DaggerAwsComponent.create().buildNewTransactionDao();
-        newTransactionDAO.setUser(transaction.getUser()); // Partition key
-        LOGGER.info(transaction.getUser());
-        newTransactionDAO.setDateAmountTransactionId(transaction.getDate() +
-                "#" +
-                transaction.getAmount() +
-                "#" +
-                transaction.getTransactionId()); // Sort key
-        newTransactionDAO.setInstitutionName(transaction.getInstitutionName());
-        newTransactionDAO.setAccount(transaction.getAccountId());
-        newTransactionDAO.setDescription(transaction.getDescription());
-        newTransactionDAO.setOriginalDescription(transaction.getOriginalDescription());
-        newTransactionDAO.setMerchantName(transaction.getMerchantName());
-        newTransactionDAO.setItemId(transaction.getDate());
-
-        return newTransactionDAO;
+    public static Transaction load(Transaction transaction) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO().withTransaction(transaction);
+        return newTransactionDAO.load();
     }
 
-    public static Transaction load(Transaction transaction) {
-        NewTransactionDAO newTransactionDAO = NewTransactionDAO.fromTransaction(transaction);
-        return newTransactionDAO.load();
+    public static void save(Transaction transaction) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO().withTransaction(transaction);
+        newTransactionDAO.save();
     }
 
     @DynamoDbPartitionKey
@@ -99,8 +84,27 @@ public class NewTransactionDAO {
     public String getMerchantName() { return merchantName; }
     public void setMerchantName(String merchantName) { this.merchantName = merchantName; }
 
-    public void save() {
+    private void save() {
         this.table.putItem(this);
+    }
+
+    private NewTransactionDAO withTransaction(Transaction transaction) {
+        NewTransactionDAO newTransactionDAO = DaggerAwsComponent.create().buildNewTransactionDao();
+        newTransactionDAO.setUser(transaction.getUser()); // Partition key
+        LOGGER.info(transaction.getUser());
+        newTransactionDAO.setDateAmountTransactionId(transaction.getDate() +
+                "#" +
+                transaction.getAmount() +
+                "#" +
+                transaction.getTransactionId()); // Sort key
+        newTransactionDAO.setInstitutionName(transaction.getInstitutionName());
+        newTransactionDAO.setAccount(transaction.getAccountId());
+        newTransactionDAO.setDescription(transaction.getDescription());
+        newTransactionDAO.setOriginalDescription(transaction.getOriginalDescription());
+        newTransactionDAO.setMerchantName(transaction.getMerchantName());
+        newTransactionDAO.setItemId(transaction.getDate());
+
+        return newTransactionDAO;
     }
 
     private Transaction asTransaction() {

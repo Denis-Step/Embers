@@ -1,19 +1,13 @@
 package dynamo;
 
-import dagger.DaggerAwsComponent;
-import dynamo.NewTransactionDAO;
 import external.plaid.entities.Transaction;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import dynamo.setup.DynamoDbClientSetup;
 import dynamo.setup.TransactionsTableSetup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
 import static org.mockito.Mockito.mock;
 
@@ -34,29 +28,14 @@ public class NewTransactionDAOTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NewTransactionDAOTests.class);
 
-    private final DynamoDbEnhancedClient ddbClient;
-    private final DynamoDbTable<NewTransactionDAO> txTable;
-    private final NewTransactionDAO transactionDAO;
-
     public NewTransactionDAOTests() {
-
-        this.ddbClient = DynamoDbEnhancedClient.builder()
-                .dynamoDbClient(DynamoDbClientSetup.getDefaultDdbClient())
-                .build();
-
-        this.txTable = ddbClient.table(TRANSACTIONS_TABLE_NAME,
-                TableSchema.fromBean(NewTransactionDAO.class));
-
-        this.transactionDAO = new NewTransactionDAO(ddbClient, txTable);
         //createTransactionsTable();
     }
 
     @Test
     public void test_saveAndLoadTransaction() {
         Transaction transaction = createTransaction();
-        NewTransactionDAO newTransactionDAO = NewTransactionDAO.fromTransaction(transaction);
-        LOGGER.info(newTransactionDAO.getUser());
-        newTransactionDAO.save();
+        NewTransactionDAO.save(transaction);
 
         Transaction loadedTransaction = NewTransactionDAO.load(transaction);
         LOGGER.info(loadedTransaction.toString());
