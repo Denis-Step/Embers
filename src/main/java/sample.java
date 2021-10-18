@@ -11,7 +11,6 @@ public class sample {
     private static final String SAMPLE_ACCESS_TOKEN = "access-development-e0744ae4-f524-4b97-b710-5949fdd58d3b";
 
     public static void main(String[] args) {
-        testProxy();
     }
 
     private static void testProxy() {

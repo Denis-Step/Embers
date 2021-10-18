@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-
 }
 
 group 'plaidapp'
@@ -23,6 +22,8 @@ dependencies {
     implementation 'software.amazon.awssdk:auth:2.17.56'
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.47'
+    implementation 'software.amazon.awssdk:dynamodb:2.17.61'
+    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.17.61'
     implementation 'software.amazon.awssdk:eventbridge:2.17.56'
     implementation 'com.amazonaws:aws-lambda-java-events:3.1.0'
 
@@ -63,6 +64,16 @@ targetCompatibility = '11'
 
 test {
     useJUnitPlatform()
+    testLogging {
+        exceptionFormat "full"
+        events "started", "skipped", "passed", "failed"
+        showStandardStreams true
+    }
+
+    reports {
+        html.enabled = true
+    }
+
 }
 
 task packageFat(type: Zip) {

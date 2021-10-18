@@ -3,10 +3,8 @@ package messages;
 import external.plaid.entities.Transaction;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.time.Instant;
-import java.util.Date;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionSmsMessageConverterTest {

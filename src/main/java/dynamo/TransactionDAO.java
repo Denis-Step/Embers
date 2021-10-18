@@ -9,6 +9,7 @@ import external.plaid.entities.Transaction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @DynamoDBTable(tableName="Transactions")
@@ -152,6 +153,24 @@ public class TransactionDAO {
                 .withKeyConditionExpression("#U = :name AND begins_with ( InstitutionNameAccountId, :institutionAccount )")
                 .addExpressionAttributeNamesEntry("#U", "User")
                 .withExpressionAttributeValues(eav);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TransactionDAO that = (TransactionDAO) o;
+        return user.equals(that.user) &&
+                institutionNameAccountIdTransactionId.equals(that.institutionNameAccountIdTransactionId) &&
+                Objects.equals(amount, that.amount) && Objects.equals(description, that.description) &&
+                Objects.equals(originalDescription, that.originalDescription) &&
+                Objects.equals(merchantName, that.merchantName) &&
+                Objects.equals(date, that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user, institutionNameAccountIdTransactionId, amount, description, originalDescription, merchantName, date);
     }
 
     private DynamoDBQueryExpression<TransactionDAO> createQueryRequest(String user) {
