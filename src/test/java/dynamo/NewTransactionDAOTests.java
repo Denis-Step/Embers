@@ -58,7 +58,7 @@ public class NewTransactionDAOTests {
         LOGGER.info(newTransactionDAO.getUser());
         newTransactionDAO.save();
 
-        Transaction loadedTransaction = new NewTransactionDAO().load(transaction);
+        Transaction loadedTransaction = NewTransactionDAO.load(transaction);
         LOGGER.info(loadedTransaction.toString());
         assert (loadedTransaction.equals(transaction));
     }

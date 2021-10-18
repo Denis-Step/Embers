@@ -64,23 +64,9 @@ public class NewTransactionDAO {
         return newTransactionDAO;
     }
 
-    public Transaction asTransaction() {
-        LOGGER.info(this.dateAmountTransactionId);
-        String date = this.dateAmountTransactionId.split("#")[0];
-        double amount = Double.valueOf(this.dateAmountTransactionId.split("#")[1]);
-        String transactionId = this.dateAmountTransactionId.split("#")[2];
-
-        return Transaction.getBuilder()
-                .setUser(this.user)
-                .setInstitutionName(this.institutionName)
-                .setAccountId(this.account)
-                .setAmount(amount)
-                .setDescription(this.description)
-                .setOriginalDescription(this.originalDescription)
-                .setMerchantName(this.merchantName)
-                .setDate(date)
-                .setTransactionId(transactionId)
-                .build();
+    public static Transaction load(Transaction transaction) {
+        NewTransactionDAO newTransactionDAO = NewTransactionDAO.fromTransaction(transaction);
+        return newTransactionDAO.load();
     }
 
     @DynamoDbPartitionKey
@@ -117,11 +103,26 @@ public class NewTransactionDAO {
         this.table.putItem(this);
     }
 
-    public Transaction load(Transaction transaction) {
-        return load(NewTransactionDAO.fromTransaction(transaction));
+    private Transaction asTransaction() {
+        LOGGER.info(this.dateAmountTransactionId);
+        String date = this.dateAmountTransactionId.split("#")[0];
+        double amount = Double.valueOf(this.dateAmountTransactionId.split("#")[1]);
+        String transactionId = this.dateAmountTransactionId.split("#")[2];
+
+        return Transaction.getBuilder()
+                .setUser(this.user)
+                .setInstitutionName(this.institutionName)
+                .setAccountId(this.account)
+                .setAmount(amount)
+                .setDescription(this.description)
+                .setOriginalDescription(this.originalDescription)
+                .setMerchantName(this.merchantName)
+                .setDate(date)
+                .setTransactionId(transactionId)
+                .build();
     }
 
-    private Transaction load(NewTransactionDAO transactionDAO) {
-       return table.getItem(transactionDAO).asTransaction();
+    private Transaction load() {
+       return table.getItem(this).asTransaction();
     }
 }
