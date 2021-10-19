@@ -1,7 +1,9 @@
 package dynamo;
 
 import external.plaid.entities.Transaction;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import dynamo.setup.DynamoDbClientSetup;
@@ -10,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
-import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionDAOTests {
@@ -32,7 +32,6 @@ public class TransactionDAOTests {
     private static final TransactionDAO transactionDao = new TransactionDAO();
 
     public TransactionDAOTests() {
-        //createTransactionsTable();
     }
 
     @Test
@@ -40,8 +39,7 @@ public class TransactionDAOTests {
         Transaction transaction = createTransaction();
         transactionDao.save(transaction);
 
-        Transaction loadedTransaction = TransactionDAO.load(transaction);
-        LOGGER.info(loadedTransaction.toString());
+        Transaction loadedTransaction = transactionDao.load(transaction);
         assert (loadedTransaction.equals(transaction));
 
         List<Transaction> queriedTransactions = transactionDao.query(transaction.getUser());
@@ -57,6 +55,8 @@ public class TransactionDAOTests {
         queriedTransactions = transactionDao.query(transaction.getUser(), transaction.getDate(),
                 transaction.getAmount(), transaction.getTransactionId());
         assert (queriedTransactions.get(0).equals(transaction));
+
+        transactionDao.delete(transaction);
     }
 
     @Test
@@ -78,7 +78,22 @@ public class TransactionDAOTests {
         assert (queriedTransaction.size() == 0);
     }
 
-    private void createTransactionsTable() {
+    @Test
+    public void test_queryLsi() {
+        Transaction transaction = createTransaction();
+        transactionDao.save(transaction);
+
+        List<Transaction> queriedTransaction = transactionDao.queryByInstitution(
+                transaction.getUser(),
+                transaction.getInstitutionName());
+        assert (queriedTransaction.get(0).equals(transaction));
+
+        transactionDao.delete(transaction);
+
+    }
+
+    //@BeforeAll
+    public static void createTransactionsTable() {
         TransactionsTableSetup.createTable(DynamoDbClientSetup.getDefaultDdbClient());
     }
 

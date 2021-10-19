@@ -4,12 +4,15 @@ import dagger.DaggerAwsComponent;
 import external.plaid.entities.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
@@ -34,6 +37,7 @@ public class TransactionDAO {
     private String itemId;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionDAO.class);
+    private static final String INSTITUTION_LSI = "institutionNameIndex";
 
     /**
      * Needs to be a bean, so it needs DI directly inside here.
@@ -51,7 +55,7 @@ public class TransactionDAO {
     }
 
     public void delete(Transaction transaction) {
-        TransactionDAO transactionDAO = new TransactionDAO()
+        TransactionDAO transactionDAO = new TransactionDAO(client, table)
                 .withTransaction(transaction);
         transactionDAO.table.deleteItem( Key.builder()
                 .partitionValue(transactionDAO.getUser())
@@ -85,6 +89,28 @@ public class TransactionDAO {
                 .map(TransactionDAO::asTransaction)
                 .collect(Collectors.toList());
 
+    }
+
+    public List<Transaction> queryByInstitution(String user, String institutionName) {
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(
+                Key.builder()
+                        .partitionValue(user)
+                        .sortValue(institutionName)
+                        .build()
+        );
+
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        this.table.index(INSTITUTION_LSI).query(queryRequest);
+
+        SdkIterable<Page<TransactionDAO>> pages = this.table.index(INSTITUTION_LSI).query(queryRequest);
+
+        return pages.stream()
+                .flatMap(page -> page.items().stream()
+                        .map(TransactionDAO::asTransaction))
+                .collect(Collectors.toList());
     }
 
     public List<Transaction> query(Transaction transaction) {
@@ -125,14 +151,13 @@ public class TransactionDAO {
         return query(user, sortKey);
     }
 
-
     public void save(Transaction transaction) {
-        TransactionDAO transactionDAO = new TransactionDAO().withTransaction(transaction);
+        TransactionDAO transactionDAO = new TransactionDAO(client, table).withTransaction(transaction);
         transactionDAO.save();
     }
 
-    public static Transaction load(Transaction transaction) {
-        TransactionDAO transactionDAO = new TransactionDAO().withTransaction(transaction);
+    public Transaction load(Transaction transaction) {
+        TransactionDAO transactionDAO = new TransactionDAO(client, table).withTransaction(transaction);
         return transactionDAO.load();
     }
 
@@ -146,6 +171,7 @@ public class TransactionDAO {
         this.dateAmountTransactionId = dateAmountTransactionId;
     }
 
+    @DynamoDbSecondarySortKey(indexNames = {"institutionNameIndex"})
     public String getInstitutionName() { return institutionName; }
     public void setInstitutionName(String institutionName) { this.institutionName = institutionName; }
 
@@ -171,9 +197,8 @@ public class TransactionDAO {
     }
 
     private TransactionDAO withTransaction(Transaction transaction) {
-        TransactionDAO transactionDAO = DaggerAwsComponent.create().buildNewTransactionDao();
+        TransactionDAO transactionDAO = new TransactionDAO(client, table);
         transactionDAO.setUser(transaction.getUser()); // Partition key
-        LOGGER.info(transaction.getUser());
         transactionDAO.setDateAmountTransactionId(transaction.getDate() +
                 "#" +
                 transaction.getAmount() +

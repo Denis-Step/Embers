@@ -28,7 +28,7 @@ public class TransactionsTableSetup {
         CreateTableRequest createTableRequest = CreateTableRequest.builder()
                 .tableName(TRANSACTION_TABLE_NAME)
                 .attributeDefinitions(getAttributeDefinitions())
-                .globalSecondaryIndexes(getGlobalSecondaryIndices())
+                .localSecondaryIndexes(getLocalSecondaryIndices())
                 .keySchema(getKeySchemaElements())
                 .provisionedThroughput( ProvisionedThroughput.builder()
                         .readCapacityUnits(5L)
@@ -56,24 +56,30 @@ public class TransactionsTableSetup {
         return keySchemaElements;
     }
 
-    public static List<GlobalSecondaryIndex> getGlobalSecondaryIndices() {
-        List<GlobalSecondaryIndex> globalSecondaryIndices = new ArrayList<>();
-        GlobalSecondaryIndex institutionGsi = GlobalSecondaryIndex.builder()
+    public static List<LocalSecondaryIndex> getLocalSecondaryIndices() {
+        List<KeySchemaElement> keySchemaElements = new ArrayList<>();
+        KeySchemaElement partitionKey = KeySchemaElement.builder()
+                .keyType(KeyType.HASH)
+                .attributeName(HASH_KEY_USER)
+                .build();
+        keySchemaElements.add(partitionKey);
+
+        KeySchemaElement rangeKey = KeySchemaElement.builder()
+                .keyType(KeyType.RANGE)
+                .attributeName(INSTITUTION_GSI_ATTRIBUTE)
+                .build();
+        keySchemaElements.add(rangeKey);
+
+        List<LocalSecondaryIndex> localSecondaryIndices = new ArrayList<>();
+        LocalSecondaryIndex institutionLsi = LocalSecondaryIndex.builder()
                 .indexName(INSTITUTION_GSI_ATTRIBUTE + "Index")
-                .keySchema(KeySchemaElement.builder()
-                        .keyType(KeyType.HASH)
-                        .attributeName(INSTITUTION_GSI_ATTRIBUTE)
-                        .build())
-                .provisionedThroughput( ProvisionedThroughput.builder()
-                        .readCapacityUnits(5L)
-                        .writeCapacityUnits(5L)
-                        .build())
+                .keySchema(keySchemaElements)
                 .projection( Projection.builder()
                         .projectionType("ALL")
                         .build() )
                 .build();
-        globalSecondaryIndices.add(institutionGsi);
-        return globalSecondaryIndices;
+        localSecondaryIndices.add(institutionLsi);
+        return localSecondaryIndices;
     }
 
     public static List<AttributeDefinition> getAttributeDefinitions() {
