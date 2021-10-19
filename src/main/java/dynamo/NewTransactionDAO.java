@@ -51,6 +51,25 @@ public class NewTransactionDAO {
         this.table = transactionDynamoDbTable;
     }
 
+    public static void delete(Transaction transaction) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO()
+                .withTransaction(transaction);
+        newTransactionDAO.table.deleteItem( Key.builder()
+                .partitionValue(newTransactionDAO.getUser())
+                .sortValue(newTransactionDAO.dateAmountTransactionId)
+                .build()
+        );
+    }
+
+    public static void delete(String user, String dateAmountTransactionId) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO();
+        newTransactionDAO.table.deleteItem( Key.builder()
+                .partitionValue(user)
+                .sortValue(dateAmountTransactionId)
+                .build()
+        );
+    }
+
     public static List<Transaction> query(String user) {
         NewTransactionDAO newTransactionDAO = new NewTransactionDAO();
 
@@ -71,6 +90,41 @@ public class NewTransactionDAO {
                 .collect(Collectors.toList());
 
     }
+
+    public static List<Transaction> query(String user, String sortKey) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO();
+
+        QueryConditional queryConditional = QueryConditional
+                .sortBeginsWith(Key.builder()
+                        .partitionValue(user)
+                        .sortValue(sortKey)
+                        .build()
+                );
+
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        PageIterable<NewTransactionDAO> pages = newTransactionDAO.table.query(queryRequest);
+
+        return pages.items().stream()
+                .map(NewTransactionDAO::asTransaction)
+                .collect(Collectors.toList());
+
+    }
+
+    public static List<Transaction> query(String user, String date, Double amount) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO();
+        String sortKey = date + "#" + amount.toString();
+        return NewTransactionDAO.query(user, sortKey);
+    }
+
+    public static List<Transaction> query(String user, String date, Double amount, String transactionId) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO();
+        String sortKey = date + "#" + amount.toString() + "#" + transactionId;
+        return NewTransactionDAO.query(user, sortKey);
+    }
+
 
 
     public static void save(Transaction transaction) {

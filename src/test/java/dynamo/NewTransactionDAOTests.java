@@ -35,7 +35,7 @@ public class NewTransactionDAOTests {
     }
 
     @Test
-    public void test_saveAndLoadTransaction() {
+    public void test_LoadQueryTransaction() {
         Transaction transaction = createTransaction();
         NewTransactionDAO.save(transaction);
 
@@ -43,8 +43,38 @@ public class NewTransactionDAOTests {
         LOGGER.info(loadedTransaction.toString());
         assert (loadedTransaction.equals(transaction));
 
+        List<Transaction> queriedTransactions = NewTransactionDAO.query(transaction.getUser());
+        assert (queriedTransactions.get(0).equals(transaction));
+
+        queriedTransactions = NewTransactionDAO.query(transaction.getUser(), transaction.getDate());
+        assert (queriedTransactions.get(0).equals(transaction));
+
+        queriedTransactions = NewTransactionDAO.query(transaction.getUser(), transaction.getDate(),
+                transaction.getAmount());
+        assert (queriedTransactions.get(0).equals(transaction));
+
+        queriedTransactions = NewTransactionDAO.query(transaction.getUser(), transaction.getDate(),
+                transaction.getAmount(), transaction.getTransactionId());
+        assert (queriedTransactions.get(0).equals(transaction));
+    }
+
+    @Test
+    public void test_deleteTransaction() {
+        Transaction transaction = createTransaction();
+        NewTransactionDAO.save(transaction);
+
+        NewTransactionDAO.delete(transaction);
+
         List<Transaction> queriedTransaction = NewTransactionDAO.query(transaction.getUser());
-        assert (queriedTransaction.get(0).equals(transaction));
+        assert (queriedTransaction.size() == 0);
+
+        NewTransactionDAO.save(transaction);
+        NewTransactionDAO.delete(transaction.getUser(), transaction.getDate() +
+                "#" +
+                transaction.getAmount() +
+                "#" +
+                transaction.getTransactionId());
+        assert (queriedTransaction.size() == 0);
     }
 
     private void createTransactionsTable() {
