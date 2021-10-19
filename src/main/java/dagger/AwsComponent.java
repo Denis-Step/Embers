@@ -3,7 +3,7 @@ package dagger;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import dynamo.NewTransactionDAO;
+import dynamo.TransactionDAO;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
@@ -21,6 +21,6 @@ public interface AwsComponent {
     AWSCredentialsProvider buildCredentialsProvider();
     EventBridgeClient buildEventBridgeClient();
 
-    NewTransactionDAO buildNewTransactionDao();
-    @Named("TRANSACTION_TABLE") DynamoDbTable<NewTransactionDAO> buildNewTransactionsTable();
+    TransactionDAO buildNewTransactionDao();
+    @Named("TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> buildNewTransactionsTable();
 }

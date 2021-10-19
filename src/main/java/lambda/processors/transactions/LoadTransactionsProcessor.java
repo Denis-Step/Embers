@@ -33,11 +33,15 @@ public class LoadTransactionsProcessor {
         return txGrabber.requestTransactions(startDate, endDate);
     }
 
+    /**
+     * @param request @TODO: Change LoadTransactionsRequest.
+     * @return
+     */
     public List<Transaction> getTransactions(GetTransactionsRequest request) {
         if (request.accountId != null) {
-           return this.transactionDAO.query(request.user, request.institutionName, request.accountId);
+           return this.transactionDAO.query(request.user);
         } else {
-            return this.transactionDAO.query(request.user, request.institutionName);
+            return this.transactionDAO.query(request.user);
         }
     }
 

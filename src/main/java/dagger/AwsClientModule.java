@@ -6,7 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dynamo.NewTransactionDAO;
+import dynamo.TransactionDAO;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -87,26 +87,26 @@ public interface AwsClientModule {
     @Provides
     @Singleton
     @Named("TRANSACTION_TABLE_SCHEMA")
-    static TableSchema<NewTransactionDAO> provideTransactionTableSchema() {
-        return TableSchema.fromBean(NewTransactionDAO.class);
+    static TableSchema<TransactionDAO> provideTransactionTableSchema() {
+        return TableSchema.fromBean(TransactionDAO.class);
     }
 
     @Provides
     @Singleton
     @Named("TRANSACTION_TABLE")
-    static DynamoDbTable<NewTransactionDAO> provideNewTransactionDdbTable(
+    static DynamoDbTable<TransactionDAO> provideNewTransactionDdbTable(
             DynamoDbEnhancedClient dynamoDbEnhancedClient,
             @Named("TRANSACTION_TABLE_NAME") String transactionTableName,
-            @Named("TRANSACTION_TABLE_SCHEMA") TableSchema<NewTransactionDAO> tableSchema) {
+            @Named("TRANSACTION_TABLE_SCHEMA") TableSchema<TransactionDAO> tableSchema) {
 
         return dynamoDbEnhancedClient
                 .table(transactionTableName, tableSchema);
     }
 
     @Provides
-    static NewTransactionDAO provideNewTransactionDao(DynamoDbEnhancedClient client,
-            @Named("TRANSACTION_TABLE") DynamoDbTable<NewTransactionDAO> table) {
-        return new NewTransactionDAO(client, table);
+    static TransactionDAO provideNewTransactionDao(DynamoDbEnhancedClient client,
+                                                   @Named("TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> table) {
+        return new TransactionDAO(client, table);
     }
 
     @Provides

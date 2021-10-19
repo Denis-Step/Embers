@@ -1,5 +1,6 @@
 package lambda.processors.transactions;
 
+import dynamo.OldTransactionDAO;
 import dynamo.TransactionDAO;
 import events.impl.TransactionsEbClient;
 import org.slf4j.Logger;
@@ -38,10 +39,7 @@ public class ReceiveTransactionsProcessor {
     }
 
     private boolean transactionExistsInDdb(Transaction transaction) {
-        List<Transaction> queryResult = transactionDAO.query(transaction.getUser(),
-                transaction.getInstitutionName(),
-                transaction.getAccountId(),
-                transaction.getTransactionId());
+        List<Transaction> queryResult = transactionDAO.query(transaction);
         LOGGER.info(transaction.toString());
         LOGGER.info(queryResult.toString());
         return !queryResult.isEmpty();

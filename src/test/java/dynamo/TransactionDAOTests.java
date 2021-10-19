@@ -14,7 +14,7 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NewTransactionDAOTests {
+public class TransactionDAOTests {
 
     private static final String TRANSACTIONS_TABLE_NAME = "Transactions";
     private static final String USER = "USER";
@@ -28,32 +28,33 @@ public class NewTransactionDAOTests {
     private static final String ACCOUNT_ID = "1233456789";
     private static final String TRANSACTION_ID = "TX-123456789";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewTransactionDAOTests.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionDAOTests.class);
+    private static final TransactionDAO transactionDao = new TransactionDAO();
 
-    public NewTransactionDAOTests() {
+    public TransactionDAOTests() {
         //createTransactionsTable();
     }
 
     @Test
     public void test_LoadQueryTransaction() {
         Transaction transaction = createTransaction();
-        NewTransactionDAO.save(transaction);
+        transactionDao.save(transaction);
 
-        Transaction loadedTransaction = NewTransactionDAO.load(transaction);
+        Transaction loadedTransaction = TransactionDAO.load(transaction);
         LOGGER.info(loadedTransaction.toString());
         assert (loadedTransaction.equals(transaction));
 
-        List<Transaction> queriedTransactions = NewTransactionDAO.query(transaction.getUser());
+        List<Transaction> queriedTransactions = transactionDao.query(transaction.getUser());
         assert (queriedTransactions.get(0).equals(transaction));
 
-        queriedTransactions = NewTransactionDAO.query(transaction.getUser(), transaction.getDate());
+        queriedTransactions = transactionDao.query(transaction.getUser(), transaction.getDate());
         assert (queriedTransactions.get(0).equals(transaction));
 
-        queriedTransactions = NewTransactionDAO.query(transaction.getUser(), transaction.getDate(),
+        queriedTransactions = transactionDao.query(transaction.getUser(), transaction.getDate(),
                 transaction.getAmount());
         assert (queriedTransactions.get(0).equals(transaction));
 
-        queriedTransactions = NewTransactionDAO.query(transaction.getUser(), transaction.getDate(),
+        queriedTransactions = transactionDao.query(transaction.getUser(), transaction.getDate(),
                 transaction.getAmount(), transaction.getTransactionId());
         assert (queriedTransactions.get(0).equals(transaction));
     }
@@ -61,15 +62,15 @@ public class NewTransactionDAOTests {
     @Test
     public void test_deleteTransaction() {
         Transaction transaction = createTransaction();
-        NewTransactionDAO.save(transaction);
+        transactionDao.save(transaction);
 
-        NewTransactionDAO.delete(transaction);
+        transactionDao.delete(transaction);
 
-        List<Transaction> queriedTransaction = NewTransactionDAO.query(transaction.getUser());
+        List<Transaction> queriedTransaction = transactionDao.query(transaction.getUser());
         assert (queriedTransaction.size() == 0);
 
-        NewTransactionDAO.save(transaction);
-        NewTransactionDAO.delete(transaction.getUser(), transaction.getDate() +
+        transactionDao.save(transaction);
+        transactionDao.delete(transaction.getUser(), transaction.getDate() +
                 "#" +
                 transaction.getAmount() +
                 "#" +

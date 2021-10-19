@@ -3,7 +3,7 @@ package dagger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
-import dynamo.TransactionDAO;
+import dynamo.OldTransactionDAO;
 import events.impl.SmsEbClient;
 import events.impl.TransactionsEbClient;
 import external.plaid.clients.ItemCreator;
@@ -27,7 +27,7 @@ public interface ProcessorModule {
     static PlaidItemDAO providePlaidItemDao() {return new PlaidItemDAO();}
 
     @Provides
-    static TransactionDAO providePlaidTransactionDao() {return new TransactionDAO();}
+    static OldTransactionDAO providePlaidTransactionDao() {return new OldTransactionDAO();}
 
     @Provides
     @Named("DEFAULT_MAPPER")

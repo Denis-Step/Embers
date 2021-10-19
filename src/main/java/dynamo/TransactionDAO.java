@@ -1,199 +1,214 @@
 package dynamo;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dagger.DaggerAwsComponent;
 import external.plaid.entities.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
-import java.util.HashMap;
+import javax.inject.Inject;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-@DynamoDBTable(tableName="Transactions")
+@DynamoDbBean
 public class TransactionDAO {
-    public static final String TABLE_NAME = "Transactions";
-    private static final AmazonDynamoDB dynamoDB = DaggerAwsComponent.create().buildDynamoClient();
+    private final DynamoDbEnhancedClient client;
+    private final DynamoDbTable<TransactionDAO> table;
 
-    private String user;
-    private String institutionNameAccountIdTransactionId;
-    private Double amount;
+    private String user; // PK
+    private String dateAmountTransactionId; // SK
 
-    // This maps to Plaid "name"
+    private String institutionName;
+    private String account;
     private String description;
     private String originalDescription;
     private String merchantName;
-    private String date;
+    private String itemId;
 
-    private static final DynamoDBMapper dynamoDBMapper = DaggerAwsComponent.create().buildDynamo();;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionDAO.class);
 
-    public TransactionDAO() {}
-
-    public TransactionDAO(Transaction transaction) {
-        this.setUser(transaction.getUser()); // Partition key
-        this.setInstitutionNameAccountIdTransactionId(transaction.getInstitutionName() +
-                "-" +
-                transaction.getAccountId() +
-                "-" +
-                transaction.getTransactionId()); // Sort key
-        this.setAmount(transaction.getAmount());
-        this.setDescription(transaction.getDescription());
-        this.setOriginalDescription(transaction.getOriginalDescription());
-        this.setMerchantName(transaction.getMerchantName());
-        this.setDate(transaction.getDate());
+    /**
+     * Needs to be a bean, so it needs DI directly inside here.
+     */
+    public TransactionDAO() {
+        this.client = DaggerAwsComponent.create().buildDynamoEnhancedClient();
+        this.table = DaggerAwsComponent.create().buildNewTransactionsTable();
     }
 
-    public Transaction createTransaction() {
-        TransactionDAO txInfo = this;
-        String institutionName = this.institutionNameAccountIdTransactionId.split("-")[0];
-        String accountId = this.institutionNameAccountIdTransactionId.split("-")[1];
-        String transactionId = this.institutionNameAccountIdTransactionId.split("-")[2];
+    @Inject
+    public TransactionDAO(DynamoDbEnhancedClient dynamoDbEnhancedClient,
+                          DynamoDbTable<TransactionDAO> transactionDynamoDbTable) {
+        this.client = dynamoDbEnhancedClient;
+        this.table = transactionDynamoDbTable;
+    }
+
+    public void delete(Transaction transaction) {
+        TransactionDAO transactionDAO = new TransactionDAO()
+                .withTransaction(transaction);
+        transactionDAO.table.deleteItem( Key.builder()
+                .partitionValue(transactionDAO.getUser())
+                .sortValue(transactionDAO.dateAmountTransactionId)
+                .build()
+        );
+    }
+
+    public void delete(String user, String dateAmountTransactionId) {
+        this.table.deleteItem( Key.builder()
+                .partitionValue(user)
+                .sortValue(dateAmountTransactionId)
+                .build()
+        );
+    }
+
+    public List<Transaction> query(String user) {
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(
+                Key.builder()
+                .partitionValue(user)
+                .build()
+        );
+
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        PageIterable<TransactionDAO> pages = this.table.query(queryRequest);
+
+        return pages.items().stream()
+                .map(TransactionDAO::asTransaction)
+                .collect(Collectors.toList());
+
+    }
+
+    public List<Transaction> query(Transaction transaction) {
+        String sortKey = transaction.date + "#" + transaction.amount.toString() + "#" +
+                transaction.transactionId;
+
+        return query(transaction.getUser(), sortKey);
+    }
+
+    public List<Transaction> query(String user, String sortKey) {
+
+        QueryConditional queryConditional = QueryConditional
+                .sortBeginsWith(Key.builder()
+                        .partitionValue(user)
+                        .sortValue(sortKey)
+                        .build()
+                );
+
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        PageIterable<TransactionDAO> pages = this.table.query(queryRequest);
+
+        return pages.items().stream()
+                .map(TransactionDAO::asTransaction)
+                .collect(Collectors.toList());
+
+    }
+
+    public List<Transaction> query(String user, String date, Double amount) {
+        String sortKey = date + "#" + amount.toString();
+        return query(user, sortKey);
+    }
+
+    public List<Transaction> query(String user, String date, Double amount, String transactionId) {
+        String sortKey = date + "#" + amount.toString() + "#" + transactionId;
+        return query(user, sortKey);
+    }
+
+
+    public void save(Transaction transaction) {
+        TransactionDAO transactionDAO = new TransactionDAO().withTransaction(transaction);
+        transactionDAO.save();
+    }
+
+    public static Transaction load(Transaction transaction) {
+        TransactionDAO transactionDAO = new TransactionDAO().withTransaction(transaction);
+        return transactionDAO.load();
+    }
+
+    @DynamoDbPartitionKey
+    public String getUser() { return user; }
+    public void setUser(String user) { this.user = user; }
+
+    @DynamoDbSortKey
+    public String getDateAmountTransactionId() { return dateAmountTransactionId; }
+    public void setDateAmountTransactionId(String dateAmountTransactionId) {
+        this.dateAmountTransactionId = dateAmountTransactionId;
+    }
+
+    public String getInstitutionName() { return institutionName; }
+    public void setInstitutionName(String institutionName) { this.institutionName = institutionName; }
+
+    public String getAccount() { return account; }
+    public void setAccount(String account) { this.account = account; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getOriginalDescription() { return originalDescription; }
+    public void setOriginalDescription(String originalDescription) {
+        this.originalDescription = originalDescription;
+    }
+
+    public String getItemId() { return itemId; }
+    public void setItemId(String itemId) { this.itemId = itemId; }
+
+    public String getMerchantName() { return merchantName; }
+    public void setMerchantName(String merchantName) { this.merchantName = merchantName; }
+
+    private void save() {
+        this.table.putItem(this);
+    }
+
+    private TransactionDAO withTransaction(Transaction transaction) {
+        TransactionDAO transactionDAO = DaggerAwsComponent.create().buildNewTransactionDao();
+        transactionDAO.setUser(transaction.getUser()); // Partition key
+        LOGGER.info(transaction.getUser());
+        transactionDAO.setDateAmountTransactionId(transaction.getDate() +
+                "#" +
+                transaction.getAmount() +
+                "#" +
+                transaction.getTransactionId()); // Sort key
+        transactionDAO.setInstitutionName(transaction.getInstitutionName());
+        transactionDAO.setAccount(transaction.getAccountId());
+        transactionDAO.setDescription(transaction.getDescription());
+        transactionDAO.setOriginalDescription(transaction.getOriginalDescription());
+        transactionDAO.setMerchantName(transaction.getMerchantName());
+        transactionDAO.setItemId(transaction.getDate());
+
+        return transactionDAO;
+    }
+
+    private Transaction asTransaction() {
+        LOGGER.info(this.dateAmountTransactionId);
+        String date = this.dateAmountTransactionId.split("#")[0];
+        double amount = Double.valueOf(this.dateAmountTransactionId.split("#")[1]);
+        String transactionId = this.dateAmountTransactionId.split("#")[2];
 
         return Transaction.getBuilder()
                 .setUser(this.user)
-                .setInstitutionName(institutionName)
-                .setAccountId(accountId)
-                .setAmount(this.amount)
+                .setInstitutionName(this.institutionName)
+                .setAccountId(this.account)
+                .setAmount(amount)
                 .setDescription(this.description)
                 .setOriginalDescription(this.originalDescription)
                 .setMerchantName(this.merchantName)
-                .setDate(this.date)
+                .setDate(date)
                 .setTransactionId(transactionId)
                 .build();
     }
 
-    @DynamoDBHashKey(attributeName = "User")
-    public String getUser() { return user; }
-    public void setUser(String user) { this.user = user; }
-
-    @DynamoDBRangeKey(attributeName = "InstitutionNameAccountId")
-    public String getInstitutionNameAccountIdTransactionId() { return institutionNameAccountIdTransactionId; }
-    public void setInstitutionNameAccountIdTransactionId(String institutionNameAccountIdTransactionId) { this.institutionNameAccountIdTransactionId = institutionNameAccountIdTransactionId; }
-
-    @DynamoDBAttribute(attributeName = "Amount")
-    public Double getAmount() { return amount; }
-    public void setAmount(Double amount) { this.amount = amount; }
-
-    @DynamoDBAttribute(attributeName = "Description")
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    @DynamoDBAttribute(attributeName = "OriginalDescription")
-    public String getOriginalDescription() { return originalDescription; }
-    public void setOriginalDescription(String originalDescription) { this.originalDescription = originalDescription; }
-
-    @DynamoDBAttribute(attributeName = "MerchantName")
-    public String getMerchantName() { return merchantName; }
-    public void setMerchantName(String merchantName) { this.merchantName = merchantName; }
-
-    @DynamoDBAttribute(attributeName = "Date")
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
-
-    public List<Transaction> query(String user) {
-        DynamoDBQueryExpression<TransactionDAO> queryExpression = createQueryRequest(user);
-        List<TransactionDAO> transactionDAOList = this.dynamoDBMapper.query(TransactionDAO.class, queryExpression);
-
-        return transactionDAOList.stream()
-                .map(TransactionDAO::createTransaction)
-                .collect(Collectors.toList());
-    }
-
-    public List<Transaction> query(String user, String institutionName) {
-        DynamoDBQueryExpression<TransactionDAO> queryExpression = createQueryRequest(user, institutionName);
-        List<TransactionDAO> transactionDAOList = this.dynamoDBMapper.query(TransactionDAO.class, queryExpression);
-
-        return transactionDAOList.stream()
-                .map(TransactionDAO::createTransaction)
-                .collect(Collectors.toList());
-    }
-
-    public List<Transaction> query(String user, String institutionName, String accountId) {
-        String sortKey = institutionName + "-" + accountId;
-        DynamoDBQueryExpression<TransactionDAO> queryExpression = createQueryRequest(user, sortKey);
-        List<TransactionDAO> transactionDAOList = this.dynamoDBMapper.query(TransactionDAO.class, queryExpression);
-
-        return transactionDAOList.stream()
-                .map(TransactionDAO::createTransaction)
-                .collect(Collectors.toList());
-    }
-
-    public List<Transaction> query(String user, String institutionName, String accountId, String transactionId) {
-        String sortKey = institutionName + "-" + accountId + "-" + transactionId;
-        DynamoDBQueryExpression<TransactionDAO> queryExpression = createQueryRequest(user, sortKey);
-        List<TransactionDAO> transactionDAOList = this.dynamoDBMapper.query(TransactionDAO.class, queryExpression);
-
-        return transactionDAOList.stream()
-                .map(TransactionDAO::createTransaction)
-                .collect(Collectors.toList());
-    }
-
-    public void save(Transaction transaction) {
-        TransactionDAO dao = new TransactionDAO(transaction);
-        dao.save();
-    }
-
-    public void save(List<Transaction> transactionList) {
-        for (Transaction transaction: transactionList) {
-            TransactionDAO dao = new TransactionDAO(transaction);
-            dao.save();
-        }
-    }
-
-    private void save() { this.dynamoDBMapper.save(this); }
-
-    private DynamoDBQueryExpression<TransactionDAO> createQueryRequest(String user, String sortKey) {
-        Map<String, AttributeValue> eav = new HashMap<>();
-        eav.put(":name", new AttributeValue().withS(user));
-        eav.put(":institutionAccount",new AttributeValue().withS(sortKey));
-
-        return new DynamoDBQueryExpression<TransactionDAO>()
-                .withKeyConditionExpression("#U = :name AND begins_with ( InstitutionNameAccountId, :institutionAccount )")
-                .addExpressionAttributeNamesEntry("#U", "User")
-                .withExpressionAttributeValues(eav);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TransactionDAO that = (TransactionDAO) o;
-        return user.equals(that.user) &&
-                institutionNameAccountIdTransactionId.equals(that.institutionNameAccountIdTransactionId) &&
-                Objects.equals(amount, that.amount) && Objects.equals(description, that.description) &&
-                Objects.equals(originalDescription, that.originalDescription) &&
-                Objects.equals(merchantName, that.merchantName) &&
-                Objects.equals(date, that.date);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(user, institutionNameAccountIdTransactionId, amount, description, originalDescription, merchantName, date);
-    }
-
-    private DynamoDBQueryExpression<TransactionDAO> createQueryRequest(String user) {
-        Map<String, AttributeValue> eav = new HashMap<>();
-        eav.put(":name", new AttributeValue().withS(user));
-
-        return new DynamoDBQueryExpression<TransactionDAO>()
-                .withKeyConditionExpression("#U = :name")
-                .addExpressionAttributeNamesEntry("#U", "User")
-                .withExpressionAttributeValues(eav);
-    }
-
-    @Override
-    public String toString() {
-        return "TransactionDAO{" +
-                "user='" + user + '\'' +
-                ", institutionNameAccountIdTransactionId='" + institutionNameAccountIdTransactionId + '\'' +
-                ", amount=" + amount +
-                ", description='" + description + '\'' +
-                ", originalDescription='" + originalDescription + '\'' +
-                ", merchantName='" + merchantName + '\'' +
-                ", date='" + date + '\'' +
-                ", dynamoDBMapper=" + dynamoDBMapper +
-                '}';
+    private Transaction load() {
+       return table.getItem(this).asTransaction();
     }
 }
