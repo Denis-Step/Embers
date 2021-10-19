@@ -6,11 +6,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @DynamoDbBean
 public class NewTransactionDAO {
@@ -44,14 +51,36 @@ public class NewTransactionDAO {
         this.table = transactionDynamoDbTable;
     }
 
-    public static Transaction load(Transaction transaction) {
-        NewTransactionDAO newTransactionDAO = new NewTransactionDAO().withTransaction(transaction);
-        return newTransactionDAO.load();
+    public static List<Transaction> query(String user) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO();
+
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(
+                Key.builder()
+                .partitionValue(user)
+                .build()
+        );
+
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        PageIterable<NewTransactionDAO> pages = newTransactionDAO.table.query(queryRequest);
+
+        return pages.items().stream()
+                .map(NewTransactionDAO::asTransaction)
+                .collect(Collectors.toList());
+
     }
+
 
     public static void save(Transaction transaction) {
         NewTransactionDAO newTransactionDAO = new NewTransactionDAO().withTransaction(transaction);
         newTransactionDAO.save();
+    }
+
+    public static Transaction load(Transaction transaction) {
+        NewTransactionDAO newTransactionDAO = new NewTransactionDAO().withTransaction(transaction);
+        return newTransactionDAO.load();
     }
 
     @DynamoDbPartitionKey

@@ -9,6 +9,8 @@ import dynamo.setup.TransactionsTableSetup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,6 +42,9 @@ public class NewTransactionDAOTests {
         Transaction loadedTransaction = NewTransactionDAO.load(transaction);
         LOGGER.info(loadedTransaction.toString());
         assert (loadedTransaction.equals(transaction));
+
+        List<Transaction> queriedTransaction = NewTransactionDAO.query(transaction.getUser());
+        assert (queriedTransaction.get(0).equals(transaction));
     }
 
     private void createTransactionsTable() {
