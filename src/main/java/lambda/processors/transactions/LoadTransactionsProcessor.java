@@ -12,19 +12,26 @@ import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
+// @TODO: Add support for accountId and dates.
 // Params: Link --> User, InstitutionId,
 // Transactions --> StartDate?, EndDate?, User, InstitutionId, AccountName
 public class LoadTransactionsProcessor {
-    private final TransactionDAO transactionDAO;
-    private final ItemProcessor itemProcessor;
+    private final PlaidItemDAO plaidItemDAO;
 
     @Inject
-    public LoadTransactionsProcessor(TransactionDAO transactionDAO, ItemProcessor itemProcessor) {
-        this.transactionDAO = transactionDAO;
-        this.itemProcessor = itemProcessor;
+    public LoadTransactionsProcessor(PlaidItemDAO plaidItemDAO) {
+        this.plaidItemDAO = plaidItemDAO;
     }
 
-    // First get item, then pull Tx from Plaid for that item.
+    /**
+     * First get item, then pull Tx from Plaid for that item.
+     * @param user plaid Item user.
+     * @param institution institutionName for transactions.
+     * @param startDate inclusive.
+     * @param endDate inclusive.
+     * @return list of {@link Transaction}s from Plaid.
+     * @throws PlaidItemDAO.ItemException
+     */
     public List<Transaction> pullNewTransactions(String user, String institution, Date startDate, Date endDate)
             throws PlaidItemDAO.ItemException {
         String accessToken = getItem(user, institution).accessToken();
@@ -33,20 +40,8 @@ public class LoadTransactionsProcessor {
         return txGrabber.requestTransactions(startDate, endDate);
     }
 
-    /**
-     * @param request @TODO: Change LoadTransactionsRequest.
-     * @return
-     */
-    public List<Transaction> getTransactions(GetTransactionsRequest request) {
-        if (request.accountId != null) {
-           return this.transactionDAO.query(request.user);
-        } else {
-            return this.transactionDAO.query(request.user);
-        }
-    }
-
     private PlaidItem getItem(String user, String institution) throws PlaidItemDAO.ItemException {
-        return itemProcessor.getItem(user, institution);
+        return plaidItemDAO.getItem(user, institution);
     }
 
 }

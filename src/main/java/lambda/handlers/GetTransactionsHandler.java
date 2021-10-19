@@ -10,7 +10,7 @@ import external.plaid.entities.Transaction;
 
 import java.util.List;
 
-
+/*
 // Params: Link --> User, InstitutionId,
 // Transactions --> StartDate, EndDate?, InstitutionId, AccountName
 public class GetTransactionsHandler implements RequestHandler<GetTransactionsRequest, List<Transaction>> {
@@ -30,7 +30,7 @@ public class GetTransactionsHandler implements RequestHandler<GetTransactionsReq
                 "\n and institution: " +
                 event.getInstitutionName()
         );
-        List<Transaction> transactions = processor.getTransactions(event);
+        List<Transaction> transactions = processor.pullNewTransactions(event.user);
         logger.log("Returning cached " +
                 transactions.size() +
                 "\n transactions for " +
@@ -41,3 +41,5 @@ public class GetTransactionsHandler implements RequestHandler<GetTransactionsReq
         return transactions;
     }
 }
+
+ */
