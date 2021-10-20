@@ -2,6 +2,7 @@ package dagger;
 
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
+import external.plaid.clients.TransactionsGrabber;
 import lambda.processors.items.CreateLinkTokenProcessor;
 import lambda.processors.items.ItemProcessor;
 import lambda.processors.transactions.LoadTransactionsProcessor;
@@ -26,6 +27,7 @@ public interface PlaidComponent {
 
     ItemCreator buildItemGrabber();
     LinkGrabber buildPlaidGrabber();
+    TransactionsGrabber buildTransactionsGrabber();
 
     CreateLinkTokenProcessor buildLinkTokenProcessor();
     ItemProcessor buildItemProcessor();

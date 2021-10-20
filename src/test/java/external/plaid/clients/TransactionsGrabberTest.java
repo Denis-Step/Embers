@@ -48,7 +48,7 @@ public class TransactionsGrabberTest {
 
     public TransactionsGrabberTest() throws IOException {
         this.plaidClient = mock(PlaidClient.class);
-        this.transactionsGrabber = new TransactionsGrabber(this.plaidClient, USER, INSTITUTION, ACCESS_TOKEN);
+        this.transactionsGrabber = new TransactionsGrabber(this.plaidClient);
         this.mockService = mock(PlaidApiService.class);
         when(this.plaidClient.service()).thenReturn(this.mockService);
         setup_Mocks();
@@ -56,7 +56,8 @@ public class TransactionsGrabberTest {
 
     @Test
     public void test_requestTransactions() {
-        List<Transaction> transactions = this.transactionsGrabber.requestTransactions(START_DATE, END_DATE);
+        List<Transaction> transactions = this.transactionsGrabber.requestTransactions(USER, INSTITUTION,
+                ACCESS_TOKEN, START_DATE, END_DATE);
         Transaction sampleTx = transactions.get(0);
         assert (sampleTx.institutionName == INSTITUTION);
         assert (sampleTx.amount == AMOUNT);

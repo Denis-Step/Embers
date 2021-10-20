@@ -1,31 +1,36 @@
 package lambda.processors.transactions;
 
 
+import dynamo.PlaidItemDAO;
 import dynamo.TransactionDAO;
+import external.plaid.clients.TransactionsGrabber;
+import external.plaid.entities.PlaidItem;
 import external.plaid.entities.Transaction;
-import lambda.processors.items.ItemProcessor;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import dynamo.setup.DynamoDbClientSetup;
-import dynamo.setup.TransactionsTableSetup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(TransactionsGrabber.class)
 public class LoadTransactionsProcessorTest {
 
-    private static final String TRANSACTIONS_TABLE_NAME = "Transactions";
     private static final String USER = "USER";
     private static final String INSTITUTION = "INSTITUTION";
+    private static final String ACCESS_TOKEN = "1234456STOKEN";
 
     private static final Double AMOUNT = 49.99;
     private static final String DESCRIPTION = "SAMPLE_TRANSACTION";
@@ -35,26 +40,45 @@ public class LoadTransactionsProcessorTest {
     private static final String ACCOUNT_ID = "1233456789";
     private static final String TRANSACTION_ID = "TX-123456789";
 
-    @Mock
-    private final ItemProcessor itemProcessor;
+    private final Date START_DATE;
+    private final Date END_DATE;
 
-    private final TransactionDAO transactionDAO;
+    @Mock
+    private final PlaidItemDAO plaidItemDAO;
+
+    @Mock
+    private final TransactionsGrabber transactionsGrabber;
 
     private final LoadTransactionsProcessor loadTransactionsProcessor;
 
+    public LoadTransactionsProcessorTest() throws Exception {
+        plaidItemDAO = mock(PlaidItemDAO.class);
+        PlaidItem mockPlaidItem = mock(PlaidItem.class);
+        when(plaidItemDAO.getItem(any(), any())).thenReturn(mockPlaidItem);
+        when(mockPlaidItem.accessToken()).thenReturn(ACCESS_TOKEN);
 
-    public LoadTransactionsProcessorTest() {
-        itemProcessor = mock(ItemProcessor.class);
-        transactionDAO = new TransactionDAO();
-        loadTransactionsProcessor = new LoadTransactionsProcessor(
-                itemProcessor
-        );
+        END_DATE = Date.from(Instant.now());
+        START_DATE = Date.from(Instant.now().minus(1, ChronoUnit.DAYS));
+
+        transactionsGrabber = mock(TransactionsGrabber.class);
+        loadTransactionsProcessor = new LoadTransactionsProcessor(plaidItemDAO, transactionsGrabber);
+
+
     }
 
-    /**
-     * @return Set up by creating 25 transactions with diff ID's.
-     */
-    private List<Transaction> createTransactions() {
+    @Test
+    public void test_PullNewTransactions() throws PlaidItemDAO.ItemException, Exception {
+        List<Transaction> mockPlaidTransactions = mock(List.class);
+        when(transactionsGrabber.requestTransactions(USER, INSTITUTION, ACCESS_TOKEN,
+                START_DATE, END_DATE)).thenReturn(mockPlaidTransactions);
+
+        List<Transaction> transactions = loadTransactionsProcessor.pullNewTransactions(USER, INSTITUTION,
+                START_DATE, END_DATE);
+        assert (mockPlaidTransactions.equals(transactions));
+
+    }
+
+    private List<Transaction> createAndSaveNewTransactions() {
         List<Transaction> transactions = new ArrayList<>();
         for (int i = 0; i < 25; i++) {
 
@@ -69,8 +93,8 @@ public class LoadTransactionsProcessorTest {
             transaction.setAccountId(ACCOUNT_ID);
             transaction.setUser(USER);
             transaction.setOriginalDescription(ORIGINAL_DESCRIPTION);
-
-            transactionDAO.save(transaction);
         }
+        return transactions;
     }
+
 }

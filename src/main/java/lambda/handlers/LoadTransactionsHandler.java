@@ -16,8 +16,11 @@ import java.util.Date;
 import java.util.List;
 
 
-// Params: Link --> User, InstitutionId,
-// Transactions --> StartDate, EndDate?, InstitutionId, AccountName
+/**
+ * Loads new Transactions by querying Plaid.
+ * Params: Link --> User, InstitutionId,
+ * Transactions --> StartDate, EndDate?, InstitutionId, AccountName
+ */
 public class LoadTransactionsHandler implements RequestHandler<PullNewTransactionsRequest, List<Transaction>> {
     private final LoadTransactionsProcessor processor;
     private static final Logger LOGGER = LoggerFactory.getLogger(LoadTransactionsHandler.class);
@@ -29,49 +32,52 @@ public class LoadTransactionsHandler implements RequestHandler<PullNewTransactio
         this.processor = processor;
     }
 
+    /**
+     * @param request Incoming lambda request.
+     * @param context Lambda Context object.
+     * @return List of new transactions from Plaid.
+     */
     @Override
-    public List<Transaction> handleRequest(PullNewTransactionsRequest event, Context context) {
+    public List<Transaction> handleRequest(PullNewTransactionsRequest request, Context context) {
         LOGGER.info("Loading Transactions for user: " +
-                event.getUser() +
+                request.getUser() +
                 "\n and institution: " +
-                event.getInstitutionName()
+                request.getInstitutionName()
                 );
+
+        // Validate dates.
 
         Date startDate;
         Date endDate;
-        if (event.endDate == null) {
+        if (request.endDate == null) {
             endDate = new Date(System.currentTimeMillis());
         } else {
-            endDate = Date.from(Instant.parse(event.endDate));
+            endDate = Date.from(Instant.parse(request.endDate));
         }
 
-        if (event.startDate == null) {
+        if (request.startDate == null) {
             startDate = Date.from(endDate.toInstant().minus(30, ChronoUnit.DAYS));
         } else {
-            startDate = Date.from(Instant.parse(event.startDate));
+            startDate = Date.from(Instant.parse(request.startDate));
         }
 
         try {
-            List<Transaction> transactions = processor.pullNewTransactions(event.getUser(), event.institutionName,
+            List<Transaction> transactions = processor.pullNewTransactions(request.getUser(), request.institutionName,
                     startDate, endDate);
-            LOGGER.info("Loaded " +
-                    transactions.size() +
-                    "\n transactions for " +
-                    event.getUser() +
-                    " \n and institution: " +
-                    event.getInstitutionName()
-            );
+
+            LOGGER.info("Loaded " + transactions.size() + "\n transactions for " + request.getUser() +
+                    " \n and institution: " + request.getInstitutionName());
             return transactions;
         } catch (PlaidItemDAO.ItemNotFoundException e) {
             // Rethrow exception to prevent lambda from succeeding.
             LOGGER.info("ItemException: " + e.getMessage());
-            throw new RuntimeException("No Item Found for User " + event.user);
+            throw new RuntimeException("No Item Found for User " + request.user);
         } catch (PlaidItemDAO.MultipleItemsFoundException e) {
             LOGGER.info("ItemException: " + e.getMessage());
-            throw new RuntimeException("Multiple Items Found for User " + event.user);
+            throw new RuntimeException("Multiple Items Found for User " + request.user);
         } catch (PlaidItemDAO.ItemException e) {
             LOGGER.info("ItemException: " + e.getMessage());
-            throw new RuntimeException("Unexpected ItemException for User " + event.user);
+            throw new RuntimeException("Unexpected ItemException for User " + request.user);
         }
     }
 

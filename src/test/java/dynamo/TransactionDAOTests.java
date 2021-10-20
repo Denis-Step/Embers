@@ -11,6 +11,7 @@ import dynamo.setup.TransactionsTableSetup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -110,6 +111,30 @@ public class TransactionDAOTests {
         transaction.setUser(USER);
         transaction.setOriginalDescription(ORIGINAL_DESCRIPTION);
         return transaction;
+    }
+
+    /**
+     * @return Set up by creating 25 transactions with diff ID's.
+     */
+    private List<Transaction> createAndSaveNewTransactions() {
+        List<Transaction> transactions = new ArrayList<>();
+        for (int i = 0; i < 25; i++) {
+
+            Transaction transaction = new Transaction();
+            transaction.setTransactionId(TRANSACTION_ID + String.valueOf(i));
+            transaction.setInstitutionName(INSTITUTION);
+            transaction.setAmount(AMOUNT);
+            transaction.setDate(DATE);
+            transaction.setAccountId(ACCOUNT_ID);
+            transaction.setDescription(DESCRIPTION);
+            transaction.setMerchantName(MERCHANT_NAME);
+            transaction.setAccountId(ACCOUNT_ID);
+            transaction.setUser(USER);
+            transaction.setOriginalDescription(ORIGINAL_DESCRIPTION);
+
+            transactionDao.save(transaction);
+        }
+        return transactions;
     }
 
 }

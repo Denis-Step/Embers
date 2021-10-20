@@ -1,9 +1,6 @@
 package lambda.processors.transactions;
 
 import dynamo.PlaidItemDAO;
-import dynamo.TransactionDAO;
-import lambda.processors.items.ItemProcessor;
-import lambda.requests.transactions.GetTransactionsRequest;
 import external.plaid.clients.TransactionsGrabber;
 import external.plaid.entities.PlaidItem;
 import external.plaid.entities.Transaction;
@@ -17,14 +14,16 @@ import java.util.List;
 // Transactions --> StartDate?, EndDate?, User, InstitutionId, AccountName
 public class LoadTransactionsProcessor {
     private final PlaidItemDAO plaidItemDAO;
+    private final TransactionsGrabber transactionsGrabber;
 
     @Inject
-    public LoadTransactionsProcessor(PlaidItemDAO plaidItemDAO) {
+    public LoadTransactionsProcessor(PlaidItemDAO plaidItemDAO, TransactionsGrabber transactionsGrabber) {
         this.plaidItemDAO = plaidItemDAO;
+        this.transactionsGrabber = transactionsGrabber;
     }
 
     /**
-     * First get item, then pull Tx from Plaid for that item.
+     * First get item for User, then pull Tx from Plaid for that item.
      * @param user plaid Item user.
      * @param institution institutionName for transactions.
      * @param startDate inclusive.
@@ -36,8 +35,7 @@ public class LoadTransactionsProcessor {
             throws PlaidItemDAO.ItemException {
         String accessToken = getItem(user, institution).accessToken();
 
-        TransactionsGrabber txGrabber = new TransactionsGrabber(user, institution, accessToken);
-        return txGrabber.requestTransactions(startDate, endDate);
+        return transactionsGrabber.requestTransactions(user, institution, accessToken, startDate, endDate);
     }
 
     private PlaidItem getItem(String user, String institution) throws PlaidItemDAO.ItemException {

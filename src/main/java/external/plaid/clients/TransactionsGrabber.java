@@ -20,27 +20,28 @@ import java.util.stream.Collectors;
  */
 public class TransactionsGrabber {
     private final PlaidClient plaidClient;
-    private final String user;
-    private final String institutionName;
-    private final String accessToken;
 
+    /**
+     * @param plaidClient {@link PlaidClient}
+     */
     @Inject
-    public TransactionsGrabber(PlaidClient plaidClient, String user, String institutionName, String accessToken){
+    public TransactionsGrabber(PlaidClient plaidClient){
         this.plaidClient = plaidClient;
-        this.user = user;
-        this.institutionName = institutionName;
-        this.accessToken = accessToken;
     }
 
-    public TransactionsGrabber(String user, String institutionName, String accessToken){
-        this.plaidClient = DaggerPlaidComponent.create().buildPLaidClient();
-        this.user = user;
-        this.institutionName = institutionName;
-        this.accessToken = accessToken;
-    }
-
-    public List<Transaction> requestTransactions(Date startDate, Date endDate) {
-
+    /**
+     * @param user user to query.
+     * @param institutionName institution to query.
+     * @param accessToken plaid Item access token.
+     * @param startDate inclusive.
+     * @param endDate inclusive.
+     * @return {@link Transaction}s.
+     */
+    public List<Transaction> requestTransactions(String user,
+                                                 String institutionName,
+                                                 String accessToken,
+                                                 Date startDate,
+                                                 Date endDate){
         TransactionsGetRequest transactionsGetRequest = new TransactionsGetRequest(accessToken, startDate, endDate);
         List<TransactionsGetResponse.Transaction> plaidTxs = callGetTransactionsRequest(transactionsGetRequest);
 
@@ -50,6 +51,11 @@ public class TransactionsGrabber {
 
     }
 
+    /**
+     * Leave public to allow different implementations.
+     * @param transactionsGetRequest Plaid client's request type.
+     * @return plaidclient's transactions.
+     */
     public List<TransactionsGetResponse.Transaction> callGetTransactionsRequest
             (TransactionsGetRequest transactionsGetRequest) {
 
