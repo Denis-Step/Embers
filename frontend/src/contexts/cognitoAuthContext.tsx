@@ -47,7 +47,6 @@ export const CognitoAuthContextProvider = (props: CognitoAuthContextProviderProp
         return <Spinner />
     }
     else {
-
         return <AuthContext.Provider value={{
             token: authToken,
             setToken: setAuthToken
