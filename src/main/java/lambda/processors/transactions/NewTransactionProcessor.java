@@ -1,6 +1,5 @@
 package lambda.processors.transactions;
 
-import com.twilio.rest.api.v2010.account.Message;
 import dynamo.PlaidItemDAO;
 import events.impl.SmsEbClient;
 import messages.ImmutableSmsMessage;
@@ -10,10 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import external.plaid.entities.PlaidItem;
 import external.plaid.entities.Transaction;
-import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
-import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
-import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
-import software.amazon.awssdk.services.eventbridge.model.PutEventsResponse;
 
 import javax.inject.Inject;
 
@@ -44,7 +39,7 @@ public class NewTransactionProcessor {
 
         String receiverNumber = item.receiverNumber().get();
         SmsMessage smsMessage = createMessage(transaction, receiverNumber);
-        LOGGER.info("Created message {} for {} to {}", smsMessage.message(), item.user(), receiverNumber);
+        LOGGER.info("Created message {} for {} to {}", smsMessage.getMessage(), item.user(), receiverNumber);
 
         this.smsEbClient.createNewSmsEvent(smsMessage);
         return smsMessage.toString();

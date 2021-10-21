@@ -4,6 +4,6 @@ import org.immutables.value.Value;
 
 @Value.Immutable
 public interface SmsMessage {
-    String message();
-    String receiverNumber();
+    String getMessage();
+    String getReceiverNumber();
 }
