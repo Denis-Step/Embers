@@ -41,6 +41,10 @@ export class ItemLambdaRoles extends Construct {
 }
 
 
+export interface TransactionLambdaRolesProps {
+    transactionsTable: Table;
+}
+
 export class TransactionLambdasRoles extends Construct {
     private readonly itemTable: ITable;
     private readonly transactionTable: ITable;
@@ -48,11 +52,11 @@ export class TransactionLambdasRoles extends Construct {
     public receiveTransactionsLambdaRole: IRole;
     public newTransactionLambdaRole: IRole;
 
-    constructor(scope: Construct, id: string) {
+    constructor(scope: Construct, id: string, props: TransactionLambdaRolesProps) {
         super(scope, id);
 
         this.itemTable = Table.fromTableArn(this, "PlaidItemsTable", PLAID_ITEMS_DDB_TABLE_ARN);
-        this.transactionTable = Table.fromTableArn(this, "TransactionsTable", TRANSACTIONS_DDB_TABLE_ARN);
+        this.transactionTable = props.transactionsTable;
 
         this.loadTransactionsLambdarole = new Role(this, 'CreateLinkTokenLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),

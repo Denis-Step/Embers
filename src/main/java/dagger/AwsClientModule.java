@@ -67,14 +67,18 @@ public interface AwsClientModule {
     @Provides
     @Singleton
     static DynamoDbClient provideDdbClient() {
-        try {
+        /*try {
             return DynamoDbClient.builder()
                     .credentialsProvider(DefaultCredentialsProvider.create())
                     .endpointOverride(new URI("http://localhost:8000"))
                     .build();
         } catch (URISyntaxException e) {
             throw new RuntimeException("Cannot build DynamoDbClient");
-        }
+        } */
+
+        return DynamoDbClient.builder()
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
     }
 
     @Provides
