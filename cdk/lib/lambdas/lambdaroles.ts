@@ -48,7 +48,8 @@ export interface TransactionLambdaRolesProps {
 export class TransactionLambdasRoles extends Construct {
     private readonly itemTable: ITable;
     private readonly transactionTable: ITable;
-    public loadTransactionsLambdarole: Role;
+    public getTransactionsLambdaRole: Role;
+    public loadTransactionsLambdaRole: Role;
     public receiveTransactionsLambdaRole: IRole;
     public newTransactionLambdaRole: IRole;
 
@@ -58,14 +59,21 @@ export class TransactionLambdasRoles extends Construct {
         this.itemTable = Table.fromTableArn(this, "PlaidItemsTable", PLAID_ITEMS_DDB_TABLE_ARN);
         this.transactionTable = props.transactionsTable;
 
-        this.loadTransactionsLambdarole = new Role(this, 'CreateLinkTokenLambdaRole', {
+        this.getTransactionsLambdaRole = new Role(this, 'GetTransactionsLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
             ]
         });
 
-        this.receiveTransactionsLambdaRole = new Role(this, 'CreateItemLambdaRole', {
+        this.loadTransactionsLambdaRole = new Role(this, 'LoadTransactionsLambdaRole', {
+            assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+            managedPolicies: [
+                ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
+            ]
+        });
+
+        this.receiveTransactionsLambdaRole = new Role(this, 'ReceiveTransactionsLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
@@ -77,7 +85,7 @@ export class TransactionLambdasRoles extends Construct {
             actions: ["events:PutEvents", "events:ListRules"]
         }))
 
-        this.newTransactionLambdaRole = new Role(this, 'GetItemLambdaRole', {
+        this.newTransactionLambdaRole = new Role(this, 'NewTransactionLambdarole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
@@ -89,10 +97,11 @@ export class TransactionLambdasRoles extends Construct {
             actions: ["events:PutEvents", "events:ListRules"]
         }))
 
-        this.itemTable.grantReadWriteData(this.loadTransactionsLambdarole);
+        this.itemTable.grantReadWriteData(this.loadTransactionsLambdaRole);
         this.itemTable.grantReadWriteData(this.receiveTransactionsLambdaRole)
         this.itemTable.grantReadData(this.newTransactionLambdaRole);
         this.transactionTable.grantReadWriteData(this.receiveTransactionsLambdaRole);
+        this.transactionTable.grantReadData(this.getTransactionsLambdaRole);
     }
 }
 

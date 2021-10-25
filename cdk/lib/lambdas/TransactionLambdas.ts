@@ -19,7 +19,6 @@ export class TransactionLambdas extends Construct {
 
         this.tables = new JPTables(this, 'Tables');
 
-
         this.roles = new TransactionLambdasRoles(this, 'TxLambdaRoles', {
             transactionsTable: this.tables.transactionsTable
         });
@@ -37,7 +36,7 @@ export class TransactionLambdas extends Construct {
 
             },
             memorySize: 512,
-            role: this.roles.loadTransactionsLambdarole,
+            role: this.roles.loadTransactionsLambdaRole,
             timeout: Duration.seconds(300),
         })
 
@@ -79,6 +78,7 @@ export class TransactionLambdas extends Construct {
                 "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
             },
             memorySize: 512,
+            role: this.roles.getTransactionsLambdaRole,
             timeout: Duration.seconds(300)
         });
     }
