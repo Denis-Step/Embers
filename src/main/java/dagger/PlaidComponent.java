@@ -5,6 +5,7 @@ import dynamo.PlaidItemDAO;
 import external.plaid.clients.TransactionsGrabber;
 import lambda.processors.items.CreateLinkTokenProcessor;
 import lambda.processors.items.ItemProcessor;
+import lambda.processors.transactions.GetTransactionsProcessor;
 import lambda.processors.transactions.LoadTransactionsProcessor;
 import lambda.processors.transactions.NewTransactionProcessor;
 import lambda.processors.transactions.ReceiveTransactionsProcessor;
@@ -31,6 +32,7 @@ public interface PlaidComponent {
 
     CreateLinkTokenProcessor buildLinkTokenProcessor();
     ItemProcessor buildItemProcessor();
+    GetTransactionsProcessor buildGetTransactionsProcessor();
     LoadTransactionsProcessor buildLoadTransactionsProcessor();
     NewTransactionProcessor buildNewTransactionProcessor();
     ReceiveTransactionsProcessor buildReceiveTransactionsProcessor();

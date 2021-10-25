@@ -4,42 +4,48 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import dagger.DaggerPlaidComponent;
-import lambda.processors.transactions.LoadTransactionsProcessor;
+import lambda.processors.transactions.GetTransactionsProcessor;
 import lambda.requests.transactions.GetTransactionsRequest;
 import external.plaid.entities.Transaction;
 
 import java.util.List;
 
-/*
+
 // Params: Link --> User, InstitutionId,
 // Transactions --> StartDate, EndDate?, InstitutionId, AccountName
 public class GetTransactionsHandler implements RequestHandler<GetTransactionsRequest, List<Transaction>> {
-    private final LoadTransactionsProcessor processor;
+    private final GetTransactionsProcessor processor;
 
-    public GetTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildLoadTransactionsProcessor(); }
+    public GetTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildGetTransactionsProcessor(); }
 
-    public GetTransactionsHandler(LoadTransactionsProcessor processor) {
+    public GetTransactionsHandler(GetTransactionsProcessor processor) {
         this.processor = processor;
     }
 
     @Override
-    public List<Transaction> handleRequest(GetTransactionsRequest event, Context context) {
+    public List<Transaction> handleRequest(GetTransactionsRequest request, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("Getting Transactions for user: " +
-                event.getUser() +
-                "\n and institution: " +
-                event.getInstitutionName()
+                request.getUser() +
+                "\n starting on " +
+                request.getStartDate()
         );
-        List<Transaction> transactions = processor.pullNewTransactions(event.user);
+
+        List<Transaction> transactions;
+        if (request.getStartDate() != null) {
+            transactions = processor.getTransactions(request.user, request.startDate);
+        } else {
+            transactions = processor.getTransactions(request.user);
+        }
+
         logger.log("Returning cached " +
                 transactions.size() +
                 "\n transactions for " +
-                event.getUser() +
-                " \n and institution: " +
-                event.getInstitutionName()
+                request.getUser() +
+                " \n starting on: " +
+                request.getStartDate()
         );
         return transactions;
+
     }
 }
-
- */

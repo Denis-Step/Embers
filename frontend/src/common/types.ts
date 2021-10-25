@@ -15,3 +15,15 @@ export interface CognitoJwt {
     token_type: string;
     expires_at: Date;
 }
+
+export interface Transaction {
+    user: string;
+    institutionName: string;
+    accountId: string;
+    amount: number;
+    description: string;
+    originalDescription: string;
+    merchantName: string;
+    date: Date;
+    transactionId: string
+}

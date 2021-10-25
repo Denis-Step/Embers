@@ -19,16 +19,5 @@ public class sample {
 
     private static void testMessages() {
         MessageProcessor messageProcessor = DaggerTwilioComponent.create().buildMessageProcessor();
-        System.out.println(messageProcessor.sendMessage("+12148865506", "This is your fazha"));
-    }
-
-    public static void testTransactionsProcessor() throws IOException, PlaidItemDAO.ItemException {
-        LoadTransactionsProcessor processor = DaggerPlaidComponent.create().buildLoadTransactionsProcessor();
-        GetTransactionsRequest request = new GetTransactionsRequest();
-        request.setStartDate("2020-08-01T10:15:30.00Z");
-        request.setEndDate("2020-08-31T10:15:30.00Z");
-        request.setUser("Denny");
-        request.setInstitutionName("Discover");
-        //List<Transaction> transactions = processor.pullNewTransactions(request);
     }
 }
