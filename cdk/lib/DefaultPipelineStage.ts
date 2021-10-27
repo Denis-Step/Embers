@@ -1,6 +1,6 @@
 import { Stack, Stage, Construct, StageProps } from '@aws-cdk/core';
 import {ItemLambdas} from "./lambdas/ItemLambdas";
-import {PlaidLinkApi} from "./PlaidLinkApi";
+import {JpApi} from "./JpApi";
 import {PullTransactionsMachine} from "./statemachines/pullTransactionsMachine";
 import {TransactionLambdas} from "./lambdas/TransactionLambdas";
 import {MessageLambdas} from "./lambdas/messageLambdas";
@@ -20,7 +20,8 @@ export class DefaultPipelineStage extends Stage {
 
         const itemLambdas = new ItemLambdas(this.mainStack, 'PlaidItem Lambdas');
         const transactionLambdas = new TransactionLambdas(this.mainStack, 'Transaction Lambdas');
-        const apiStack = new PlaidLinkApi(this.mainStack, 'PlaidLinkApi',{
+        const apiStack = new JpApi(this.mainStack, 'PlaidLinkApi',{
+            getTransactionsLambda: transactionLambdas.getTransactionsLambda,
             linkLambda: itemLambdas.createLinkTokenLambda,
             itemLambda: itemLambdas.createItemLambda
         })

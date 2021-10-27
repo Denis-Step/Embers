@@ -8,9 +8,10 @@ import {PassthroughBehavior} from '@aws-cdk/aws-apigateway';
 export interface PlaidLinkApiProps extends StackProps {
   linkLambda: lambda.Function;
   itemLambda: lambda.Function;
+  getTransactionsLambda: lambda.Function;
 }
 
-export class PlaidLinkApi extends cdk.Stack {
+export class JpApi extends cdk.Stack {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.
@@ -103,7 +104,53 @@ export class PlaidLinkApi extends cdk.Stack {
         }
       }]
     })
+
+    const getTransactionsIntegration = new apigw.LambdaIntegration(props.getTransactionsLambda, {
+      proxy: false,
+      allowTestInvoke: true,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      requestParameters: {
+        'integration.request.querystring.user': 'method.request.querystring.user',
+        'integration.request.querystring.startDate': 'method.request.querystring.startDate'
+      },
+      integrationResponses: [
+        {
+
+          // Successful response from the Lambda function, no filter defined
+          statusCode: "200",
+          responseTemplates: {
+            // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+            'application/json': JSON.stringify('$util.escapeJavaScript($input.body)')
+          },
+          responseParameters: {
+            // We can map response parameters
+            // - Destination parameters (the key) are the response parameters (used in mappings)
+            // - Source parameters (the value) are the integration response parameters or expressions
+            // Do this for CORS.
+            // WARNING: DOES NOT SUPPORT ALL HEADERS.
+            'method.response.header.Content-Type': "'application/json'",
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization'",
+          }
+        },
+      ],
+    })
+    const getTransactionsResource = this.restApi.root.addResource("transactions")
+    getTransactionsResource.addMethod('OPTIONS');
+    getTransactionsResource.addMethod('GET', getTransactionsIntegration, {
+      methodResponses: [{
+        statusCode: "200",
+        responseParameters: {
+          'method.response.header.Content-Type': true,
+          'method.response.header.Access-Control-Allow-Origin': true,
+          'method.response.header.Access-Control-Allow-Headers': true,
+        }
+      }]
+    })
   }
+
+
+
 
 }
 
