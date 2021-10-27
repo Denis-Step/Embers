@@ -24,6 +24,6 @@ export interface Transaction {
     description: string;
     originalDescription: string;
     merchantName: string;
-    date: Date;
+    date: string;
     transactionId: string
 }
