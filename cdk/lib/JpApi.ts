@@ -113,6 +113,8 @@ export class JpApi extends cdk.Stack {
         'integration.request.querystring.user': 'method.request.querystring.user',
         'integration.request.querystring.startDate': 'method.request.querystring.startDate'
       },
+      requestTemplates: {"application/json": '{"user" : "$util.escapeJavaScript($input.params(\'user\'))",\n' +
+            '"startDate" : "$util.escapeJavaScript($input.params(\'startDate\'))"}'},
       integrationResponses: [
         {
 
@@ -138,13 +140,17 @@ export class JpApi extends cdk.Stack {
     const getTransactionsResource = this.restApi.root.addResource("transactions")
     getTransactionsResource.addMethod('OPTIONS');
     getTransactionsResource.addMethod('GET', getTransactionsIntegration, {
+      requestParameters: {
+        'method.request.querystring.user': false,
+        'method.request.querystring.startDate': false
+      },
       methodResponses: [{
         statusCode: "200",
         responseParameters: {
           'method.response.header.Content-Type': true,
           'method.response.header.Access-Control-Allow-Origin': true,
           'method.response.header.Access-Control-Allow-Headers': true,
-        }
+        },
       }]
     })
   }
