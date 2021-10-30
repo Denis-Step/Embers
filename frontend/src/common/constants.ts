@@ -1,6 +1,8 @@
-export const BETA_ENDPOINT = "https://mv6o8yjeo1.execute-api.us-east-2.amazonaws.com/Beta/"
+export const BETA_ENDPOINT = "https://4oxqcp9xmi.execute-api.us-east-2.amazonaws.com/prod/"
 export const LINK_API_RESOURCE = "linktoken";
 export const ITEM_API_RESOURCE = "items";
+export const TRANSACTIONS_API_RESOURCE = "transactions";
+
 export const LINK_DEFAULT_PRODUCTS = ["transactions"]
 
 export const COGNITO_UI_URI = `https://txnotificationservice.auth.us-east-2.amazoncognito.com/login?

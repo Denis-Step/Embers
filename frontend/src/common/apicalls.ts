@@ -1,18 +1,13 @@
 import axios from "axios";
-import {config, CognitoIdentityCredentials} from "aws-sdk";
-import {BETA_ENDPOINT, ITEM_API_RESOURCE, LINK_API_RESOURCE, LINK_DEFAULT_PRODUCTS, IDENTITY_POOL_ID} from "./constants";
-import {PlaidItemCreationInfo} from "./types";
-
-export const getIamCredentials = (token: string) => {
-    config.credentials = new CognitoIdentityCredentials({
-        IdentityPoolId: IDENTITY_POOL_ID,
-        Logins: { // optional tokens, used for authenticated login
-            'accounts.google.com': token
-        }
-    });
-
-    return config.credentials;
-}
+import {
+    BETA_ENDPOINT,
+    ITEM_API_RESOURCE,
+    LINK_API_RESOURCE,
+    LINK_DEFAULT_PRODUCTS,
+    IDENTITY_POOL_ID,
+    TRANSACTIONS_API_RESOURCE
+} from "./constants";
+import {PlaidItemCreationInfo, Transaction} from "./types";
 
 // Get link token for clients.plaid flow.
 export const getLinkToken = async (user: string,
@@ -43,4 +38,16 @@ export const requestItemCreation = async (itemInfo: PlaidItemCreationInfo, token
         }})
 
     return request.data;
+}
+
+export const getTransactions = async (user: string, startDate: string, token: string): Promise<Transaction[]> => {
+    const endpoint = BETA_ENDPOINT + TRANSACTIONS_API_RESOURCE;
+    const request = await axios.get(endpoint, {
+    params: {
+        user,
+        startDate
+    }
+    })
+
+    return JSON.parse(request.data);
 }
