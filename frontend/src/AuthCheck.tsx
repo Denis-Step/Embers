@@ -4,7 +4,7 @@ import {
     Route,
 } from "react-router-dom";
 import {MainRoutes} from "./MainRoutes";
-import {AuthRedirect} from "./auth/AuthRedirect";
+import {AuthRedirect} from "./components/auth/AuthRedirect";
 
 export const AuthCheck = () => {
 

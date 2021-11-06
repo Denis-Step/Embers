@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
-import {useTransactionsTable} from "../common/hooks";
-import {Transaction} from "../common/types";
+import {useTransactionsTable} from "../../common/hooks";
+import {Transaction} from "../../common/types";
 
 interface TransactionsTableProps {
     transactions: Transaction[]

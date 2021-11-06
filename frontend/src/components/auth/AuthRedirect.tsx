@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Redirect, useLocation} from "react-router";
-import {decodeJwt, putInLocalStorage} from "../common/utils";
+import {decodeJwt, putInLocalStorage} from "../../common/utils";
 import {Spinner} from "@chakra-ui/react";
-import {CognitoJwt} from "../common/types";
+import {CognitoJwt} from "../../common/types";
 
 // Fire effect to store in local storage &
 // Trigger Redirect here.

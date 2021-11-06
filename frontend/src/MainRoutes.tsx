@@ -3,10 +3,11 @@ import {
     Switch,
     Route,
 } from "react-router-dom";
-import LinkAccount from "./plaid/LinkAccount";
+import LinkAccount from "./components/plaid/LinkAccount";
 import {CognitoAuthContextProvider} from "./contexts/cognitoAuthContext";
 import {HomePage} from "./pages/HomePage";
-import {TransactionsPage} from "./pages/TransactionsPage";
+import {LinkAccountPage} from "./pages/LinkAccountPage";
+import {ViewTransactionsPage} from "./pages/ViewTransactionsPage";
 
 export const MainRoutes = () => {
 
@@ -14,10 +15,10 @@ export const MainRoutes = () => {
         <CognitoAuthContextProvider>
             <Switch>
                 <Route path="/link">
-                    <LinkAccount />
+                    <LinkAccountPage />
                 </Route>
                 <Route path="/transactions/view">
-                    <TransactionsPage />
+                    <ViewTransactionsPage />
                 </Route>
                 <Route path="/">
                     <HomePage />

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {TransactionsTable} from "../tables/TransactionsTable";
+import {TransactionsTable} from "../components/tables/TransactionsTable";
 import {getTransactions} from "../common/apicalls";
 import {useAuth} from "../contexts/cognitoAuthContext";
 import {Transaction} from "../common/types";
@@ -16,7 +16,7 @@ const testTransactions = [
         "transactionId": "transactionId"}
 ]
 
-export const TransactionsPage = () => {
+export const ViewTransactionsPage = () => {
     const auth = useAuth();
     const [sampleTx, setSampleTx] = useState<Transaction[]>();
 
@@ -28,6 +28,7 @@ export const TransactionsPage = () => {
     }, [])
 
 
-    return ( <TransactionsTable transactions={sampleTx || [] } />
+    return (
+        <TransactionsTable transactions={sampleTx || [] } />
     )
 }

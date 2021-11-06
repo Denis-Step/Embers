@@ -1,10 +1,10 @@
 import React, {useCallback, useMemo, useReducer, useEffect, useContext} from 'react';
 import {Button, Checkbox, FormControl, FormLabel, Input, FormHelperText, VStack} from "@chakra-ui/react"
 import {PlaidLinkOnSuccessMetadata} from "react-plaid-link";
-import {getLinkToken, requestItemCreation} from "../common/apicalls";
+import {getLinkToken, requestItemCreation} from "../../common/apicalls";
 import LinkFlow from "./LinkFlow";
-import {PlaidItemCreationInfo} from "../common/types";
-import {AuthContext, useAuth} from "../contexts/cognitoAuthContext";
+import {PlaidItemCreationInfo} from "../../common/types";
+import {AuthContext, useAuth} from "../../contexts/cognitoAuthContext";
 
 
 // @TODO: Use discriminated unions to type reducer actions.
