@@ -25,17 +25,6 @@ export class JpApi extends cdk.Stack {
     // individually.
     this.restApi = new apigw.RestApi(this, 'PlaidLinkApi', {
       description: "Transaction Service API",
-      defaultCorsPreflightOptions: {
-        allowHeaders: [
-          'Content-Type',
-          'X-Amz-Date',
-          'Authorization',
-          'X-Api-Key',
-        ],
-        allowMethods: ['OPTIONS', 'GET', 'POST'],
-        allowCredentials: true,
-        allowOrigins: ['http://localhost:3000'],
-    }
     });
 
     // Let's do the integration for linkTokens:
@@ -80,7 +69,12 @@ export class JpApi extends cdk.Stack {
         }
       }]
     });
-
+    linkResource.addCorsPreflight({
+      allowOrigins: ['http://localhost:3000'],
+      allowMethods: ['OPTIONS', 'GET', 'POST'],
+      allowCredentials: true,
+      allowHeaders: apigw.Cors.DEFAULT_HEADERS
+    })
 
     // Now we'll integrate the postItem lambda:
     const postItemIntegration = new apigw.LambdaIntegration(props.itemLambda, {
@@ -123,6 +117,13 @@ export class JpApi extends cdk.Stack {
         }
       }]
     })
+    itemResource.addCorsPreflight({
+      allowOrigins: ['http://localhost:3000'],
+      allowMethods: ['OPTIONS', 'GET', 'POST'],
+      allowCredentials: true,
+      allowHeaders: apigw.Cors.DEFAULT_HEADERS
+    })
+
 
     const getTransactionsIntegration = new apigw.LambdaIntegration(props.getTransactionsLambda, {
       proxy: false,
@@ -175,6 +176,13 @@ export class JpApi extends cdk.Stack {
         },
       }]
     })
+    getTransactionsResource.addCorsPreflight({
+      allowOrigins: ['http://localhost:3000'],
+      allowMethods: ['OPTIONS', 'GET', 'POST'],
+      allowCredentials: true,
+      allowHeaders: apigw.Cors.DEFAULT_HEADERS
+    })
+
   }
 
 
