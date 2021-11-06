@@ -22,7 +22,7 @@ export const TransactionsPage = () => {
 
     useEffect( () => {
         if (!sampleTx) {
-            getTransactions("Denny", "2021-10-01", auth.token.access_token).then(
+            getTransactions("Denny", "2021-10-01", auth.token.id_token).then(
                 (newTx) => setSampleTx(newTx))
         }
     }, [])

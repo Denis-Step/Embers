@@ -20,7 +20,7 @@ export class DefaultPipelineStage extends Stage {
 
         const itemLambdas = new ItemLambdas(this.mainStack, 'PlaidItem Lambdas');
         const transactionLambdas = new TransactionLambdas(this.mainStack, 'Transaction Lambdas');
-        const apiStack = new JpApi(this.mainStack, 'PlaidLinkApi',{
+        const apiStack = new JpApi(this.mainStack, 'JpApi',{
             getTransactionsLambda: transactionLambdas.getTransactionsLambda,
             linkLambda: itemLambdas.createLinkTokenLambda,
             itemLambda: itemLambdas.createItemLambda

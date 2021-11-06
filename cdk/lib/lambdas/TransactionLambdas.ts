@@ -2,7 +2,6 @@ import * as lambda from "@aws-cdk/aws-lambda";
 import {Construct, Duration} from "@aws-cdk/core";
 import * as path from "path";
 import {TransactionLambdasRoles} from "./lambdaroles";
-import {Table} from "@aws-cdk/aws-dynamodb";
 import {JPTables} from "../tables/tables";
 
 export class TransactionLambdas extends Construct {

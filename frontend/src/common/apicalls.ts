@@ -43,10 +43,13 @@ export const requestItemCreation = async (itemInfo: PlaidItemCreationInfo, token
 export const getTransactions = async (user: string, startDate: string, token: string): Promise<Transaction[]> => {
     const endpoint = BETA_ENDPOINT + TRANSACTIONS_API_RESOURCE;
     const request = await axios.get(endpoint, {
-    params: {
-        user,
-        startDate
-    }
+        params: {
+            user,
+            startDate
+    },
+        headers: {
+            Authorization: token
+        }
     })
 
     return JSON.parse(request.data);

@@ -23,7 +23,20 @@ export class JpApi extends cdk.Stack {
     // There are great constructs for a Proxy integration. Here,
     // we need multiple resources and so will configure them
     // individually.
-    this.restApi = new apigw.RestApi(this, 'PlaidLinkApi');
+    this.restApi = new apigw.RestApi(this, 'PlaidLinkApi', {
+      description: "Transaction Service API",
+      defaultCorsPreflightOptions: {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+        ],
+        allowMethods: ['OPTIONS', 'GET', 'POST'],
+        allowCredentials: true,
+        allowOrigins: ['http://localhost:3000'],
+    }
+    });
 
     // Let's do the integration for linkTokens:
     const postLinkTokenIntegration = new apigw.LambdaIntegration(props.linkLambda, {
@@ -45,22 +58,25 @@ export class JpApi extends cdk.Stack {
             // - Source parameters (the value) are the integration response parameters or expressions
             // Do this for CORS.
             // WARNING: DOES NOT SUPPORT ALL HEADERS.
+            'method.response.header.X-Requested-With': "'*'",
             'method.response.header.Content-Type': "'application/json'",
-            'method.response.header.Access-Control-Allow-Origin': "'*'",
-            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization'",
+            'method.response.header.Access-Control-Allow-Origin': "http://localhost:3000",
+            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'",
+            'method.response.header.Access-Control-Allow-Methods': "'POST,GET,OPTIONS'"
           }
         },
       ],
     });
     const linkResource = this.restApi.root.addResource("linktoken");
-    linkResource.addMethod('OPTIONS');
     linkResource.addMethod("POST", postLinkTokenIntegration, {
       methodResponses: [{
         statusCode: "200",
         responseParameters: {
+          'method.response.header.X-Requested-With': true,
           'method.response.header.Content-Type': true,
           'method.response.header.Access-Control-Allow-Origin': true,
           'method.response.header.Access-Control-Allow-Headers': true,
+          'method.response.header.Access-Control-Allow-Methods': true
         }
       }]
     });
@@ -85,22 +101,25 @@ export class JpApi extends cdk.Stack {
             // - Source parameters (the value) are the integration response parameters or expressions
             // Do this for CORS.
             // WARNING: DOES NOT SUPPORT ALL HEADERS.
+            'method.response.header.X-Requested-With': "'*'",
             'method.response.header.Content-Type': "'application/json'",
-            'method.response.header.Access-Control-Allow-Origin': "'*'",
-            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization'",
+            'method.response.header.Access-Control-Allow-Origin': "'http://localhost:3000'",
+            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'",
+            'method.response.header.Access-Control-Allow-Methods': "'POST,GET,OPTIONS'"
           }
         },
       ],
     })
     const itemResource = this.restApi.root.addResource("items")
-    itemResource.addMethod('OPTIONS');
     itemResource.addMethod('POST', postItemIntegration, {
       methodResponses: [{
         statusCode: "200",
         responseParameters: {
+          'method.response.header.X-Requested-With': true,
           'method.response.header.Content-Type': true,
           'method.response.header.Access-Control-Allow-Origin': true,
           'method.response.header.Access-Control-Allow-Headers': true,
+          'method.response.header.Access-Control-Allow-Methods': true
         }
       }]
     })
@@ -130,15 +149,16 @@ export class JpApi extends cdk.Stack {
             // - Source parameters (the value) are the integration response parameters or expressions
             // Do this for CORS.
             // WARNING: DOES NOT SUPPORT ALL HEADERS.
+            'method.response.header.X-Requested-With': "'*'",
             'method.response.header.Content-Type': "'application/json'",
-            'method.response.header.Access-Control-Allow-Origin': "'*'",
-            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization'",
+            'method.response.header.Access-Control-Allow-Origin': "'http://localhost:3000'",
+            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'",
+            'method.response.header.Access-Control-Allow-Methods': "'POST,GET,OPTIONS'"
           }
         },
       ],
     })
     const getTransactionsResource = this.restApi.root.addResource("transactions")
-    getTransactionsResource.addMethod('OPTIONS');
     getTransactionsResource.addMethod('GET', getTransactionsIntegration, {
       requestParameters: {
         'method.request.querystring.user': false,
@@ -147,9 +167,11 @@ export class JpApi extends cdk.Stack {
       methodResponses: [{
         statusCode: "200",
         responseParameters: {
+          'method.response.header.X-Requested-With': true,
           'method.response.header.Content-Type': true,
           'method.response.header.Access-Control-Allow-Origin': true,
           'method.response.header.Access-Control-Allow-Headers': true,
+          'method.response.header.Access-Control-Allow-Methods': true
         },
       }]
     })
