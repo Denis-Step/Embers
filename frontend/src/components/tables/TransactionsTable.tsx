@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {useTransactionsTable} from "../../common/hooks";
+import {useHeadlessTransactionsTable} from "../../common/hooks";
 import {Transaction} from "../../common/types";
 
 interface TransactionsTableProps {
@@ -15,9 +15,7 @@ export const TransactionsTable = (props: TransactionsTableProps) => {
         rows,
         prepareRow,
         // eslint-disable-next-line react-hooks/rules-of-hooks
-    } = useTransactionsTable(props.transactions);
-
-
+    } = useHeadlessTransactionsTable(props.transactions);
 
     return (
         <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>

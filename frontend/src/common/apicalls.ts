@@ -8,6 +8,7 @@ import {
     TRANSACTIONS_API_RESOURCE
 } from "./constants";
 import {PlaidItemCreationInfo, Transaction} from "./types";
+import {formatDate} from "./utils";
 
 // Get link token for clients.plaid flow.
 export const getLinkToken = async (user: string,
@@ -40,12 +41,12 @@ export const requestItemCreation = async (itemInfo: PlaidItemCreationInfo, token
     return request.data;
 }
 
-export const getTransactions = async (user: string, startDate: string, token: string): Promise<Transaction[]> => {
+export const getTransactions = async (user: string, startDate: Date, token: string): Promise<Transaction[]> => {
     const endpoint = BETA_ENDPOINT + TRANSACTIONS_API_RESOURCE;
     const request = await axios.get(endpoint, {
         params: {
-            user,
-            startDate
+            user: user,
+            startDate: formatDate(startDate)
     },
         headers: {
             Authorization: token

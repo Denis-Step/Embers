@@ -1,9 +1,11 @@
-import {useMemo} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Transaction} from "./types";
 import {useTable} from "react-table";
+import {useAuth} from "../contexts/cognitoAuthContext";
+import {getTransactions} from "./apicalls";
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
-export const useTransactionsTable = (transactions: Transaction[]) => {
+export const useHeadlessTransactionsTable = (transactions: Transaction[]) => {
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const transactionColumns = useMemo(() => [
@@ -36,4 +38,25 @@ export const useTransactionsTable = (transactions: Transaction[]) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useTable({ columns: transactionColumns,
         data: testData})
+}
+
+// Dependency on useAuth.
+export const useTransactions = (startDate: Date) => {
+    const user = "Denny"
+    const token = useAuth().token.id_token;
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+    useEffect(() => {
+
+        const refreshTransactions = async () => {
+            const transactions = await getTransactions(user, startDate, token);
+            setTransactions(transactions);
+        }
+
+        refreshTransactions();
+
+    }, [startDate])
+
+    return transactions;
+
 }

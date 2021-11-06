@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {TransactionsTable} from "../components/tables/TransactionsTable";
-import {getTransactions} from "../common/apicalls";
-import {useAuth} from "../contexts/cognitoAuthContext";
-import {Transaction} from "../common/types";
+import {TopNavBar} from "../components/navigation/Nav";
+import {ViewTransactions} from "../components/transactions/ViewTransactions";
 
 const testTransactions = [
     {
@@ -17,18 +16,11 @@ const testTransactions = [
 ]
 
 export const ViewTransactionsPage = () => {
-    const auth = useAuth();
-    const [sampleTx, setSampleTx] = useState<Transaction[]>();
-
-    useEffect( () => {
-        if (!sampleTx) {
-            getTransactions("Denny", "2021-10-01", auth.token.id_token).then(
-                (newTx) => setSampleTx(newTx))
-        }
-    }, [])
-
 
     return (
-        <TransactionsTable transactions={sampleTx || [] } />
+        <>
+            <TopNavBar />
+            <ViewTransactions />
+        </>
     )
 }

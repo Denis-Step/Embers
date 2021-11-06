@@ -22,8 +22,16 @@ import {
     ChevronDownIcon,
     ChevronRightIcon,
 } from '@chakra-ui/icons';
+import {ViewTransactionsSearchBox} from "../components/search/ViewTransactionsSearchBox";
+import {useTransactions} from "../common/hooks";
+import React, {useState} from "react";
 
 export const HomePage = () => {
-    return <TopNavBar />
+
+    return (
+        <>
+            <TopNavBar />
+        </>
+    )
 
 }
