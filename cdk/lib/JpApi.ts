@@ -60,7 +60,7 @@ export class JpApi extends cdk.Stack {
             // WARNING: DOES NOT SUPPORT ALL HEADERS.
             'method.response.header.X-Requested-With': "'*'",
             'method.response.header.Content-Type': "'application/json'",
-            'method.response.header.Access-Control-Allow-Origin': "http://localhost:3000",
+            'method.response.header.Access-Control-Allow-Origin': "'http://localhost:3000'",
             'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'",
             'method.response.header.Access-Control-Allow-Methods': "'POST,GET,OPTIONS'"
           }
