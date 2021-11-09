@@ -133,8 +133,8 @@ export class JpApi extends cdk.Stack {
         'integration.request.querystring.user': 'method.request.querystring.user',
         'integration.request.querystring.startDate': 'method.request.querystring.startDate'
       },
-      requestTemplates: {"user" : "$context.authorizer.claims[\'cognito:username\']",
-        "startDate" : "$util.escapeJavaScript($input.params(\'startDate\'))"},
+      requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito: username\']",\n' +
+            '"startDate" : "$util.escapeJavaScript($input.params(\'startDate\'))"}'},
       integrationResponses: [
         {
 
