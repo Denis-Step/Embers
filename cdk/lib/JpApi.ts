@@ -1,9 +1,10 @@
-import * as s3 from "@aws-cdk/aws-s3";
+import {UserPool} from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import {Duration, StackProps} from '@aws-cdk/core';
 import * as apigw from '@aws-cdk/aws-apigateway';
 import {PassthroughBehavior} from '@aws-cdk/aws-apigateway';
+import {DEFAULT_COGNITO_USER_POOL_ARN} from "./constants";
 
 export interface PlaidLinkApiProps extends StackProps {
   linkLambda: lambda.Function;
@@ -15,17 +16,21 @@ export class JpApi extends cdk.Stack {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.
+  private userPoolsAuthorizer: apigw.CognitoUserPoolsAuthorizer
   public restApi: apigw.RestApi;
 
   constructor(scope: cdk.Construct, id: string, props: PlaidLinkApiProps) {
     super(scope, id, props);
 
-    // There are great constructs for a Proxy integration. Here,
-    // we need multiple resources and so will configure them
-    // individually.
     this.restApi = new apigw.RestApi(this, 'PlaidLinkApi', {
       description: "Transaction Service API",
     });
+
+    const userPool = UserPool.fromUserPoolArn(this, 'DefaultUserPool', DEFAULT_COGNITO_USER_POOL_ARN) as UserPool;
+
+    this.userPoolsAuthorizer = new apigw.CognitoUserPoolsAuthorizer(this, 'UserPoolAuthorizer', {
+      cognitoUserPools: [userPool]
+    })
 
     // Let's do the integration for linkTokens:
     const postLinkTokenIntegration = new apigw.LambdaIntegration(props.linkLambda, {
@@ -58,6 +63,8 @@ export class JpApi extends cdk.Stack {
     });
     const linkResource = this.restApi.root.addResource("linktoken");
     linkResource.addMethod("POST", postLinkTokenIntegration, {
+      authorizer: this.userPoolsAuthorizer,
+      authorizationType: apigw.AuthorizationType.COGNITO,
       methodResponses: [{
         statusCode: "200",
         responseParameters: {
@@ -80,6 +87,9 @@ export class JpApi extends cdk.Stack {
     const postItemIntegration = new apigw.LambdaIntegration(props.itemLambda, {
       proxy: false,
       allowTestInvoke: true,
+      requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito:username\']",' +
+          '"products" : $input.json(\'$.products\'),' +
+          '"webhook" : "$util.escapeJavaScript($input.json(\'$.webhook\'))"}'},
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH, integrationResponses: [
         {
 
@@ -106,6 +116,8 @@ export class JpApi extends cdk.Stack {
     })
     const itemResource = this.restApi.root.addResource("items")
     itemResource.addMethod('POST', postItemIntegration, {
+      authorizer: this.userPoolsAuthorizer,
+      authorizationType: apigw.AuthorizationType.COGNITO,
       methodResponses: [{
         statusCode: "200",
         responseParameters: {
@@ -133,7 +145,7 @@ export class JpApi extends cdk.Stack {
         'integration.request.querystring.user': 'method.request.querystring.user',
         'integration.request.querystring.startDate': 'method.request.querystring.startDate'
       },
-      requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito: username\']",\n' +
+      requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito:username\']",\n' +
             '"startDate" : "$util.escapeJavaScript($input.params(\'startDate\'))"}'},
       integrationResponses: [
         {
@@ -161,6 +173,8 @@ export class JpApi extends cdk.Stack {
     })
     const getTransactionsResource = this.restApi.root.addResource("transactions")
     getTransactionsResource.addMethod('GET', getTransactionsIntegration, {
+      authorizer: this.userPoolsAuthorizer,
+      authorizationType: apigw.AuthorizationType.COGNITO,
       requestParameters: {
         'method.request.querystring.user': false,
         'method.request.querystring.startDate': false
