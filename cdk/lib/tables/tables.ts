@@ -1,9 +1,9 @@
 import {Construct} from "@aws-cdk/core";
 import {AttributeType, BillingMode, Table} from "@aws-cdk/aws-dynamodb";
 
-
 export class JPTables extends Construct {
     public readonly transactionsTable: Table;
+    public readonly itemsTable: Table;
 
     constructor(scope: Construct, id: string) {
         super(scope, id);
@@ -17,6 +17,13 @@ export class JPTables extends Construct {
         this.transactionsTable.addLocalSecondaryIndex({
             indexName: 'institutionNameIndex',
             sortKey: {name: 'institutionName', type: AttributeType.STRING}
+        })
+
+        this.itemsTable = new Table(this, 'PlaidItems', {
+            tableName: 'PlaidItems',
+            partitionKey: {name: 'user', type: AttributeType.STRING},
+            sortKey: {name: 'institutionIdAccessToken', type: AttributeType.STRING},
+            billingMode: BillingMode.PAY_PER_REQUEST
         })
     }
 }

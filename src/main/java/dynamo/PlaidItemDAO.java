@@ -18,8 +18,7 @@ public class PlaidItemDAO {
     public static final String TABLE_NAME = "PlaidItems";
     // Primary Key:
     private String user;
-    private String institutionId;
-    private String accessToken;
+    private String institutionIdAccessToken;
     private String ID;
     private List<String> availableProducts;
     private List<String> accounts;
@@ -34,9 +33,9 @@ public class PlaidItemDAO {
 
     public PlaidItemDAO(PlaidItem plaidItem) {
         this.setUser(plaidItem.user()); // Set partition key.
-        this.setInstitutionId(plaidItem.institutionId()); // Set sort key.
+        this.setInstitutionIdAccessToken(plaidItem.institutionId() +
+                "#" + plaidItem.accessToken()); // Set sort key.
         this.setID(plaidItem.ID());
-        this.setAccessToken(plaidItem.accessToken());
         this.setAvailableProducts(plaidItem.availableProducts());
         this.setAccounts(plaidItem.accounts());
         this.setDateCreated(plaidItem.dateCreated());
@@ -49,15 +48,17 @@ public class PlaidItemDAO {
 
     public PlaidItem createItem() {
         PlaidItemDAO itemInfo = this;
+        String institutionID = institutionIdAccessToken.split("#")[0];
+        String accessToken = institutionIdAccessToken.split("#")[1];
 
         ImmutablePlaidItem.Builder builder = ImmutablePlaidItem.builder()
                 .ID(itemInfo.getID())
-                .accessToken(itemInfo.getAccessToken())
+                .accessToken(accessToken)
                 .user(itemInfo.getUser())
                 .dateCreated(itemInfo.getDateCreated())
                 .availableProducts(itemInfo.getAvailableProducts())
                 .accounts(itemInfo.getAccounts())
-                .institutionId(itemInfo.getInstitutionId())
+                .institutionId(institutionID)
                 .metaData(itemInfo.getMetaData())
                 .webhook(itemInfo.getWebHook());
         if (!(this.receiverNumber == null)) {
@@ -72,12 +73,8 @@ public class PlaidItemDAO {
     public void setUser(String user) { this.user = user; }
 
     @DynamoDBRangeKey(attributeName = "InstitutionID")
-    public String getInstitutionId() { return institutionId; }
-    public void setInstitutionId(String institutionId) { this.institutionId = institutionId; }
-
-    @DynamoDBAttribute(attributeName = "AccessToken")
-    public String getAccessToken() { return accessToken; }
-    public void setAccessToken(String accessToken) { this.accessToken = accessToken; }
+    public String getInstitutionIdAccessToken() { return institutionIdAccessToken; }
+    public void setInstitutionIdAccessToken(String institutionIdAccessToken) { this.institutionIdAccessToken = institutionIdAccessToken; }
 
     @DynamoDBAttribute(attributeName = "ID")
     public String getID() { return ID; }
