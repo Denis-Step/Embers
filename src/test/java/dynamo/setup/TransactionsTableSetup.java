@@ -1,5 +1,7 @@
 package dynamo.setup;
 
+import com.amazonaws.services.dynamodbv2.document.Table;
+import dagger.DaggerAwsComponent;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -23,8 +25,20 @@ public class TransactionsTableSetup {
     public static final String MERCHANT_NAME_LSI_ATTRIBUTE = "merchantName";
     public static final String ITEM_ID_ATTRIBUTE = "itemId";
 
+    private static final DynamoDbClient dynamoDbClient = DaggerAwsComponent.create().buildDynamoDbClient();
 
-    public static void createTable(DynamoDbClient ddbClient) {
+
+    /**
+     * Clean up existing table and create new one.
+     */
+    public static void setUpTransactionsTable() {
+
+        try {
+            deleteTransactionsTable();
+        } catch (DynamoDbException e) {
+            // no-op.
+        }
+
         CreateTableRequest createTableRequest = CreateTableRequest.builder()
                 .tableName(TRANSACTION_TABLE_NAME)
                 .attributeDefinitions(getAttributeDefinitions())
@@ -36,7 +50,14 @@ public class TransactionsTableSetup {
                         .build())
                 .build();
 
-        ddbClient.createTable(createTableRequest);
+        dynamoDbClient.createTable(createTableRequest);
+    }
+
+    public static void deleteTransactionsTable() {
+        DeleteTableRequest deleteTableRequest = DeleteTableRequest.builder()
+                .tableName(TRANSACTION_TABLE_NAME)
+                .build();
+        dynamoDbClient.deleteTable(deleteTableRequest);
     }
 
     public static List<KeySchemaElement> getKeySchemaElements() {
@@ -136,21 +157,21 @@ public class TransactionsTableSetup {
         return attributeDefinitions;
     }
 
-    /**
-     * @return returns default DDB client for Local DDB.
-     */
-    public static DynamoDbClient getDefaultClient() {
-        DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .build();
-
-        try {
-            return DynamoDbClient.builder()
-                    .credentialsProvider(DefaultCredentialsProvider.create())
-                    .endpointOverride(new URI("http://localhost:8000"))
-                    .build();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e.getCause());
-        }
-    }
+//    /**
+//     * @return returns default DDB client for Local DDB.
+//     */
+//    public static DynamoDbClient getDefaultClient() {
+//        DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
+//                .credentialsProvider(DefaultCredentialsProvider.create())
+//                .build();
+//
+//        try {
+//            return DynamoDbClient.builder()
+//                    .credentialsProvider(DefaultCredentialsProvider.create())
+//                    .endpointOverride(new URI("http://localhost:8000"))
+//                    .build();
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e.getCause());
+//        }
+//    }
 }

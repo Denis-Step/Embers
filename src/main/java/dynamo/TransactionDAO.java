@@ -18,6 +18,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -120,10 +121,19 @@ public class TransactionDAO {
         return query(transaction.getUser(), sortKey);
     }
 
+    public Transaction querySingle(String user, String sortKey) throws TransactionNotFoundException {
+        List<Transaction> transactions = query(user, sortKey);
+        if (transactions.size() != 1) {
+            throw new TransactionNotFoundException("Transaction not found");
+        } else {
+            return transactions.get(0);
+        }
+    }
+
     public List<Transaction> query(String user, String sortKey) {
 
         QueryConditional queryConditional = QueryConditional
-                .sortGreaterThanOrEqualTo(Key.builder()
+                .sortBeginsWith(Key.builder()
                         .partitionValue(user)
                         .sortValue(sortKey)
                         .build()
@@ -236,4 +246,16 @@ public class TransactionDAO {
     private Transaction load() {
        return table.getItem(this).asTransaction();
     }
+
+    // Exceptions
+    public static class TransactionException extends Exception {
+        public TransactionException(String errorMessage) {super(errorMessage);}
+    }
+
+    public static class TransactionNotFoundException extends TransactionDAO.TransactionException {
+        public TransactionNotFoundException(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
 }

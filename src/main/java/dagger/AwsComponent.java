@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import dynamo.TransactionDAO;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 
 import javax.inject.Named;
@@ -17,6 +18,7 @@ public interface AwsComponent {
 
     DynamoDBMapper buildDynamo();
     AmazonDynamoDB buildDynamoClient();
+    DynamoDbClient buildDynamoDbClient();
     DynamoDbEnhancedClient buildDynamoEnhancedClient();
     AWSCredentialsProvider buildCredentialsProvider();
     EventBridgeClient buildEventBridgeClient();

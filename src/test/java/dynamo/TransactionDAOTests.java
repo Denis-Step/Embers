@@ -1,12 +1,11 @@
 package dynamo;
 
+import dagger.DaggerAwsComponent;
 import external.plaid.entities.Transaction;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import dynamo.setup.DynamoDbClientSetup;
 import dynamo.setup.TransactionsTableSetup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +31,7 @@ public class TransactionDAOTests {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionDAOTests.class);
     private static final TransactionDAO transactionDao = new TransactionDAO();
 
-    public TransactionDAOTests() {
-    }
+    public TransactionDAOTests() { }
 
     @Test
     public void test_LoadQueryTransaction() {
@@ -93,9 +91,9 @@ public class TransactionDAOTests {
 
     }
 
-    //@BeforeAll
+    @BeforeAll
     public static void createTransactionsTable() {
-        TransactionsTableSetup.createTable(DynamoDbClientSetup.getDefaultDdbClient());
+        TransactionsTableSetup.setUpTransactionsTable();
     }
 
     private Transaction createTransaction() {

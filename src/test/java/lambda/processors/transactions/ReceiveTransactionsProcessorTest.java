@@ -1,5 +1,6 @@
 package lambda.processors.transactions;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import dynamo.TransactionDAO;
 import events.impl.TransactionsEbClient;
 import external.plaid.entities.Transaction;
@@ -48,9 +49,13 @@ public class ReceiveTransactionsProcessorTest {
     public void test_saveAndReturnNewTransactions() {
         List<Transaction> newTransactions = createNewTransactions();
         cleanup_Transactions(newTransactions);
+
         List<Transaction> receivedTransactions = this.receiveTransactionsProcessor
                 .saveAndReturnNewTransactions(newTransactions);
-
+        System.out.println("new:");
+        System.out.println(newTransactions);
+        System.out.println("received:");
+        System.out.println(receivedTransactions);
         assert (newTransactions.equals(receivedTransactions));
         Mockito.verify(transactionsEbClient, times(25)).createNewTransactionEvent((Transaction) any());
 
