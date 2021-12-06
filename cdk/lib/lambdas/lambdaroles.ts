@@ -1,7 +1,39 @@
-import {IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal} from "@aws-cdk/aws-iam";
-import {Construct, Stack, StackProps} from "@aws-cdk/core";
+import {
+    Effect,
+    IPolicy,
+    IRole,
+    ManagedPolicy,
+    Policy,
+    PolicyDocument,
+    PolicyStatement,
+    Role,
+    ServicePrincipal
+} from "@aws-cdk/aws-iam";
+import {Construct} from "@aws-cdk/core";
 import {ITable, Table} from "@aws-cdk/aws-dynamodb";
-import {PLAID_ITEMS_DDB_TABLE_ARN, TRANSACTIONS_DDB_TABLE_ARN} from "../constants";
+import {PLAID_ITEMS_DDB_TABLE_ARN, PLAID_SECRETS_ARN} from "../constants";
+
+class PlaidSecretsPolicy extends Construct {
+    public readonly policy: Policy;
+
+    constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        this.policy = new Policy(this, id, {
+            statements: [
+                new PolicyStatement(({
+                    resources: [PLAID_SECRETS_ARN],
+                    effect: Effect.ALLOW,
+                    actions: [
+                        "secretsmanager:GetSecretValue",
+                        "secretsmanager:DescribeSecret",
+                        "secretsmanager:ListSecretVersionIds",
+                    ]
+                }))
+            ]
+        })
+    }
+}
 
 export class ItemLambdaRoles extends Construct {
     private readonly itemTable: ITable;
@@ -18,14 +50,39 @@ export class ItemLambdaRoles extends Construct {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
-            ]
+            ],
+            inlinePolicies: {
+                plaidSecretsPolicy: new PolicyDocument({statements: [
+                        new PolicyStatement(({
+                            resources: [PLAID_SECRETS_ARN],
+                            effect: Effect.ALLOW,
+                            actions: [
+                                "secretsmanager:GetSecretValue",
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:ListSecretVersionIds",
+                            ]
+                        }))
+                    ]} )
+            }
         });
-
         this.createItemLambdaRole = new Role(this, 'CreateItemLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
-            ]
+            ],
+            inlinePolicies: {
+                plaidSecretsPolicy: new PolicyDocument({statements: [
+                        new PolicyStatement(({
+                            resources: [PLAID_SECRETS_ARN],
+                            effect: Effect.ALLOW,
+                            actions: [
+                                "secretsmanager:GetSecretValue",
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:ListSecretVersionIds",
+                            ]
+                        }))
+                    ]} )
+            }
         })
 
         this.getItemLambdaRole = new Role(this, 'GetItemLambdaRole', {
@@ -63,16 +120,28 @@ export class TransactionLambdasRoles extends Construct {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
-            ]
+            ],
         });
 
         this.loadTransactionsLambdaRole = new Role(this, 'LoadTransactionsLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
-            ]
+            ],
+            inlinePolicies: {
+                plaidSecretsPolicy: new PolicyDocument({statements: [
+                        new PolicyStatement(({
+                            resources: [PLAID_SECRETS_ARN],
+                            effect: Effect.ALLOW,
+                            actions: [
+                                "secretsmanager:GetSecretValue",
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:ListSecretVersionIds",
+                            ]
+                        }))
+                    ]} )
+            }
         });
-
         this.receiveTransactionsLambdaRole = new Role(this, 'ReceiveTransactionsLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [

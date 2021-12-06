@@ -70,7 +70,6 @@ const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
     const accounts = metadata.accounts?.map((account) => account.name + "-" + account.id) || [];
 
     return {
-        user: user,
         publicToken: publicToken,
         institutionId: institutionName + "-" + institutionId,
         availableProducts: products,

@@ -42,14 +42,13 @@ export const useHeadlessTransactionsTable = (transactions: Transaction[]) => {
 
 // Dependency on useAuth.
 export const useTransactions = (startDate: Date) => {
-    const user = "Denny"
     const token = useAuth().token.id_token;
     const [transactions, setTransactions] = useState<Transaction[]>([]);
 
     useEffect(() => {
 
         const refreshTransactions = async () => {
-            const transactions = await getTransactions(user, startDate, token);
+            const transactions = await getTransactions(startDate, token);
             setTransactions(transactions);
         }
 

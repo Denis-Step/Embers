@@ -1,5 +1,4 @@
 export interface PlaidItemCreationInfo {
-    user: string;
     publicToken: string;
     institutionId: string; // {INST_NAME}-{INST_ID} need both for Dynamo sort key.
     availableProducts: string[];
