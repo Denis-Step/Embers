@@ -78,4 +78,18 @@ public class CreateItemRequest {
     public void setWebhook(boolean webhook) {
         this.webhook = webhook;
     }
+
+    @Override
+    public String toString() {
+        return "CreateItemRequest{" +
+                "user='" + user + '\'' +
+                ", publicToken='" + publicToken + '\'' +
+                ", institutionId='" + institutionId + '\'' +
+                ", availableProducts=" + availableProducts +
+                ", accounts=" + accounts +
+                ", dateCreated='" + dateCreated + '\'' +
+                ", metaData='" + metaData + '\'' +
+                ", webhook=" + webhook +
+                '}';
+    }
 }

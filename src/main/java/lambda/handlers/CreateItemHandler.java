@@ -23,6 +23,7 @@ public class CreateItemHandler implements RequestHandler<CreateItemRequest, Stri
     public String handleRequest(CreateItemRequest event, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("Getting access token for" + event.getPublicToken());
+        logger.log(event.toString());
 
         try {
             PlaidItem item = processor.createPlaidItem(event);
