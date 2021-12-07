@@ -47,7 +47,7 @@ export class JpApi extends cdk.Stack {
           statusCode: "200",
           responseTemplates: {
             // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
-            'application/json': '$util.body' // Just return the accessToken string.
+            'application/json': 'input.body' // Just return the accessToken string.
           },
           responseParameters: {
             // We can map response parameters
