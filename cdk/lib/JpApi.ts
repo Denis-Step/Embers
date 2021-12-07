@@ -16,7 +16,7 @@ export class JpApi extends cdk.Stack {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.
-  private userPoolsAuthorizer: apigw.CognitoUserPoolsAuthorizer
+  private readonly userPoolsAuthorizer: apigw.CognitoUserPoolsAuthorizer
   public restApi: apigw.RestApi;
 
   constructor(scope: cdk.Construct, id: string, props: PlaidLinkApiProps) {
@@ -37,6 +37,9 @@ export class JpApi extends cdk.Stack {
       proxy: false,
       allowTestInvoke: true,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito:username\']",' +
+            '"products" : $input.json(\'$.products\'),' +
+            '"webhook" : "$util.escapeJavaScript($input.json(\'$.webhook\'))"}'},
       integrationResponses: [
         {
 
