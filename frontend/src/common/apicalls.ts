@@ -22,7 +22,7 @@ export const getLinkToken = async (token: string,
         { products, webhook },
         {headers: {
             Authorization: token
-            }});
+        }});
 
     return request.data;
 }
