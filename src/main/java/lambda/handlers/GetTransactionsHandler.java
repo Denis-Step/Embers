@@ -3,7 +3,7 @@ package lambda.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import dagger.DaggerPlaidComponent;
+import dagger.DaggerProcessorComponent;
 import lambda.processors.transactions.GetTransactionsProcessor;
 import lambda.requests.transactions.GetTransactionsRequest;
 import external.plaid.entities.Transaction;
@@ -16,7 +16,7 @@ import java.util.List;
 public class GetTransactionsHandler implements RequestHandler<GetTransactionsRequest, List<Transaction>> {
     private final GetTransactionsProcessor processor;
 
-    public GetTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildGetTransactionsProcessor(); }
+    public GetTransactionsHandler() {this.processor = DaggerProcessorComponent.create().buildGetTransactionsProcessor(); }
 
     public GetTransactionsHandler(GetTransactionsProcessor processor) {
         this.processor = processor;

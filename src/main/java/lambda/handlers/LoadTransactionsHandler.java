@@ -2,7 +2,7 @@ package lambda.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import dagger.DaggerPlaidComponent;
+import dagger.DaggerProcessorComponent;
 import dynamo.PlaidItemDAO;
 import lambda.processors.transactions.LoadTransactionsProcessor;
 import lambda.requests.transactions.PullNewTransactionsRequest;
@@ -26,7 +26,7 @@ public class LoadTransactionsHandler implements RequestHandler<PullNewTransactio
     private static final Logger LOGGER = LoggerFactory.getLogger(LoadTransactionsHandler.class);
     private static final int DEFAULT_DATE_RANGE_DAYS = 30;
 
-    public LoadTransactionsHandler() {this.processor = DaggerPlaidComponent.create().buildLoadTransactionsProcessor(); }
+    public LoadTransactionsHandler() {this.processor = DaggerProcessorComponent.create().buildLoadTransactionsProcessor(); }
 
     public LoadTransactionsHandler(LoadTransactionsProcessor processor) {
         this.processor = processor;

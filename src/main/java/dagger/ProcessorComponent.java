@@ -1,5 +1,6 @@
 package dagger;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
 import external.plaid.clients.TransactionsGrabber;
@@ -12,23 +13,16 @@ import lambda.processors.transactions.ReceiveTransactionsProcessor;
 import external.plaid.clients.ItemCreator;
 import external.plaid.clients.LinkGrabber;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
 @Component(modules = {
         AwsClientModule.class,
         PlaidClientModule.class,
-        PlaidCredentialsModule.class,
         ProcessorModule.class})
-public interface PlaidComponent {
-
-    PlaidClient buildPLaidClient();
-
-    PlaidItemDAO buildPlaidItemDao();
-
-    ItemCreator buildItemGrabber();
-    LinkGrabber buildPlaidGrabber();
-    TransactionsGrabber buildTransactionsGrabber();
+public interface ProcessorComponent {
+    @Named("PLAID_SECRETS_JSON") JsonNode buildJsonNode();
 
     CreateLinkTokenProcessor buildLinkTokenProcessor();
     ItemProcessor buildItemProcessor();

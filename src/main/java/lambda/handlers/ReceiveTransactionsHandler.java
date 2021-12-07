@@ -2,7 +2,7 @@ package lambda.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import dagger.DaggerPlaidComponent;
+import dagger.DaggerProcessorComponent;
 import lambda.processors.transactions.ReceiveTransactionsProcessor;
 import external.plaid.entities.Transaction;
 
@@ -16,7 +16,7 @@ public class ReceiveTransactionsHandler implements RequestHandler<List<Transacti
     }
 
     public ReceiveTransactionsHandler() {
-        this.processor = DaggerPlaidComponent.create().buildReceiveTransactionsProcessor();
+        this.processor = DaggerProcessorComponent.create().buildReceiveTransactionsProcessor();
     }
 
     @Override

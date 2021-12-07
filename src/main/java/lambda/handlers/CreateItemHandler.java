@@ -3,7 +3,7 @@ package lambda.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import dagger.DaggerPlaidComponent;
+import dagger.DaggerProcessorComponent;
 import lambda.processors.items.ItemProcessor;
 import lambda.requests.items.CreateItemRequest;
 import external.plaid.entities.PlaidItem;
@@ -14,7 +14,7 @@ import java.io.IOException;
 public class CreateItemHandler implements RequestHandler<CreateItemRequest, String> {
     private final ItemProcessor processor;
 
-    public CreateItemHandler() {this.processor = DaggerPlaidComponent.create().buildItemProcessor();}
+    public CreateItemHandler() {this.processor = DaggerProcessorComponent.create().buildItemProcessor();}
 
     @Inject
     public CreateItemHandler(ItemProcessor processor) {this.processor = processor;}

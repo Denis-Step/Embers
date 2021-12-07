@@ -1,18 +1,19 @@
 package dagger;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dynamo.TransactionDAO;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -31,8 +32,8 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    static AWSCredentialsProvider provideAWSCredentials() {
-        return new DefaultAWSCredentialsProviderChain();
+    static AwsCredentialsProvider provideAWSCredentials() {
+        return DefaultCredentialsProvider.create();
     }
 
     @Provides
@@ -43,11 +44,11 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    static AmazonDynamoDB provideAmazonDynamoDb(AWSCredentialsProvider awsCredentialsProvider) {
+    static AmazonDynamoDB provideAmazonDynamoDb() {
         return AmazonDynamoDBClientBuilder
                 .standard()
                 .withRegion("us-east-2")
-                .withCredentials(awsCredentialsProvider)
+                .withCredentials(new DefaultAWSCredentialsProviderChain())
                 .build();
     }
 
@@ -115,6 +116,15 @@ public interface AwsClientModule {
     static TransactionDAO provideNewTransactionDao(DynamoDbEnhancedClient client,
                                                    @Named("TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> table) {
         return new TransactionDAO(client, table);
+    }
+
+    @Provides
+    @Singleton
+    static SecretsManagerClient provideSecretsManager(AwsCredentialsProvider awsCredentialsProvider) {
+        return SecretsManagerClient.builder()
+                .credentialsProvider(awsCredentialsProvider)
+                .build();
+
     }
 
     @Provides

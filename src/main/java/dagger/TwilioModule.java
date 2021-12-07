@@ -10,5 +10,5 @@ public interface TwilioModule {
     @Provides
     static TwilioMessageSender provideTwilioMessageSender() {return new TwilioMessageSender(); }
 
-    @Binds abstract MessageClient provideMessageClient(TwilioMessageClient twilioMessageClient );
+    @Binds MessageClient provideMessageClient(TwilioMessageClient twilioMessageClient );
 }

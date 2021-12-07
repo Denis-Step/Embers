@@ -3,7 +3,6 @@ package external.plaid.clients;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.TransactionsGetRequest;
 import com.plaid.client.response.TransactionsGetResponse;
-import dagger.DaggerPlaidComponent;
 import external.plaid.entities.Transaction;
 import retrofit2.Call;
 import retrofit2.Response;
