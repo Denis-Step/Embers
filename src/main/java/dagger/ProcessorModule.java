@@ -26,9 +26,6 @@ public interface ProcessorModule {
     static PlaidItemDAO providePlaidItemDao() {return new PlaidItemDAO();}
 
     @Provides
-    static OldTransactionDAO providePlaidTransactionDao() {return new OldTransactionDAO();}
-
-    @Provides
     @Named("DEFAULT_MAPPER")
     static ObjectMapper provideDefaultObjectMapper() {return new ObjectMapper();}
 
