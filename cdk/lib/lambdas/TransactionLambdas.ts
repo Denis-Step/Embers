@@ -2,10 +2,14 @@ import * as lambda from "@aws-cdk/aws-lambda";
 import {Construct, Duration} from "@aws-cdk/core";
 import * as path from "path";
 import {TransactionLambdasRoles} from "./lambdaroles";
-import {JPTables} from "../tables/tables";
+import {Table} from "@aws-cdk/aws-dynamodb";
+
+export class TransactionLambdasProps {
+    itemsTable: Table;
+    transactionsTable: Table;
+}
 
 export class TransactionLambdas extends Construct {
-    private readonly tables: JPTables;
     public readonly loadTransactionsLambda: lambda.Function;
     public readonly receiveTransactionsLambda: lambda.Function;
     public readonly newTransactionLambda: lambda.Function;
@@ -13,13 +17,12 @@ export class TransactionLambdas extends Construct {
 
     private readonly roles: TransactionLambdasRoles;
 
-    constructor(scope: Construct, id: string) {
+    constructor(scope: Construct, id: string, props: TransactionLambdasProps) {
         super(scope, id);
 
-        this.tables = new JPTables(this, 'Tables');
-
         this.roles = new TransactionLambdasRoles(this, 'TxLambdaRoles', {
-            transactionsTable: this.tables.transactionsTable
+            transactionsTable: props.transactionsTable,
+            itemsTable: props.itemsTable
         });
 
         this.loadTransactionsLambda = new lambda.Function(this, 'LoadTransactionsLambda', {

@@ -3,7 +3,6 @@ package dagger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plaid.client.PlaidClient;
 import dynamo.PlaidItemDAO;
-import dynamo.OldTransactionDAO;
 import events.impl.SmsEbClient;
 import events.impl.TransactionsEbClient;
 import external.plaid.clients.ItemCreator;

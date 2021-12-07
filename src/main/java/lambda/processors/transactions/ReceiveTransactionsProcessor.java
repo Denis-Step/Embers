@@ -1,6 +1,5 @@
 package lambda.processors.transactions;
 
-import dynamo.OldTransactionDAO;
 import dynamo.TransactionDAO;
 import events.impl.TransactionsEbClient;
 import org.slf4j.Logger;

@@ -4,15 +4,13 @@ import {
     ITEM_API_RESOURCE,
     LINK_API_RESOURCE,
     LINK_DEFAULT_PRODUCTS,
-    IDENTITY_POOL_ID,
     TRANSACTIONS_API_RESOURCE
 } from "./constants";
 import {PlaidItemCreationInfo, Transaction} from "./types";
 import {formatDate} from "./utils";
 
 // Get link token for clients.plaid flow.
-export const getLinkToken = async (user: string,
-                             token: string,
+export const getLinkToken = async (token: string,
                              webhook: boolean,
                              products?: string[]): Promise<string> => {
 
@@ -21,7 +19,7 @@ export const getLinkToken = async (user: string,
     const endpoint = BETA_ENDPOINT + LINK_API_RESOURCE;
 
     const request = await axios.post(endpoint,
-        { user, products, webhook },
+        { products, webhook },
         {headers: {
             Authorization: token
             }});

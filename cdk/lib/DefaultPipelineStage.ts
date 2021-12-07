@@ -5,11 +5,13 @@ import {PullTransactionsMachine} from "./statemachines/pullTransactionsMachine";
 import {TransactionLambdas} from "./lambdas/TransactionLambdas";
 import {MessageLambdas} from "./lambdas/messageLambdas";
 import {MessageEvents, NewTransactionEvents} from "./events/events";
+import {JPTables} from "./tables/tables";
 
 // Let's use one stage for now.
 export class DefaultPipelineStage extends Stage {
     public readonly mainStack: Stack
     public readonly messageStack: Stack
+    public readonly tables: JPTables;
 
     constructor(scope: Stack, id: string, props?: StageProps) {
         super(scope, id, props);
@@ -18,8 +20,18 @@ export class DefaultPipelineStage extends Stage {
         this.mainStack = new Stack(this,  'MainStack');
         this.messageStack = new Stack(this, 'MessageStack');
 
-        const itemLambdas = new ItemLambdas(this.mainStack, 'PlaidItem Lambdas');
-        const transactionLambdas = new TransactionLambdas(this.mainStack, 'Transaction Lambdas');
+        // Create Tables
+        this.tables = new JPTables(this.mainStack, 'JpTables');
+
+        const itemLambdas = new ItemLambdas(this.mainStack, 'PlaidItem Lambdas', {
+            itemsTable: this.tables.itemsTable
+            });
+
+        const transactionLambdas = new TransactionLambdas(this.mainStack, 'Transaction Lambdas', {
+            itemsTable: this.tables.itemsTable,
+            transactionsTable: this.tables.transactionsTable
+        });
+
         const apiStack = new JpApi(this.mainStack, 'JpApi',{
             getTransactionsLambda: transactionLambdas.getTransactionsLambda,
             linkLambda: itemLambdas.createLinkTokenLambda,

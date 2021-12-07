@@ -11,7 +11,7 @@ import {
 } from "@aws-cdk/aws-iam";
 import {Construct} from "@aws-cdk/core";
 import {ITable, Table} from "@aws-cdk/aws-dynamodb";
-import {PLAID_ITEMS_DDB_TABLE_ARN, PLAID_SECRETS_ARN} from "../constants";
+import {PLAID_SECRETS_ARN} from "../constants";
 
 class PlaidSecretsPolicy extends Construct {
     public readonly policy: Policy;
@@ -35,16 +35,18 @@ class PlaidSecretsPolicy extends Construct {
     }
 }
 
+export interface ItemLambdaRolesProps {
+    itemsTable: Table;
+}
+
+
 export class ItemLambdaRoles extends Construct {
-    private readonly itemTable: ITable;
     public createLinkTokenLambdaRole: Role;
     public createItemLambdaRole: IRole;
     public getItemLambdaRole: IRole;
 
-    constructor(scope: Construct, id: string) {
+    constructor(scope: Construct, id: string, props: ItemLambdaRolesProps) {
         super(scope, id);
-
-        this.itemTable = Table.fromTableArn(this, "PlaidItemsTable", PLAID_ITEMS_DDB_TABLE_ARN);
 
         this.createLinkTokenLambdaRole = new Role(this, 'CreateLinkTokenLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -92,19 +94,18 @@ export class ItemLambdaRoles extends Construct {
             ]
         })
 
-        this.itemTable.grantReadWriteData(this.createItemLambdaRole);
-        this.itemTable.grantReadData(this.getItemLambdaRole);
+        props.itemsTable.grantReadWriteData(this.createItemLambdaRole);
+        props.itemsTable.grantReadData(this.getItemLambdaRole);
     }
 }
 
 
 export interface TransactionLambdaRolesProps {
     transactionsTable: Table;
+    itemsTable: Table;
 }
 
 export class TransactionLambdasRoles extends Construct {
-    private readonly itemTable: ITable;
-    private readonly transactionTable: ITable;
     public getTransactionsLambdaRole: Role;
     public loadTransactionsLambdaRole: Role;
     public receiveTransactionsLambdaRole: IRole;
@@ -112,9 +113,6 @@ export class TransactionLambdasRoles extends Construct {
 
     constructor(scope: Construct, id: string, props: TransactionLambdaRolesProps) {
         super(scope, id);
-
-        this.itemTable = Table.fromTableArn(this, "PlaidItemsTable", PLAID_ITEMS_DDB_TABLE_ARN);
-        this.transactionTable = props.transactionsTable;
 
         this.getTransactionsLambdaRole = new Role(this, 'GetTransactionsLambdaRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -166,11 +164,11 @@ export class TransactionLambdasRoles extends Construct {
             actions: ["events:PutEvents", "events:ListRules"]
         }))
 
-        this.itemTable.grantReadWriteData(this.loadTransactionsLambdaRole);
-        this.itemTable.grantReadWriteData(this.receiveTransactionsLambdaRole)
-        this.itemTable.grantReadData(this.newTransactionLambdaRole);
-        this.transactionTable.grantReadWriteData(this.receiveTransactionsLambdaRole);
-        this.transactionTable.grantReadData(this.getTransactionsLambdaRole);
+        props.itemsTable.grantReadWriteData(this.loadTransactionsLambdaRole);
+        props.itemsTable.grantReadWriteData(this.receiveTransactionsLambdaRole)
+        props.itemsTable.grantReadData(this.newTransactionLambdaRole);
+        props.transactionsTable.grantReadWriteData(this.receiveTransactionsLambdaRole);
+        props.transactionsTable.grantReadData(this.getTransactionsLambdaRole);
     }
 }
 
