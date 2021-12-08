@@ -68,11 +68,11 @@ public class PlaidItemDAO {
         }
     }
 
-    @DynamoDBHashKey(attributeName = "User")
+    @DynamoDBHashKey(attributeName = "user")
     public String getUser() { return user; }
     public void setUser(String user) { this.user = user; }
 
-    @DynamoDBRangeKey(attributeName = "InstitutionID")
+    @DynamoDBRangeKey(attributeName = "institutionIdAccessToken")
     public String getInstitutionIdAccessToken() { return institutionIdAccessToken; }
     public void setInstitutionIdAccessToken(String institutionIdAccessToken) { this.institutionIdAccessToken = institutionIdAccessToken; }
 
@@ -80,27 +80,27 @@ public class PlaidItemDAO {
     public String getID() { return ID; }
     public void setID(String ID) { this.ID = ID; }
 
-    @DynamoDBAttribute(attributeName = "AvailableProducts")
+    @DynamoDBAttribute(attributeName = "availableProducts")
     public List<String> getAvailableProducts() { return availableProducts; }
     public void setAvailableProducts(List<String> availableProducts) { this.availableProducts = availableProducts; }
 
-    @DynamoDBAttribute(attributeName = "DateCreated")
+    @DynamoDBAttribute(attributeName = "dateCreated")
     public String getDateCreated() { return dateCreated; }
     public void setDateCreated(String dateCreated) { this.dateCreated = dateCreated; }
 
-    @DynamoDBAttribute(attributeName = "Metadata")
+    @DynamoDBAttribute(attributeName = "metaData")
     public String getMetaData() { return metaData; }
     public void setMetaData(String metaData) { this.metaData = metaData; }
 
-    @DynamoDBAttribute(attributeName = "Accounts")
+    @DynamoDBAttribute(attributeName = "accounts")
     public List<String> getAccounts() { return accounts; }
     public void setAccounts(List<String> accounts) { this.accounts = accounts; }
 
-    @DynamoDBAttribute(attributeName = "ReceiverNumber")
+    @DynamoDBAttribute(attributeName = "receiverNumber")
     public String getReceiverNumber() { return receiverNumber; }
     public void setReceiverNumber(String receiverNumber) { this.receiverNumber = receiverNumber; }
 
-    @DynamoDBAttribute(attributeName = "Webhook")
+    @DynamoDBAttribute(attributeName = "webHook")
     public Boolean getWebHook() { return webHook; }
     public void setWebHook(Boolean webHook) { this.webHook = webHook; }
 
