@@ -42,6 +42,7 @@ public class ItemCreator {
 
         try {
             Response<ItemPublicTokenExchangeResponse> resp = publicTokenExchangeResponseCall.execute();
+            LOGGER.info("Response result: {}", resp);
 
 
             if (resp.isSuccessful()) {
