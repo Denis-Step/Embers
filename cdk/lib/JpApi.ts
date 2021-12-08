@@ -91,8 +91,14 @@ export class JpApi extends cdk.Stack {
       proxy: false,
       allowTestInvoke: true,
       requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito:username\']",' +
-          '"products" : $input.json(\'$.products\'),' +
-          '"webhook" : "$util.escapeJavaScript($input.json(\'$.webhook\'))"}'},
+          '"availableProducts" : $input.json(\'$.availableProducts\'),' +
+          '"publicToken" : "$util.escapeJavaScript($input.json(\'$.publicToken\'))"}' +
+            '"institutionId": "$util.escapeJavaScript($input.json(\'$.institutionId\'))"' +
+            '"accounts": input.json(\'$.accounts\')"' +
+            '"dateCreated": "$util.escapeJavaScript($input.json(\'$.dateCreated\'))"' +
+            '"metaData" : "$util.escapeJavaScript($input.json(\'$.metaData\'))"' +
+            '"webhook" : $input.json(\'$.webhook\')'
+      },
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH, integrationResponses: [
         {
 
