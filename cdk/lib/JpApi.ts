@@ -94,7 +94,7 @@ export class JpApi extends cdk.Stack {
           '"availableProducts" : $input.json(\'$.availableProducts\'),' +
           '"publicToken" : $input.json(\'$.publicToken\'),' +
             '"institutionId": $input.json(\'$.institutionId\'),' +
-            '"accounts": input.json(\'$.accounts\'),' +
+            '"accounts": $input.json(\'$.accounts\'),' +
             '"dateCreated": $input.json(\'$.dateCreated\'),' +
             '"metaData" : $input.json(\'$.metaData\'),' +
             '"webhook" : $input.json(\'$.webhook\')}'
