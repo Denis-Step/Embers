@@ -70,7 +70,7 @@ public interface AwsClientModule {
 
         String stage = System.getenv().get("STAGE");
 
-        if (stage.equals("TEST")) {
+        if (stage != null && stage.equals("TEST")) {
             try {
                 return DynamoDbClient.builder()
                         .credentialsProvider(DefaultCredentialsProvider.create())
