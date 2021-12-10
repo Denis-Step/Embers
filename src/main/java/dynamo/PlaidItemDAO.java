@@ -157,8 +157,8 @@ public class PlaidItemDAO {
         eav.put(":institution",new AttributeValue().withS(institutionId));
 
         return new DynamoDBQueryExpression<PlaidItemDAO>()
-                .withKeyConditionExpression("#U = :name AND begins_with ( InstitutionID, :institution )")
-                .addExpressionAttributeNamesEntry("#U", "User")
+                .withKeyConditionExpression("#U = :name AND begins_with ( institutionIdAccessToken, :institution )")
+                .addExpressionAttributeNamesEntry("#U", "user")
                 .withExpressionAttributeValues(eav);
     }
 
@@ -168,7 +168,7 @@ public class PlaidItemDAO {
 
         return new DynamoDBQueryExpression<PlaidItemDAO>()
                 .withKeyConditionExpression("#U = :name")
-                .addExpressionAttributeNamesEntry("#U", "User")
+                .addExpressionAttributeNamesEntry("#U", "user")
                 .withExpressionAttributeValues(eav);
     }
 

@@ -44,7 +44,6 @@ public class ItemCreator {
             Response<ItemPublicTokenExchangeResponse> resp = publicTokenExchangeResponseCall.execute();
             LOGGER.info("Response result: {}", resp);
 
-
             if (resp.isSuccessful()) {
                 return new PublicTokenExchangeResponse(
                         resp.body().getItemId(),
