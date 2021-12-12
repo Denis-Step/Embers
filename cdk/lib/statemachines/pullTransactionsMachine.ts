@@ -1,6 +1,5 @@
 import {Construct, Duration} from '@aws-cdk/core';
 import {Function} from "@aws-cdk/aws-lambda";
-import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import {StateMachine} from "@aws-cdk/aws-stepfunctions";
 
