@@ -130,10 +130,15 @@ public class TransactionDAO {
         }
     }
 
+    /**
+     * @param user
+     * @param sortKey usually date.
+     * @return
+     */
     public List<Transaction> query(String user, String sortKey) {
 
         QueryConditional queryConditional = QueryConditional
-                .sortBeginsWith(Key.builder()
+                .sortGreaterThanOrEqualTo(Key.builder()
                         .partitionValue(user)
                         .sortValue(sortKey)
                         .build()
