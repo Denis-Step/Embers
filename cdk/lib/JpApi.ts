@@ -243,7 +243,7 @@ export class JpApi extends cdk.Stack {
         ],
         requestTemplates: {
           "application/json": `{
-              "input": $input.body,
+              "input": "$util.escapeJavaScript($input.body)",
               "stateMachineArn": "${props.pullTransactionsMachine.stateMachineArn}"
             }`,
         },
