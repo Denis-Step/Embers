@@ -27,7 +27,9 @@ public abstract class AbstractTransactionsEbClient implements EventBridgeEventCr
 
     public abstract void createNewTransactionEvent(Transaction transaction);
 
-    public abstract void createNewTransactionEvent(Collection<Transaction> transactions);
+    public void createNewTransactionEvent(Collection<Transaction> transactions) {
+        transactions.stream().forEach(this::createNewTransactionEvent);
+    };
 
     @Override
     public EventBridgeClient getEventBridgeClient() {

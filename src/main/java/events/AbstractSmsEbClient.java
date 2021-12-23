@@ -24,7 +24,9 @@ public abstract class AbstractSmsEbClient implements SmsEventCreator, EventBridg
 
     public abstract void createNewSmsEvent(SmsMessage smsMessage);
 
-    public abstract void createNewSmsEvent(Collection<SmsMessage> smsMessages);
+    public void createNewSmsEvent(Collection<SmsMessage> smsMessages) {
+        smsMessages.stream().forEach(sms -> createNewSmsEvent(sms));
+    }
 
     @Override
     public EventBridgeClient getEventBridgeClient() {

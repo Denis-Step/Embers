@@ -45,11 +45,6 @@ public class TransactionsEbClient extends AbstractTransactionsEbClient {
         }
     }
 
-    public void createNewTransactionEvent(Collection<Transaction> newTransactions) {
-        newTransactions.stream().forEach(
-                newTransaction -> createNewTransactionEvent(newTransaction));
-    }
-
 
     private PutEventsRequestEntry newTransactionPutEvent(Transaction transaction) throws JsonProcessingException {
         return PutEventsRequestEntry.builder()
