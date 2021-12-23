@@ -153,13 +153,14 @@ public class PlaidItemDAO {
 
     private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user, String institutionId) {
         Map<String, AttributeValue> eav = new HashMap<>();
-        eav.put(":name", new AttributeValue().withS(user));
+        eav.put(":user", new AttributeValue().withS(user));
         eav.put(":institution",new AttributeValue().withS(institutionId));
 
         return new DynamoDBQueryExpression<PlaidItemDAO>()
                 .withKeyConditionExpression("#U = :name AND begins_with ( institutionIdAccessToken, :institution )")
                 .addExpressionAttributeNamesEntry("#U", "user")
                 .withExpressionAttributeValues(eav);
+
     }
 
     private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user) {

@@ -20,6 +20,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @DynamoDbBean
@@ -114,19 +115,32 @@ public class TransactionDAO {
                 .collect(Collectors.toList());
     }
 
-    public List<Transaction> query(Transaction transaction) {
-        String sortKey = transaction.date + "#" + transaction.amount.toString() + "#" +
-                transaction.transactionId;
+    public Optional<Transaction> query(Transaction transaction) {
+        String sortKey = transaction.getDate() +
+                "#" +
+                transaction.getAmount() +
+                "#" +
+                transaction.getTransactionId();
 
-        return query(transaction.getUser(), sortKey);
-    }
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder()
+                        .partitionValue(transaction.getUser())
+                        .sortValue(sortKey)
+                        .build());
 
-    public Transaction querySingle(String user, String sortKey) throws TransactionNotFoundException {
-        List<Transaction> transactions = query(user, sortKey);
-        if (transactions.size() != 1) {
-            throw new TransactionNotFoundException("Transaction not found");
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        PageIterable<TransactionDAO> pages = this.table.query(queryRequest);
+
+        List<Transaction> transactions = pages.items().stream()
+                .map(TransactionDAO::asTransaction)
+                .collect(Collectors.toList());
+
+        if (!transactions.isEmpty()) {
+            return Optional.of(transactions.get(0));
         } else {
-            return transactions.get(0);
+            return Optional.empty();
         }
     }
 

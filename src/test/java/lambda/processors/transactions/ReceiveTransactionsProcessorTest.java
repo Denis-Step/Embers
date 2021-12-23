@@ -52,10 +52,7 @@ public class ReceiveTransactionsProcessorTest {
 
         List<Transaction> receivedTransactions = this.receiveTransactionsProcessor
                 .saveAndReturnNewTransactions(newTransactions);
-        System.out.println("new:");
-        System.out.println(newTransactions);
-        System.out.println("received:");
-        System.out.println(receivedTransactions);
+
         assert (newTransactions.equals(receivedTransactions));
         Mockito.verify(transactionsEbClient, times(25)).createNewTransactionEvent((Transaction) any());
 

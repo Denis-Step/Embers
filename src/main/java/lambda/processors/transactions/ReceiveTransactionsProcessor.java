@@ -8,6 +8,7 @@ import external.plaid.entities.Transaction;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ReceiveTransactionsProcessor {
@@ -38,10 +39,10 @@ public class ReceiveTransactionsProcessor {
     }
 
     private boolean transactionExistsInDdb(Transaction transaction) {
-        List<Transaction> queryResult = transactionDAO.query(transaction);
+        Optional<Transaction> queryResult = transactionDAO.query(transaction);
         LOGGER.info(transaction.toString());
         LOGGER.info(queryResult.toString());
-        return !queryResult.isEmpty();
+        return queryResult.isPresent();
     }
 
 }

@@ -11,7 +11,7 @@ export const ViewTransactions = () => {
         <div>
             <ViewTransactionsSearchBox paramsState={params} handleChange={setParams} />
             <TransactionsTable transactions={transactions } />
-    </div>
+        </div>
     )
 }
 

@@ -25,11 +25,8 @@ public class GetTransactionsHandler implements RequestHandler<GetTransactionsReq
     @Override
     public List<Transaction> handleRequest(GetTransactionsRequest request, Context context) {
         LambdaLogger logger = context.getLogger();
-        logger.log("Getting Transactions for user: " +
-                request.getUser() +
-                "\n starting on " +
-                request.getStartDate()
-        );
+        logger.log("Getting Transactions for user: " + request.getUser() +
+                "\n starting on " + request.getStartDate());
 
         List<Transaction> transactions;
         if (request.getStartDate() != null) {
@@ -38,13 +35,9 @@ public class GetTransactionsHandler implements RequestHandler<GetTransactionsReq
             transactions = processor.getTransactions(request.user);
         }
 
-        logger.log("Returning cached " +
-                transactions.size() +
-                "\n transactions for " +
-                request.getUser() +
-                " \n starting on: " +
-                request.getStartDate()
-        );
+        logger.log("Returning cached " + transactions.size() +
+                "\n transactions for " + request.getUser() +
+                " \n starting on: " + request.getStartDate());
         return transactions;
 
     }
