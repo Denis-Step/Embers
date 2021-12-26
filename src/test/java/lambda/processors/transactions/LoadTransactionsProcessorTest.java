@@ -2,12 +2,15 @@ package lambda.processors.transactions;
 
 
 import dynamo.PlaidItemDAO;
+import dynamo.TransactionDAO;
 import external.plaid.clients.TransactionsGrabber;
 import external.plaid.entities.PlaidItem;
 import external.plaid.entities.Transaction;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -52,7 +55,7 @@ public class LoadTransactionsProcessorTest {
         plaidItemDAO = mock(PlaidItemDAO.class);
         PlaidItem mockPlaidItem = mock(PlaidItem.class);
         when(plaidItemDAO.getItem(any(), any())).thenReturn(mockPlaidItem);
-        when(mockPlaidItem.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(mockPlaidItem.accessToken()).thenReturn(ACCESS_TOKEN);
 
         END_DATE = Date.from(Instant.now());
         START_DATE = Date.from(Instant.now().minus(1, ChronoUnit.DAYS));

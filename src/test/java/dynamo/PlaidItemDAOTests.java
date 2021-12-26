@@ -46,7 +46,7 @@ public class PlaidItemDAOTests {
         PlaidItem item = PlaidItemsTableSetup.createItem();
         plaidItemDAO.save(item);
 
-        List<PlaidItem> queriedItems = plaidItemDAO.query(item.getUser(), item.getInstitutionId());
+        List<PlaidItem> queriedItems = plaidItemDAO.query(item.user(), item.institutionId());
 
         assert (queriedItems.size() == 1);
         assert (queriedItems.get(0).equals(item));
@@ -58,7 +58,7 @@ public class PlaidItemDAOTests {
     public void test_saveAndQueryByUser() {
         List<PlaidItem> items = PlaidItemsTableSetup.createItems();
         items.forEach(i -> plaidItemDAO.save(i));
-        List<PlaidItem> queriedItems = plaidItemDAO.query(items.get(0).getUser());
+        List<PlaidItem> queriedItems = plaidItemDAO.query(items.get(0).user());
 
         assert(queriedItems.equals(items));
     }

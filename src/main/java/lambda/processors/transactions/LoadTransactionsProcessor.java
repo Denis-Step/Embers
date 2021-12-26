@@ -33,7 +33,7 @@ public class LoadTransactionsProcessor {
      */
     public List<Transaction> pullNewTransactions(String user, String institution, Date startDate, Date endDate)
             throws PlaidItemDAO.ItemException {
-        String accessToken = getItem(user, institution).getAccessToken();
+        String accessToken = getItem(user, institution).accessToken();
 
         return transactionsGrabber.requestTransactions(user, institution, accessToken, startDate, endDate);
     }
