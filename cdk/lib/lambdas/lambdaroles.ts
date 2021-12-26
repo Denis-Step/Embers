@@ -91,7 +91,20 @@ export class ItemLambdaRoles extends Construct {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")
-            ]
+            ],
+            inlinePolicies: {
+                plaidSecretsPolicy: new PolicyDocument({statements: [
+                        new PolicyStatement(({
+                            resources: [PLAID_SECRETS_ARN],
+                            effect: Effect.ALLOW,
+                            actions: [
+                                "secretsmanager:GetSecretValue",
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:ListSecretVersionIds",
+                            ]
+                        }))
+                    ]} )
+            }
         })
 
         props.itemsTable.grantReadWriteData(this.createItemLambdaRole);

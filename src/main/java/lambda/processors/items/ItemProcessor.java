@@ -32,12 +32,8 @@ public class ItemProcessor {
         return item;
     }
 
-    public List<PlaidItem> getItems(GetItemRequest itemRequest) {
-        if (itemRequest.getInstitution() == null) {
-            return plaidItemDAO.query(itemRequest.getUser());
-        } else {
-            return plaidItemDAO.query(itemRequest.getUser(), itemRequest.getInstitution());
-        }
+    public List<PlaidItem> getItems(String user,  String institution) {
+        return plaidItemDAO.query(user, institution);
     }
 
     // For when a specific Item is required, avoids having to check size farther up the stack.
