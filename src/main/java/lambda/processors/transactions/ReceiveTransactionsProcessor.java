@@ -40,6 +40,8 @@ public class ReceiveTransactionsProcessor {
 
     private boolean transactionExistsInDdb(Transaction transaction) {
         Optional<Transaction> queryResult = transactionDAO.query(transaction);
+        System.out.println(queryResult.isPresent());
+        System.out.println(queryResult.toString());
         LOGGER.info(transaction.toString());
         LOGGER.info(queryResult.toString());
         return queryResult.isPresent();

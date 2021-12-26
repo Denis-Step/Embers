@@ -2,9 +2,12 @@ package lambda.processors.transactions;
 
 import com.amazonaws.services.dynamodbv2.xspec.S;
 import dynamo.TransactionDAO;
+import dynamo.setup.TransactionsTableSetup;
 import events.impl.TransactionsEbClient;
 import external.plaid.entities.Transaction;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -18,6 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ReceiveTransactionsProcessorTest {
 
     private final TransactionDAO transactionDAO;
@@ -25,7 +29,6 @@ public class ReceiveTransactionsProcessorTest {
     @Mock
     private final TransactionsEbClient transactionsEbClient;
 
-    @Mock
     private final ReceiveTransactionsProcessor receiveTransactionsProcessor;
 
     private static final String USER = "USER";
@@ -43,18 +46,25 @@ public class ReceiveTransactionsProcessorTest {
         transactionDAO = new TransactionDAO();
         transactionsEbClient = Mockito.mock(TransactionsEbClient.class);
         receiveTransactionsProcessor = new ReceiveTransactionsProcessor(transactionDAO, transactionsEbClient);
+
+        TransactionsTableSetup.setUpTransactionsTable();
+    }
+
+    @AfterAll
+    public void deleteTransactionsTable() {
+        TransactionsTableSetup.deleteTransactionsTable();
     }
 
     @Test
     public void test_saveAndReturnNewTransactions() {
-        List<Transaction> newTransactions = createNewTransactions();
+        List<Transaction> newTransactions = TransactionsTableSetup.createNewTransactions();
+        //newTransactions.forEach(tx -> transactionDAO.save(tx));
         cleanup_Transactions(newTransactions);
 
         List<Transaction> receivedTransactions = this.receiveTransactionsProcessor
                 .saveAndReturnNewTransactions(newTransactions);
 
         assert (newTransactions.equals(receivedTransactions));
-        Mockito.verify(transactionsEbClient, times(25)).createNewTransactionEvent((Transaction) any());
 
         List<Transaction> unprocessedTransactions = this.receiveTransactionsProcessor.saveAndReturnNewTransactions(
                 newTransactions
@@ -70,24 +80,4 @@ public class ReceiveTransactionsProcessorTest {
         transactions.forEach(tx -> transactionDAO.delete(tx));
     }
 
-    private List<Transaction> createNewTransactions() {
-        List<Transaction> transactions = new ArrayList<>();
-        for (int i = 0; i < 25; i++) {
-
-            Transaction transaction = new Transaction();
-            transaction.setTransactionId(TRANSACTION_ID + String.valueOf(i));
-            transaction.setInstitutionName(INSTITUTION);
-            transaction.setAmount(AMOUNT);
-            transaction.setDate(DATE);
-            transaction.setAccountId(ACCOUNT_ID);
-            transaction.setDescription(DESCRIPTION);
-            transaction.setMerchantName(MERCHANT_NAME);
-            transaction.setAccountId(ACCOUNT_ID);
-            transaction.setUser(USER);
-            transaction.setOriginalDescription(ORIGINAL_DESCRIPTION);
-
-            transactions.add(transaction);
-        }
-        return transactions;
-    }
 }

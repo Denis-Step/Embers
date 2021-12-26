@@ -9,6 +9,7 @@ import external.plaid.entities.PlaidItem;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -147,13 +148,31 @@ public class PlaidItemDAO {
         dao.save();
     }
 
+    public void delete(String user, String institutionIdAccessToken) {
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":name", new AttributeValue().withS(user));
+        eav.put(":institutionId", new AttributeValue().withS(institutionIdAccessToken));
+
+        DynamoDBDeleteExpression dynamoDBDeleteExpression = new DynamoDBDeleteExpression()
+                .withConditionExpression("#U = :name AND #Ins = :institutionId")
+                .addExpressionAttributeNamesEntry("#U", "user")
+                .addExpressionAttributeNamesEntry("#Ins", "institutionIdAccessToken")
+                .withExpressionAttributeValues(eav);
+
+        dynamoDBMapper.delete(PlaidItemDAO.class, dynamoDBDeleteExpression);
+    }
+
+    public void delete(PlaidItem plaidItem) {
+        dynamoDBMapper.delete(new PlaidItemDAO(plaidItem));
+    }
+
     private void save() {
         this.dynamoDBMapper.save(this);
     }
 
     private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user, String institutionId) {
         Map<String, AttributeValue> eav = new HashMap<>();
-        eav.put(":user", new AttributeValue().withS(user));
+        eav.put(":name", new AttributeValue().withS(user));
         eav.put(":institution",new AttributeValue().withS(institutionId));
 
         return new DynamoDBQueryExpression<PlaidItemDAO>()

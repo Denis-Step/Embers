@@ -1,6 +1,9 @@
 package dynamo.setup;
 
 import dagger.DaggerAwsComponent;
+import external.plaid.entities.ImmutablePlaidItem;
+import external.plaid.entities.PlaidItem;
+import external.plaid.entities.Transaction;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -15,12 +18,23 @@ public class PlaidItemsTableSetup {
     public static final String HASH_KEY_USER = "user";
     public static final String RANGE_KEY = "institutionIdAccessToken";
 
+    public static String USER = "USER";
+    public static String INSTITUTION = "INSTITUTION";
+    public static String ACCESS_TOKEN = "ACCESSTOKEN1234";
+    public static String ID = "0000";
+    public static List<String> AVAILABLE_PRODUCTS;
+    public static List<String> ACCOUNTS;
+    public static String DATE_CREATED = "2020-12-01";
+    public static String METADATA = "METADATA";
+    public static String RECEIVER_NUMBER = "1-212-555-1234";
+    public static boolean WEBHOOK = false;
+
     private static final DynamoDbClient dynamoDbClient = DaggerAwsComponent.create().buildDynamoDbClient();
 
     /**
      * Clean up existing table and create new one.
      */
-    public static void setPlaidItemsTableName() {
+    public static void setupPlaidItemsTable() {
 
         try {
             deletePlaidItemsTable();
@@ -82,5 +96,36 @@ public class PlaidItemsTableSetup {
 
 
         return attributeDefinitions;
+    }
+
+    public static PlaidItem createItem() {
+        AVAILABLE_PRODUCTS = new ArrayList<>();
+        AVAILABLE_PRODUCTS.add("transactions");
+        ACCOUNTS = new ArrayList<>();
+        ACCOUNTS.add("ACCOUNT");
+
+        return ImmutablePlaidItem.builder()
+                .metaData(METADATA)
+                .accessToken(ACCESS_TOKEN)
+                .accounts(ACCOUNTS)
+                .dateCreated(DATE_CREATED)
+                .ID(ID)
+                .institutionId(INSTITUTION)
+                .user(USER)
+                .receiverNumber(RECEIVER_NUMBER)
+                .webhook(WEBHOOK)
+                .build();
+    }
+
+    public static List<PlaidItem> createItems() {
+        List<PlaidItem> items = new ArrayList<>();
+        PlaidItem item = createItem();
+        items.add(item);
+
+        for (int i = 0; i < 25; i++) {
+            ImmutablePlaidItem newItem = ImmutablePlaidItem.copyOf(item)
+                    .withID( item.ID() + String.valueOf(i) );
+        }
+        return items;
     }
 }
