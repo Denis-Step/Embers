@@ -13,14 +13,14 @@ import java.util.Optional;
 @JsonSerialize
 @JsonDeserialize
 public interface PlaidItem {
-    public String user();
-    public String institutionId();
-    public String accessToken();
-    public String ID();
-    public List<String> availableProducts();
-    public List<String> accounts();
-    public String dateCreated();
-    public String metaData(); // Remaining metadata. Rarely used.
-    public boolean webhook();
-    public Optional<String> receiverNumber();
+    public String getUser();
+    public String getInstitutionId();
+    public String getAccessToken();
+    public String getId();
+    public List<String> getAvailableProducts();
+    public List<String> getAccounts();
+    public String getDateCreated();
+    public String getMetadata(); // Remaining metadata. Rarely used.
+    public boolean getWebhook();
+    public Optional<String> getReceiverNumber();
 }

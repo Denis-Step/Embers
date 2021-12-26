@@ -3,7 +3,6 @@ package dynamo.setup;
 import dagger.DaggerAwsComponent;
 import external.plaid.entities.ImmutablePlaidItem;
 import external.plaid.entities.PlaidItem;
-import external.plaid.entities.Transaction;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -124,7 +123,7 @@ public class PlaidItemsTableSetup {
 
         for (int i = 0; i < 25; i++) {
             ImmutablePlaidItem newItem = ImmutablePlaidItem.copyOf(item)
-                    .withID( item.ID() + String.valueOf(i) );
+                    .withID( item.getId() + String.valueOf(i) );
         }
         return items;
     }

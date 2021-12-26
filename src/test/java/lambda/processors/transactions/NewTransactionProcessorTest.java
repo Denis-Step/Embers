@@ -55,7 +55,7 @@ public class NewTransactionProcessorTest {
     public void test_throwsException() throws PlaidItemDAO.ItemException {
         when(plaidItemDAO.getItem(any(), any())).thenReturn(plaidItem);
         Optional receiverNumberOptional = Optional.empty();
-        when(plaidItem.receiverNumber()).thenReturn(receiverNumberOptional);
+        when(plaidItem.getReceiverNumber()).thenReturn(receiverNumberOptional);
         newTransactionProcessor.process(createTransaction());
     }
 
@@ -63,7 +63,7 @@ public class NewTransactionProcessorTest {
     public void test_sendsSmsMessage() throws PlaidItemDAO.ItemException {
         when(plaidItemDAO.getItem(any(), any())).thenReturn(plaidItem);
         Optional receiverNumberOptional = Optional.of("+191755555555");
-        when(plaidItem.receiverNumber()).thenReturn(receiverNumberOptional);
+        when(plaidItem.getReceiverNumber()).thenReturn(receiverNumberOptional);
 
         verify(smsEbClient).createNewSmsEvent((SmsMessage) any());
     }
