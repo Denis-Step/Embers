@@ -9,7 +9,6 @@ import external.plaid.entities.PlaidItem;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -33,17 +32,17 @@ public class PlaidItemDAO {
     public PlaidItemDAO() { }
 
     public PlaidItemDAO(PlaidItem plaidItem) {
-        this.setUser(plaidItem.user()); // Set partition key.
-        this.setInstitutionIdAccessToken(plaidItem.institutionId() +
-                "#" + plaidItem.accessToken()); // Set sort key.
-        this.setID(plaidItem.ID());
-        this.setAvailableProducts(plaidItem.availableProducts());
-        this.setAccounts(plaidItem.accounts());
-        this.setDateCreated(plaidItem.dateCreated());
-        this.setMetaData(plaidItem.metaData());
-        this.setWebHook(plaidItem.webhook());
-        if (plaidItem.receiverNumber().isPresent()) {
-            this.setReceiverNumber(plaidItem.receiverNumber().get());
+        this.setUser(plaidItem.getUser()); // Set partition key.
+        this.setInstitutionIdAccessToken(plaidItem.getInstitutionId() +
+                "#" + plaidItem.getAccessToken()); // Set sort key.
+        this.setID(plaidItem.getId());
+        this.setAvailableProducts(plaidItem.getAvailableProducts());
+        this.setAccounts(plaidItem.getAccounts());
+        this.setDateCreated(plaidItem.getDateCreated());
+        this.setMetaData(plaidItem.getMetadata());
+        this.setWebHook(plaidItem.getWebhook());
+        if (plaidItem.getReceiverNumber().isPresent()) {
+            this.setReceiverNumber(plaidItem.getReceiverNumber().get());
         };
     }
 
@@ -53,14 +52,14 @@ public class PlaidItemDAO {
         String accessToken = institutionIdAccessToken.split("#")[1];
 
         ImmutablePlaidItem.Builder builder = ImmutablePlaidItem.builder()
-                .ID(itemInfo.getID())
+                .id(itemInfo.getID())
                 .accessToken(accessToken)
                 .user(itemInfo.getUser())
                 .dateCreated(itemInfo.getDateCreated())
                 .availableProducts(itemInfo.getAvailableProducts())
                 .accounts(itemInfo.getAccounts())
                 .institutionId(institutionID)
-                .metaData(itemInfo.getMetaData())
+                .metadata(itemInfo.getMetaData())
                 .webhook(itemInfo.getWebHook());
 
         if (this.receiverNumber != null) {
