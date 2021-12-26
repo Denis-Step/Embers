@@ -1,5 +1,6 @@
 package external.plaid.entities;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.gson.annotations.JsonAdapter;
@@ -13,14 +14,32 @@ import java.util.Optional;
 @JsonSerialize
 @JsonDeserialize
 public interface PlaidItem {
-    public String getUser();
-    public String getInstitutionId();
-    public String getAccessToken();
-    public String getId();
-    public List<String> getAvailableProducts();
-    public List<String> getAccounts();
-    public String getDateCreated();
-    public String getMetadata(); // Remaining metadata. Rarely used.
-    public boolean getWebhook();
-    public Optional<String> getReceiverNumber();
+    @JsonGetter
+    public String user();
+
+    @JsonGetter
+    public String institutionId();
+
+    @JsonGetter
+    public String accessToken();
+
+    @JsonGetter
+    public String ID();
+
+    @JsonGetter
+    public List<String> availableProducts();
+    @JsonGetter
+    public List<String> accounts();
+
+    @JsonGetter
+    public String dateCreated();
+
+    @JsonGetter
+    public String metaData(); // Re
+
+    @JsonGetter// Remaining metadata. Rarely used.
+    public boolean webhook();
+
+    @JsonGetter
+    public Optional<String> receiverNumber();
 }
