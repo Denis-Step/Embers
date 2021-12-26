@@ -19,6 +19,8 @@ public class GetItemsHandler implements RequestHandler<GetItemRequest, List<Plai
     public List<PlaidItem> handleRequest(GetItemRequest event, Context context){
         LambdaLogger logger = context.getLogger();
         logger.log("Getting Item for:" +  event.toString());
-        return this.processor.getItems(event.getUser(), event.getInstitution());
+        List<PlaidItem> items = this.processor.getItems(event.getUser(), event.getInstitution());
+        logger.log(items.toString());
+        return items;
     }
 }

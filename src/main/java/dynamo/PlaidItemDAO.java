@@ -63,7 +63,7 @@ public class PlaidItemDAO {
                 .metaData(itemInfo.getMetaData())
                 .webhook(itemInfo.getWebHook());
 
-        if (!(this.receiverNumber == null)) {
+        if (this.receiverNumber != null) {
             return builder.build().withReceiverNumber(this.receiverNumber);
         } else {
             return builder.build();
