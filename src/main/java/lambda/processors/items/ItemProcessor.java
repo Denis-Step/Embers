@@ -80,14 +80,14 @@ public class ItemProcessor {
         PublicTokenExchangeResponse itemInfo = this.itemCreator.requestItem(createItemRequest.getPublicToken());
 
         return ImmutablePlaidItem.builder()
-                .ID(itemInfo.getID())
+                .id(itemInfo.getID())
                 .accessToken(itemInfo.getAccessToken())
                 .user(createItemRequest.getUser())
                 .dateCreated(createItemRequest.getDateCreated())
                 .availableProducts(createItemRequest.getAvailableProducts())
                 .accounts(createItemRequest.getAccounts())
                 .institutionId(createItemRequest.getInstitutionId())
-                .metaData(createItemRequest.getMetaData())
+                .metadata(createItemRequest.getMetaData())
                 .webhook(createItemRequest.isWebhook())
                 .build();
     }

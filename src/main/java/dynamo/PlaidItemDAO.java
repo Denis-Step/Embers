@@ -52,14 +52,14 @@ public class PlaidItemDAO {
         String accessToken = institutionIdAccessToken.split("#")[1];
 
         ImmutablePlaidItem.Builder builder = ImmutablePlaidItem.builder()
-                .ID(itemInfo.getID())
+                .id(itemInfo.getID())
                 .accessToken(accessToken)
                 .user(itemInfo.getUser())
                 .dateCreated(itemInfo.getDateCreated())
                 .availableProducts(itemInfo.getAvailableProducts())
                 .accounts(itemInfo.getAccounts())
                 .institutionId(institutionID)
-                .metaData(itemInfo.getMetaData())
+                .metadata(itemInfo.getMetaData())
                 .webhook(itemInfo.getWebHook());
 
         if (this.receiverNumber != null) {

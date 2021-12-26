@@ -104,11 +104,11 @@ public class PlaidItemsTableSetup {
         ACCOUNTS.add("ACCOUNT");
 
         return ImmutablePlaidItem.builder()
-                .metaData(METADATA)
+                .metadata(METADATA)
                 .accessToken(ACCESS_TOKEN)
                 .accounts(ACCOUNTS)
                 .dateCreated(DATE_CREATED)
-                .ID(ID)
+                .id(ID)
                 .institutionId(INSTITUTION)
                 .user(USER)
                 .receiverNumber(RECEIVER_NUMBER)
@@ -123,7 +123,7 @@ public class PlaidItemsTableSetup {
 
         for (int i = 0; i < 25; i++) {
             ImmutablePlaidItem newItem = ImmutablePlaidItem.copyOf(item)
-                    .withID( item.getId() + String.valueOf(i) );
+                    .withId( item.getId() + String.valueOf(i) );
         }
         return items;
     }
