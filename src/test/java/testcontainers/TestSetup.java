@@ -22,10 +22,21 @@ import java.util.List;
 
 //@Testcontainers
 @RunWith(MockitoJUnitRunner.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestSetup {
 
     //@Container
-    private static final GenericContainer localDynamoDbContainer = LocalDynamoDbContainer.getInstance();
+    //private static final LocalDynamoDbContainer localDynamoDbContainer = LocalDynamoDbContainer.getInstance();
+
+    private DynamoDbClient dynamoClient;
+    private PlaidItemsTableSetup plaidItemsTableSetup;
+
+    @BeforeAll
+    public void test_client() {
+        dynamoClient = LocalDynamoDbClient.getDynamoClient();
+        PlaidItemsTableSetup plaidItemsTableSetup = new PlaidItemsTableSetup(dynamoClient);
+        plaidItemsTableSetup.setupPlaidItemsTable();
+    }
 
     @Test
     public void test_sample() {
