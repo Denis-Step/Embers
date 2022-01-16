@@ -28,12 +28,16 @@ public class PlaidItemsTableSetup {
     public static String RECEIVER_NUMBER = "1-212-555-1234";
     public static boolean WEBHOOK = false;
 
-    private static final DynamoDbClient dynamoDbClient = DaggerAwsComponent.create().buildDynamoDbClient();
+    private final DynamoDbClient dynamoDbClient;
+
+    public PlaidItemsTableSetup(DynamoDbClient dynamoDbClient) {
+        this.dynamoDbClient = dynamoDbClient;
+    }
 
     /**
      * Clean up existing table and create new one.
      */
-    public static void setupPlaidItemsTable() {
+    public void setupPlaidItemsTable() {
 
         try {
             deletePlaidItemsTable();
@@ -54,7 +58,7 @@ public class PlaidItemsTableSetup {
         dynamoDbClient.createTable(createTableRequest);
     }
 
-    public static void deletePlaidItemsTable() {
+    public void deletePlaidItemsTable() {
         DeleteTableRequest deleteTableRequest = DeleteTableRequest.builder()
                 .tableName(PLAID_ITEMS_TABLE_NAME)
                 .build();
@@ -78,7 +82,7 @@ public class PlaidItemsTableSetup {
         return keySchemaElements;
     }
 
-    private static List<AttributeDefinition> getAttributeDefinitions() {
+    private List<AttributeDefinition> getAttributeDefinitions() {
         List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
 
         AttributeDefinition userAttribute = AttributeDefinition.builder()
@@ -97,7 +101,7 @@ public class PlaidItemsTableSetup {
         return attributeDefinitions;
     }
 
-    public static PlaidItem createItem() {
+    public PlaidItem createItem() {
         AVAILABLE_PRODUCTS = new ArrayList<>();
         AVAILABLE_PRODUCTS.add("transactions");
         ACCOUNTS = new ArrayList<>();
@@ -116,7 +120,7 @@ public class PlaidItemsTableSetup {
                 .build();
     }
 
-    public static List<PlaidItem> createItems() {
+    public List<PlaidItem> createItems() {
         List<PlaidItem> items = new ArrayList<>();
         PlaidItem item = createItem();
         items.add(item);
