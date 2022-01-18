@@ -2,6 +2,7 @@ package testcontainers;
 
 import org.testcontainers.containers.GenericContainer;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import javax.inject.Singleton;
@@ -26,5 +27,12 @@ public class LocalDynamoDbClient {
         } catch (URISyntaxException e) {
             throw new RuntimeException("URI is wrong");
         }
+    }
+
+    public static DynamoDbEnhancedClient getEnhancedDynamoClient() {
+        DynamoDbClient dynamoDbClient = getDynamoClient();
+        return DynamoDbEnhancedClient.builder()
+                .dynamoDbClient(dynamoDbClient)
+                .build();
     }
 }

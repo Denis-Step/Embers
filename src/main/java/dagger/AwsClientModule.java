@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dynamo.TransactionDAO;
+import external.plaid.entities.PlaidItem;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -17,8 +18,6 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Module
 public interface AwsClientModule {
@@ -67,23 +66,9 @@ public interface AwsClientModule {
     @Provides
     @Singleton
     static DynamoDbClient provideDdbClient() {
-
-        String stage = System.getenv().get("STAGE");
-
-        if (stage != null && stage.equals("TEST")) {
-            try {
-                return DynamoDbClient.builder()
-                        .credentialsProvider(DefaultCredentialsProvider.create())
-                        .endpointOverride(new URI("http://localhost:8000"))
-                        .build();
-            } catch (URISyntaxException e) {
-                throw new RuntimeException("Cannot build DynamoDbClient");
-            }
-        } else {
             return DynamoDbClient.builder()
                     .credentialsProvider(DefaultCredentialsProvider.create())
                     .build();
-        }
     }
 
     @Provides

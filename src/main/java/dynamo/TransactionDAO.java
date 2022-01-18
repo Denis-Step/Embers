@@ -244,7 +244,6 @@ public class TransactionDAO {
     }
 
     private Transaction asTransaction() {
-        LOGGER.info(this.dateAmountTransactionId);
         String date = this.dateAmountTransactionId.split("#")[0];
         double amount = Double.valueOf(this.dateAmountTransactionId.split("#")[1]);
         String transactionId = this.dateAmountTransactionId.split("#")[2];
