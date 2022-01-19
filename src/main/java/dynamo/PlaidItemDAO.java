@@ -105,6 +105,9 @@ public class PlaidItemDAO {
     public Boolean getWebHook() { return webHook; }
     public void setWebHook(Boolean webHook) { this.webHook = webHook; }
 
+    // @TODO: Start here for public API.
+
+
     public PlaidItem getItem(String user, String institution) throws ItemException {
         List<PlaidItem> plaidItems = this.query(user, institution);
 

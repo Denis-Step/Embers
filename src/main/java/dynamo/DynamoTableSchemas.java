@@ -58,7 +58,7 @@ public final class DynamoTableSchemas {
                     .build())
             .addAttribute(String.class, a -> a.name("receiverNumber")
                     .getter(item -> item.getReceiverNumber().orElse(null))
-                    .setter(ImmutablePlaidItem.Builder::dateCreated)
+                    .setter(ImmutablePlaidItem.Builder::receiverNumber)
                     .build())
             .addAttribute(Boolean.class, a -> a.name("webHook")
                     .getter(PlaidItem::getWebhook)

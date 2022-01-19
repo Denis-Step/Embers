@@ -1,6 +1,7 @@
 package testcontainers;
 
 import dynamo.DynamoTableSchemas;
+import dynamo.NewPlaidItemDAO;
 import dynamo.setup.PlaidItemsTableSetup;
 import external.plaid.entities.PlaidItem;
 import org.junit.jupiter.api.*;
@@ -9,7 +10,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
-//@Testcontainers
+import java.util.List;
+
+
 @RunWith(MockitoJUnitRunner.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestSetup {
@@ -27,8 +30,14 @@ public class TestSetup {
                 DynamoTableSchemas.PLAID_ITEM_SCHEMA);
 
         PlaidItem item = plaidItemsTableSetup.createItem();
-        System.out.println(item);
         itemsTable.putItem(item);
+
+        NewPlaidItemDAO newPlaidItemDAO = new NewPlaidItemDAO(itemsTable);
+        List<PlaidItem> pLaidItemList = newPlaidItemDAO.query(item.getUser(), item.getInstitutionId());
+        assert (pLaidItemList.size() == 1);
+        System.out.println(pLaidItemList.get(0));
+        System.out.println(item);
+        assert (pLaidItemList.get(0).equals(item));
     }
 
     @Test

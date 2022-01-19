@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dynamo.DynamoTableSchemas;
 import dynamo.TransactionDAO;
 import external.plaid.entities.PlaidItem;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -28,6 +29,11 @@ public interface AwsClientModule {
     static String provideTransactionTableName() {
         return "Transactions";
     }
+
+    @Provides
+    @Singleton
+    @Named("PLAID_ITEM_TABLE_NAME")
+    static String providePlaidItemTableName() {return "PlaidItems";}
 
     @Provides
     @Singleton
@@ -87,6 +93,13 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
+    @Named("PLAID_ITEM_TABLE_SCHEMA")
+    static TableSchema<PlaidItem> providePlaidItemSchema() {
+        return DynamoTableSchemas.PLAID_ITEM_SCHEMA;
+    }
+
+    @Provides
+    @Singleton
     @Named("TRANSACTION_TABLE")
     static DynamoDbTable<TransactionDAO> provideNewTransactionDdbTable(
             DynamoDbEnhancedClient dynamoDbEnhancedClient,
@@ -95,6 +108,15 @@ public interface AwsClientModule {
 
         return dynamoDbEnhancedClient
                 .table(transactionTableName, tableSchema);
+    }
+
+    @Provides
+    @Singleton
+    static DynamoDbTable<PlaidItem> providePlaidItemTable(DynamoDbEnhancedClient dynamoDbEnhancedClient,
+                                                          @Named("PLAID_ITEM_TABLE_NAME") String itemTableName,
+                                                          @Named("PLAID_ITEM_TABLE_SCHEMA") TableSchema<PlaidItem> tableSchema) {
+
+        return dynamoDbEnhancedClient.table(itemTableName, tableSchema);
     }
 
     @Provides
