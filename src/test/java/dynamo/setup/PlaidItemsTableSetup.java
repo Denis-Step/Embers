@@ -1,6 +1,5 @@
 package dynamo.setup;
 
-import dagger.DaggerAwsComponent;
 import external.plaid.entities.ImmutablePlaidItem;
 import external.plaid.entities.PlaidItem;
 import org.junit.runner.RunWith;

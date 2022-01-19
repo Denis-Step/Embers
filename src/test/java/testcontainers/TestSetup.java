@@ -1,6 +1,6 @@
 package testcontainers;
 
-import dynamo.DynamoTableSchema;
+import dynamo.DynamoTableSchemas;
 import dynamo.setup.PlaidItemsTableSetup;
 import external.plaid.entities.PlaidItem;
 import org.junit.jupiter.api.*;
@@ -14,9 +14,6 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestSetup {
 
-    //@Container
-    //private static final LocalDynamoDbContainer localDynamoDbContainer = LocalDynamoDbContainer.getInstance();
-
     private DynamoDbEnhancedClient enhancedDynamoClient;
     private PlaidItemsTableSetup plaidItemsTableSetup;
 
@@ -26,10 +23,12 @@ public class TestSetup {
         PlaidItemsTableSetup plaidItemsTableSetup = new PlaidItemsTableSetup(LocalDynamoDbClient.getDynamoClient());
         plaidItemsTableSetup.setupPlaidItemsTable();
 
-        DynamoDbTable<PlaidItem> itemsTable = (DynamoDbTable<PlaidItem>) enhancedDynamoClient.table("PlaidItems",
-                DynamoTableSchema.PLAID_ITEM_SCHEMA.schema);
+        DynamoDbTable<PlaidItem> itemsTable = enhancedDynamoClient.table("PlaidItems",
+                DynamoTableSchemas.PLAID_ITEM_SCHEMA);
 
-        itemsTable.putItem(plaidItemsTableSetup.createItem());
+        PlaidItem item = plaidItemsTableSetup.createItem();
+        System.out.println(item);
+        itemsTable.putItem(item);
     }
 
     @Test

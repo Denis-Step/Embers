@@ -73,7 +73,7 @@ public class LocalDynamoDbContainer {
         LOGGER.info(container.getContainerId());
         LOGGER.info(container.getContainerInfo().toString());
         LOGGER.info(container.getFirstMappedPort().toString());
-        LOGGER.info(String.valueOf(container.getNetwork()));
+
         this.exposedPort = container.getFirstMappedPort();
     }
 
