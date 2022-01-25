@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PlaidItemsTableSetup {
+public class PlaidItemsTableUtils {
     public static final String PLAID_ITEMS_TABLE_NAME = "PlaidItems";
     public static final String HASH_KEY_USER = "user";
     public static final String RANGE_KEY = "institutionIdAccessToken";
@@ -29,7 +29,7 @@ public class PlaidItemsTableSetup {
 
     private final DynamoDbClient dynamoDbClient;
 
-    public PlaidItemsTableSetup(DynamoDbClient dynamoDbClient) {
+    public PlaidItemsTableUtils(DynamoDbClient dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
     }
 
@@ -122,11 +122,12 @@ public class PlaidItemsTableSetup {
     public List<PlaidItem> createItems() {
         List<PlaidItem> items = new ArrayList<>();
         PlaidItem item = createItem();
-        items.add(item);
 
         for (int i = 0; i < 25; i++) {
             ImmutablePlaidItem newItem = ImmutablePlaidItem.copyOf(item)
+                    .withAccessToken(item.getAccessToken() + String.valueOf(i))
                     .withId( item.getId() + String.valueOf(i) );
+            items.add(newItem);
         }
         return items;
     }

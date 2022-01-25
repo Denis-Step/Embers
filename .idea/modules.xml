@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/JavaPlaid.iml" filepath="$PROJECT_DIR$/.idea/JavaPlaid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/JavaPlaid.iml" filepath="$PROJECT_DIR$/.idea/modules/JavaPlaid.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/annotation-processors/JavaPlaid.annotation-processors.iml" filepath="$PROJECT_DIR$/.idea/modules/annotation-processors/JavaPlaid.annotation-processors.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/JavaPlaid.core.iml" filepath="$PROJECT_DIR$/.idea/modules/core/JavaPlaid.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/JavaPlaid.main.iml" filepath="$PROJECT_DIR$/.idea/modules/JavaPlaid.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/JavaPlaid.test.iml" filepath="$PROJECT_DIR$/.idea/modules/JavaPlaid.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/plaidapp.JavaPlaid.main.iml" filepath="$PROJECT_DIR$/.idea/modules/plaidapp.JavaPlaid.main.iml" />
     </modules>
   </component>
 </project>

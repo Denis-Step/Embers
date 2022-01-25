@@ -1,6 +1,6 @@
 package dynamo;
 
-import dynamo.setup.PlaidItemsTableSetup;
+import dynamo.setup.PlaidItemsTableUtils;
 import external.plaid.entities.PlaidItem;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,19 +16,19 @@ import java.util.List;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PlaidItemDAOTests {
 
-    private PlaidItemsTableSetup plaidItemsTableSetup;
+    private PlaidItemsTableUtils plaidItemsTableUtils;
     private PlaidItemDAO plaidItemDAO;
 
     @BeforeAll
     public void setUpPlaidItemsTable() {
-        PlaidItemsTableSetup plaidItemsTableSetup = new PlaidItemsTableSetup(
+        PlaidItemsTableUtils plaidItemsTableUtils = new PlaidItemsTableUtils(
                 LocalDynamoDbClient.getDynamoClient());
-        plaidItemsTableSetup.setupPlaidItemsTable();
+        plaidItemsTableUtils.setupPlaidItemsTable();
     }
 
     @AfterAll
     public void deletePlaidItemsTable() {
-         plaidItemsTableSetup.deletePlaidItemsTable();
+         plaidItemsTableUtils.deletePlaidItemsTable();
     }
 
     public PlaidItemDAOTests() {
@@ -37,7 +37,7 @@ public class PlaidItemDAOTests {
 
     @Test
     public void test_toAndFromItem() {
-        PlaidItem item = plaidItemsTableSetup.createItem();
+        PlaidItem item = plaidItemsTableUtils.createItem();
         PlaidItemDAO itemDao = new PlaidItemDAO(item);
 
         assert (itemDao.createItem().equals(item));
@@ -47,7 +47,7 @@ public class PlaidItemDAOTests {
 
     @Test
     public void test_saveAndReturnItem() {
-        PlaidItem item = plaidItemsTableSetup.createItem();
+        PlaidItem item = plaidItemsTableUtils.createItem();
         plaidItemDAO.save(item);
 
         List<PlaidItem> queriedItems = plaidItemDAO.query(item.getUser(), item.getInstitutionId());
@@ -60,7 +60,7 @@ public class PlaidItemDAOTests {
 
     @Test
     public void test_saveAndQueryByUser() {
-        List<PlaidItem> items = plaidItemsTableSetup.createItems();
+        List<PlaidItem> items = plaidItemsTableUtils.createItems();
         items.forEach(i -> plaidItemDAO.save(i));
         List<PlaidItem> queriedItems = plaidItemDAO.query(items.get(0).getUser());
 
