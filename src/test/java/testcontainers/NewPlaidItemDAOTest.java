@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @RunWith(MockitoJUnitRunner.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NewPlaidItemDAOTest {
-    // @TODO: Add flush() to PlaidItemsTableUtils.
 
     private DynamoDbTable<PlaidItem> itemsTable;
     private PlaidItemsTableUtils plaidItemsTableUtils;
@@ -34,13 +33,16 @@ public class NewPlaidItemDAOTest {
                 DynamoTableSchemas.PLAID_ITEM_SCHEMA);
 
         plaidItemsTableUtils = new PlaidItemsTableUtils(LocalDynamoDbClient.getDynamoClient());
-        plaidItemsTableUtils.setupPlaidItemsTable();
-
         newPlaidItemDAO = new NewPlaidItemDAO(itemsTable);
     }
 
+    @BeforeAll
+    public void deleteAndRecreateTable() {
+        plaidItemsTableUtils.setupPlaidItemsTable();
+    }
+
     @Test
-    public void test_basicQuery() {
+    public void test_queryWithPartitionAndSortKey() {
         PlaidItem item = plaidItemsTableUtils.createItem();
         // Don't rely on DAO save method.
         itemsTable.putItem(item);
@@ -50,6 +52,16 @@ public class NewPlaidItemDAOTest {
         assert (pLaidItemList.get(0).equals(item));
 
         itemsTable.deleteItem(item);
+    }
+
+    @Test
+    public void test_queryWithPartitionKeyOnly() {
+        List<PlaidItem> sampleItems = plaidItemsTableUtils.createItems();
+        // Don't rely on DAO save method.
+        sampleItems.forEach(item -> itemsTable.putItem(item));
+
+        List<PlaidItem> plaidItemList = newPlaidItemDAO.query(sampleItems.get(0).getUser());
+        assert (plaidItemList.size() == sampleItems.size());
     }
 
     @Test

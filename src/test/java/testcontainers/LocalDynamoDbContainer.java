@@ -1,6 +1,5 @@
 package testcontainers;
 
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.DockerComposeContainer;
@@ -33,7 +32,7 @@ public class LocalDynamoDbContainer {
      */
     public static LocalDynamoDbContainer getInstance() {
         if (singleton == null) {
-            singleton = new LocalDynamoDbContainer(createDockerContainer());
+            singleton = new LocalDynamoDbContainer(createLocalDynamoDbDockerContainer());
         }
         return singleton;
     }
@@ -42,17 +41,15 @@ public class LocalDynamoDbContainer {
      * This is the preferred method for instantiating LDDB.
      * @return LocalDynamoDb container.
      */
-    private static GenericContainer<?> createDockerContainer() {
+    private static GenericContainer<?> createLocalDynamoDbDockerContainer() {
         GenericContainer<?> dynamoContainer =  new GenericContainer<>(
                 DockerImageName.parse("amazon/dynamodb-local:latest"))
                 .withExposedPorts(8000)
                 .withReuse(true)
-                .withCommand(String.format("-jar DynamoDBLocal.jar -inMemory -port %s", String.valueOf(INTERNAL_CONTAINER_PORT)))
+                .withCommand(String.format("-jar DynamoDBLocal.jar -inMemory -port %s",
+                        String.valueOf(INTERNAL_CONTAINER_PORT)))
                 .waitingFor(Wait.forLogMessage(".*shouldDelayTransientStatuses.*\n", 1))
-//                .withStartupCheckStrategy(
-//                        new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(30)))
-                .withLogConsumer(
-                        new Slf4jLogConsumer(LOGGER));
+                .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
         dynamoContainer.start();
         return dynamoContainer;

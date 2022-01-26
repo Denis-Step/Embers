@@ -7,6 +7,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -57,7 +58,17 @@ public class NewPlaidItemDAO {
      */
     public List<PlaidItem> query(String user, String institutionIdAccessToken) {
         PageIterable<PlaidItem> plaidItemPages = this.paginatedQuery(user, institutionIdAccessToken);
+        return plaidItemPages.items().stream().collect(Collectors.toList());
+    }
 
+
+    /**
+     * Queries by partition key only.
+     * @param user User
+     * @return List of PlaidItem's.
+     */
+    public List<PlaidItem> query(String user) {
+        PageIterable<PlaidItem> plaidItemPages = this.paginatedQuery(user, null);
         return plaidItemPages.items().stream().collect(Collectors.toList());
     }
 
@@ -77,20 +88,34 @@ public class NewPlaidItemDAO {
 
     /**
      * @param user
-     * @param institutionIdAccessToken
+     * @param institutionIdAccessToken NULLABLE
      * @return Iterable from SDK.
      * Other queries rely on this method to allow logging and access to underlying pages.
      */
     private PageIterable<PlaidItem> paginatedQuery(String user, String institutionIdAccessToken) {
         LOGGER.info("Querying PlaidItems Table for user {} and institutionIdAccessToken {}",
-                user, institutionIdAccessToken);
-        PageIterable<PlaidItem> queryResult =  table.query(r -> r.queryConditional(QueryConditional.sortBeginsWith(
-                Key.builder()
-                        .partitionValue(user)
-                        .sortValue(institutionIdAccessToken)
-                        .build())));
-        LOGGER.info("Query returned: {}", queryResult.items().toString());
-        return queryResult;
+                user, institutionIdAccessToken != null ? institutionIdAccessToken : "NONE" );
+
+        if (institutionIdAccessToken != null) {
+            PageIterable<PlaidItem> queryResult = table.query(r -> r.queryConditional(
+                    QueryConditional.sortBeginsWith(
+                            Key.builder()
+                            .partitionValue(user)
+                            .sortValue(institutionIdAccessToken)
+                            .build()
+                    )));
+            LOGGER.info("Query returned: {}", queryResult.items().toString());
+            return queryResult;
+        } else {
+            PageIterable<PlaidItem> queryResult = table.query(r -> r.queryConditional(
+                    QueryConditional.keyEqualTo(
+                            Key.builder()
+                                    .partitionValue(user)
+                                    .build()
+                    )));
+            LOGGER.info("Query returned: {}", queryResult.items().toString());
+            return queryResult;
+        }
     }
 
     /**
@@ -109,7 +134,7 @@ public class NewPlaidItemDAO {
     }
 
     private static class PlaitItemDAOException extends Exception {
-        // @TODO: Check out and follow https://docs.oracle.com/javase/7/docs/api/java/lang/Exception.html
+        // Check out and follow https://docs.oracle.com/javase/7/docs/api/java/lang/Exception.html
 
         public PlaitItemDAOException(String message) { super(message); }
 
