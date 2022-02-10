@@ -1,11 +1,9 @@
-package testcontainers;
+package dynamo.setup;
 
-import org.testcontainers.containers.GenericContainer;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-import javax.inject.Singleton;
 import java.net.URI;
 import java.net.URISyntaxException;
 

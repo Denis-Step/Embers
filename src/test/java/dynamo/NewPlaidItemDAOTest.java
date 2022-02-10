@@ -1,7 +1,5 @@
-package testcontainers;
+package dynamo;
 
-import dynamo.DynamoTableSchemas;
-import dynamo.NewPlaidItemDAO;
 import dynamo.setup.PlaidItemsTableUtils;
 import external.plaid.entities.PlaidItem;
 import org.junit.jupiter.api.*;
@@ -11,6 +9,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import dynamo.setup.LocalDynamoDbClient;
 
 import java.util.HashSet;
 import java.util.List;

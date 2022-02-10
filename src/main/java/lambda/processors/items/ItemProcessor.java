@@ -1,5 +1,7 @@
 package lambda.processors.items;
 
+import dynamo.NewPlaidItemDAO;
+import dynamo.NewPlaidItemDAO.MultipleItemsFoundException;
 import dynamo.PlaidItemDAO;
 import lambda.requests.items.CreateItemRequest;
 import lambda.requests.items.GetItemRequest;
@@ -7,19 +9,24 @@ import external.plaid.clients.ItemCreator;
 import external.plaid.entities.ImmutablePlaidItem;
 import external.plaid.entities.PlaidItem;
 import external.plaid.responses.PublicTokenExchangeResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 // Params: Link --> User, InstitutionId,
 public class ItemProcessor {
 
     private final ItemCreator itemCreator;
-    private final PlaidItemDAO plaidItemDAO;
+    private final NewPlaidItemDAO plaidItemDAO;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemProcessor.class);
 
     @Inject
-    public ItemProcessor(ItemCreator itemCreator, PlaidItemDAO plaidItemDAO) {
+    public ItemProcessor(ItemCreator itemCreator, NewPlaidItemDAO plaidItemDAO) {
         this.itemCreator = itemCreator;
         this.plaidItemDAO = plaidItemDAO;
     }
@@ -32,48 +39,29 @@ public class ItemProcessor {
         return item;
     }
 
-    public List<PlaidItem> getItems(String user,  String institution) {
-        return plaidItemDAO.query(user, institution);
+    public List<PlaidItem> getItems(String user,  String institutionIdAccessToken) {
+        return plaidItemDAO.query(user, institutionIdAccessToken);
     }
 
-    // For when a specific Item is required, avoids having to check size farther up the stack.
-    // Requires institutionId to make this possible.
-    public PlaidItem getItem(GetItemRequest request) throws PlaidItemDAO.ItemException {
-        List<PlaidItem> plaidItems = plaidItemDAO.query(request.getUser(), request.getInstitution());
-
-        if (plaidItems.size() > 1) {
-            throw new PlaidItemDAO.MultipleItemsFoundException("Found " +
-                    plaidItems.size() +
-                    " items:" +
-                    plaidItems.toString());
-        }
-        if (plaidItems.size() < 1) {
-            throw new PlaidItemDAO.ItemNotFoundException("Item Not Found for User:" +
-                    request.getUser() +
-                    "And institution:" +
-                    request.getInstitution());
-        } else {
-            return plaidItems.get(0);
+    /**
+     * Use when needing a specific item.
+     * @param request Request
+     * @return Result of DAO call.
+     */
+    public Optional<PlaidItem> getItem(GetItemRequest request) {
+        try {
+            Optional<PlaidItem> plaidItemOptional = getItem(request.getUser(), request.getInstitutionIdAccessToken());
+            LOGGER.info("Plaid Item Optional: {}",
+                    plaidItemOptional.isPresent() ? plaidItemOptional.toString() : "NONE");
+            return plaidItemOptional;
+        } catch (MultipleItemsFoundException e) {
+            LOGGER.info(e.toString());
+            return Optional.empty();
         }
     }
 
-    public PlaidItem getItem(String user, String institution) throws PlaidItemDAO.ItemException {
-        List<PlaidItem> plaidItems = plaidItemDAO.query(user, institution);
-
-        if (plaidItems.size() > 1) {
-            throw new PlaidItemDAO.MultipleItemsFoundException("Found " +
-                    plaidItems.size() +
-                    " items:" +
-                    plaidItems.toString());
-        }
-        if (plaidItems.size() < 1) {
-            throw new PlaidItemDAO.ItemNotFoundException("Item Not Found for User:" +
-                    user +
-                    "And institution:" +
-                    institution);
-        } else {
-            return plaidItems.get(0);
-        }
+    public Optional<PlaidItem> getItem(String user, String institutionIdAccessToken) throws MultipleItemsFoundException {
+        return plaidItemDAO.get(user, institutionIdAccessToken);
     }
 
     private PlaidItem createItem(CreateItemRequest createItemRequest) {
@@ -87,8 +75,8 @@ public class ItemProcessor {
                 .availableProducts(createItemRequest.getAvailableProducts())
                 .accounts(createItemRequest.getAccounts())
                 .institutionId(createItemRequest.getInstitutionId())
-                .metadata(createItemRequest.getMetaData())
-                .webhook(createItemRequest.isWebhook())
+                .metadata(createItemRequest.getMetadata())
+                .webhook(createItemRequest.getWebhook())
                 .build();
     }
 

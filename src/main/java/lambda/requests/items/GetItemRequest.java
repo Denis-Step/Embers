@@ -1,31 +1,17 @@
 package lambda.requests.items;
 
-public class GetItemRequest {
 
-    private String user;
-    private String institution; // @Nullable
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.immutables.value.Value;
+import org.jetbrains.annotations.Nullable;
 
-    public String getUser() {
-        return user;
-    }
+// Immutable class that represents request for Item
+@Value.Immutable
+@JsonSerialize(as= ImmutableGetItemRequest.class)
+@JsonDeserialize(as= ImmutableGetItemRequest.class)
+public interface GetItemRequest {
 
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getInstitution() {
-        return institution;
-    }
-
-    public void setInstitution(String institution) {
-        this.institution = institution;
-    }
-
-    @Override
-    public String toString() {
-        return "GetItemRequest{" +
-                "user='" + user + '\'' +
-                ", institution='" + institution + '\'' +
-                '}';
-    }
+    String getUser();
+    @Nullable String getInstitutionIdAccessToken();
 }

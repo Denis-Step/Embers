@@ -1,4 +1,4 @@
-package lambda.handlers;
+package lambda.handlers.items;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -19,7 +19,7 @@ public class GetItemsHandler implements RequestHandler<GetItemRequest, List<Plai
     public List<PlaidItem> handleRequest(GetItemRequest event, Context context){
         LambdaLogger logger = context.getLogger();
         logger.log("Getting Item for:" +  event.toString());
-        List<PlaidItem> items = this.processor.getItems(event.getUser(), event.getInstitution());
+        List<PlaidItem> items = this.processor.getItems(event.getUser(), event.getInstitutionIdAccessToken());
         logger.log(items.toString());
         return items;
     }

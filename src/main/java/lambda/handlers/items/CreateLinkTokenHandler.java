@@ -1,4 +1,4 @@
-package lambda.handlers;
+package lambda.handlers.items;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -21,7 +21,8 @@ public class CreateLinkTokenHandler implements RequestHandler<CreateLinkTokenReq
     @Override
     public String handleRequest(CreateLinkTokenRequest event, Context context) {
         LambdaLogger logger = context.getLogger();
-        logger.log("Getting link token for " + event.getUser() + " products " + event.getProducts() + " and webhook?: " + event.webhook);
+        logger.log("Getting link token for " + event.getUser() +
+                " products " + event.getProducts() + " and webhook?: " + event.getWebhookEnabled());
 
         try {
             return processor.createLinkToken(event);

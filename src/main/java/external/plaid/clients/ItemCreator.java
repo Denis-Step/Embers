@@ -4,7 +4,6 @@ import com.plaid.client.PlaidClient;
 import com.plaid.client.request.ItemPublicTokenExchangeRequest;
 import com.plaid.client.response.ItemPublicTokenExchangeResponse;
 import external.plaid.responses.PublicTokenExchangeResponse;
-import lambda.processors.transactions.NewTransactionProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Call;

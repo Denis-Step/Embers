@@ -7,9 +7,12 @@ import events.impl.SmsEbClient;
 import events.impl.TransactionsEbClient;
 import external.plaid.clients.ItemCreator;
 import external.plaid.clients.LinkGrabber;
+import lambda.processors.items.CreateLinkTokenProcessor;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 
 import javax.inject.Named;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Module
 public interface ProcessorModule {
@@ -18,6 +21,12 @@ public interface ProcessorModule {
 
     @Provides
     static LinkGrabber provideLinkGrabber(PlaidClient plaidClient) {return new LinkGrabber(plaidClient);}
+
+    @Provides
+    static CreateLinkTokenProcessor provideCreateLinkTokenProcessor(LinkGrabber linkGrabber,
+                                                                    @Named("WEBHOOK_URL") URI webhookUrl) {
+        return new CreateLinkTokenProcessor(linkGrabber, webhookUrl);
+    }
 
     @Provides
     static ItemCreator provideItemGrabber(PlaidClient plaidClient) {return new ItemCreator(plaidClient);}
@@ -39,6 +48,16 @@ public interface ProcessorModule {
     static SmsEbClient provideSmsEbClient(EventBridgeClient eventBridgeClient,
                                           @Named("DEFAULT_MAPPER") ObjectMapper objectMapper) {
         return new SmsEbClient(eventBridgeClient, SMS_EVENT_BUS_NAME, objectMapper);
+    }
+
+    @Provides
+    @Named("WEBHOOK_URL")
+    static URI provideWebhookUrl() {
+        try {
+            return new URI("https://mv6o8yjeo1.execute-api.us-east-2.amazonaws.com/Beta/plaidhook");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*@Provides
