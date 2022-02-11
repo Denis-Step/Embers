@@ -25,6 +25,15 @@ public class CreateLinkTokenProcessor {
     }
 
     /**
+     * Use without a link token.
+     * @param linkGrabber Plaid wrapper client.
+     */
+    public CreateLinkTokenProcessor(LinkGrabber linkGrabber, URI webhookUrl) {
+        this.linkGrabber = linkGrabber;
+        this.webhookUrl = Optional.of(webhookUrl);
+    }
+
+    /**
      * Get new Link Token from Plaid.
      * @param request request for new link token.
      * @return Stringified link token.
