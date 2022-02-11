@@ -8,14 +8,14 @@ import {DEFAULT_COGNITO_USER_POOL_ARN} from "./constants";
 import {StateMachine} from "@aws-cdk/aws-stepfunctions";
 import {Role} from "@aws-cdk/aws-iam";
 
-export interface PlaidLinkApiProps extends StackProps {
+export interface PlaidLinkApiProps {
   linkLambda: lambda.Function;
   itemLambda: lambda.Function;
   getTransactionsLambda: lambda.Function;
   pullTransactionsMachine: StateMachine
 }
 
-export class JpApi extends cdk.Stack {
+export class JpApi extends cdk.Construct {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.
@@ -23,7 +23,7 @@ export class JpApi extends cdk.Stack {
   public restApi: apigw.RestApi;
 
   constructor(scope: cdk.Construct, id: string, props: PlaidLinkApiProps) {
-    super(scope, id, props);
+    super(scope, id);
 
     this.restApi = new apigw.RestApi(this, 'PlaidLinkApi', {
       description: "Transaction Service API",
