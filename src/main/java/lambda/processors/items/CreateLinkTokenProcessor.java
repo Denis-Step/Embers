@@ -14,28 +14,34 @@ public class CreateLinkTokenProcessor {
     private final Optional<URI> webhookUrl;
     private static final Logger LOGGER = Logger.getLogger(CreateLinkTokenProcessor.class.getName());
 
-    public CreateLinkTokenProcessor(LinkGrabber linkGrabber, URI webhookUrl) {
-        this.linkGrabber = linkGrabber;
-        this.webhookUrl = Optional.of(webhookUrl);
-    }
 
+    /**
+     * Use without a link token.
+     * @param linkGrabber Plaid wrapper client.
+     */
     public CreateLinkTokenProcessor(LinkGrabber linkGrabber) {
         this.linkGrabber = linkGrabber;
         this.webhookUrl = Optional.empty();
     }
 
-    public String createLinkToken(CreateLinkTokenRequest event) throws IOException {
-        LOGGER.info(event.toString());
-        if (event.getWebhookEnabled()) {
+    /**
+     * Get new Link Token from Plaid.
+     * @param request request for new link token.
+     * @return Stringified link token.
+     * @throws IOException
+     */
+    public String createLinkToken(CreateLinkTokenRequest request) throws IOException {
+        LOGGER.info(request.toString());
+        if (request.getWebhookEnabled()) {
 
             if (!webhookUrl.isPresent()) {
                 throw new RuntimeException("Cannot create linkToken webhook without webhook URI configured in env.");
             }
 
-            return this.linkGrabber.getLinkToken(event.getUser(), event.getProducts(),
+            return this.linkGrabber.getLinkToken(request.getUser(), request.getProducts(),
                     this.webhookUrl.get().toString());
         } else {
-            return this.linkGrabber.getLinkToken(event.getUser(), event.getProducts());
+            return this.linkGrabber.getLinkToken(request.getUser(), request.getProducts());
         }
     }
 

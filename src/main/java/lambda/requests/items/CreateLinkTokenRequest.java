@@ -13,7 +13,6 @@ import java.util.List;
 @JsonSerialize(as= ImmutableCreateLinkTokenRequest.class)
 @JsonDeserialize(as= ImmutableCreateLinkTokenRequest.class)
 public interface CreateLinkTokenRequest {
-
     String getUser();
     List<String> getProducts();
     boolean getWebhookEnabled();
