@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DefaultPipelineStage = void 0;
+const core_1 = require("@aws-cdk/core");
+const mainStack_1 = require("./stacks/mainStack");
+class DefaultPipelineStage extends core_1.Stage {
+    constructor(scope, id, props) {
+        super(scope, id, props);
+        new mainStack_1.MainStack(this, 'MainStack');
+    }
+}
+exports.DefaultPipelineStage = DefaultPipelineStage;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRGVmYXVsdFBpcGVsaW5lU3RhZ2UuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJEZWZhdWx0UGlwZWxpbmVTdGFnZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFBQSx3Q0FBb0U7QUFDcEUsa0RBQTZDO0FBRTdDLE1BQWEsb0JBQXFCLFNBQVEsWUFBSztJQUczQyxZQUFZLEtBQVksRUFBRSxFQUFVLEVBQUUsS0FBa0I7UUFDcEQsS0FBSyxDQUFDLEtBQUssRUFBRSxFQUFFLEVBQUUsS0FBSyxDQUFDLENBQUM7UUFFeEIsSUFBSSxxQkFBUyxDQUFDLElBQUksRUFBRSxXQUFXLENBQUMsQ0FBQztJQUNyQyxDQUFDO0NBQ0o7QUFSRCxvREFRQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IFN0YWNrLCBTdGFnZSwgQ29uc3RydWN0LCBTdGFnZVByb3BzIH0gZnJvbSAnQGF3cy1jZGsvY29yZSc7XG5pbXBvcnQge01haW5TdGFja30gZnJvbSBcIi4vc3RhY2tzL21haW5TdGFja1wiO1xuXG5leHBvcnQgY2xhc3MgRGVmYXVsdFBpcGVsaW5lU3RhZ2UgZXh0ZW5kcyBTdGFnZSB7XG4gICAgcHVibGljIHJlYWRvbmx5IG1haW5TdGFjazogU3RhY2tcblxuICAgIGNvbnN0cnVjdG9yKHNjb3BlOiBTdGFjaywgaWQ6IHN0cmluZywgcHJvcHM/OiBTdGFnZVByb3BzKSB7XG4gICAgICAgIHN1cGVyKHNjb3BlLCBpZCwgcHJvcHMpO1xuXG4gICAgICAgIG5ldyBNYWluU3RhY2sodGhpcywgJ01haW5TdGFjaycpO1xuICAgIH1cbn0iXX0=

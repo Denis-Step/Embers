@@ -2,7 +2,6 @@ package lambda.processors.items;
 
 import dynamo.NewPlaidItemDAO;
 import dynamo.NewPlaidItemDAO.MultipleItemsFoundException;
-import dynamo.PlaidItemDAO;
 import lambda.requests.items.CreateItemRequest;
 import lambda.requests.items.GetItemRequest;
 import external.plaid.clients.ItemCreator;
@@ -17,6 +16,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Item-related functionality wrapping Plaid clients. Create Items with Link Tokens
+ * & Query for existing Items.
+ */
 // Params: Link --> User, InstitutionId,
 public class ItemProcessor {
 
@@ -25,43 +28,58 @@ public class ItemProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemProcessor.class);
 
+    /**
+     * Takes Plaid ItemCreator client & Item DAO in constructor.
+     * @param itemCreator Plaid client to create items
+     * @param plaidItemDAO DAO
+     */
     @Inject
     public ItemProcessor(ItemCreator itemCreator, NewPlaidItemDAO plaidItemDAO) {
         this.itemCreator = itemCreator;
         this.plaidItemDAO = plaidItemDAO;
     }
 
-    // Calls Plaid client to request a new Item and uses info from incoming request
-    // to build PlaidItem.
+    /**
+     * Calls Plaid client to request a new Item and uses info from incoming request
+     * to build PlaidItem.
+     * @param createItemRequest incoming request
+     * @return built & saved PlaidItem
+     * @throws IOException
+     */
     public PlaidItem createPlaidItem (CreateItemRequest createItemRequest) throws IOException {
         PlaidItem item = createItem(createItemRequest);
         plaidItemDAO.save(item);
         return item;
     }
 
+    /**
+     * Get all items for a user.
+     * @param user the user associated with this item
+     * @param institutionIdAccessToken sort key
+     * @return
+     */
     public List<PlaidItem> getItems(String user,  String institutionIdAccessToken) {
         return plaidItemDAO.query(user, institutionIdAccessToken);
     }
 
     /**
-     * Use when needing a specific item.
-     * @param request Request
-     * @return Result of DAO call.
+     * Finds a specific item. If and only if one matching item is found, it returns a full Optional.
+     * Otherwise, it will return an empty Optional.
+     * @param user
+     * @param institutionIdAccessToken
+     * @return
+     * @throws MultipleItemsFoundException
      */
-    public Optional<PlaidItem> getItem(GetItemRequest request) {
+    public Optional<PlaidItem> getItem(String user, String institutionIdAccessToken) {
         try {
-            Optional<PlaidItem> plaidItemOptional = getItem(request.getUser(), request.getInstitutionIdAccessToken());
+            Optional<PlaidItem> plaidItemOptional = plaidItemDAO.get(user, institutionIdAccessToken);
             LOGGER.info("Plaid Item Optional: {}",
                     plaidItemOptional.isPresent() ? plaidItemOptional.toString() : "NONE");
             return plaidItemOptional;
         } catch (MultipleItemsFoundException e) {
-            LOGGER.info(e.toString());
+            LOGGER.error(e.toString());
             return Optional.empty();
         }
-    }
-
-    public Optional<PlaidItem> getItem(String user, String institutionIdAccessToken) throws MultipleItemsFoundException {
-        return plaidItemDAO.get(user, institutionIdAccessToken);
     }
 
     private PlaidItem createItem(CreateItemRequest createItemRequest) {
