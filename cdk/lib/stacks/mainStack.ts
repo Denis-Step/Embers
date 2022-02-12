@@ -1,7 +1,7 @@
 import {Construct, Stack, StackProps} from "@aws-cdk/core";
 import {JPTables} from "../tables/tables";
 import {ItemLambdas} from "../lambdas/ItemLambdas";
-import {TransactionLambdas} from "../lambdas/TransactionLambdas";
+import {TransactionLambdas} from "../lambdas/transactionLambdas";
 import {MessageLambdas} from "../lambdas/messageLambdas";
 import {PullTransactionsMachine} from "../statemachines/pullTransactionsMachine";
 import {JpApi} from "../JpApi";
