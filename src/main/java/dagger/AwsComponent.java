@@ -20,6 +20,6 @@ public interface AwsComponent {
     DynamoDbClient buildDynamoDbClient();
     DynamoDbEnhancedClient buildDynamoEnhancedClient();
 
-    @Named("TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> buildNewTransactionsTable();
+    @Named("OLD_TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> buildNewTransactionsTable();
     NewPlaidItemDAO buildPlaidItemDAO();
 }

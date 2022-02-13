@@ -12,12 +12,12 @@ public class TransactionSmsMessageConverter {
     public String createNewTransactionMessage(Transaction transaction) {
         return
                 "New Transaction: " +
-                transaction.description + " " +
+                transaction.getDescription() + " " +
                 "for " +
-                transaction.amount + " " +
+                transaction.getAmount() + " " +
                 "at " +
-                transaction.merchantName +
+                transaction.getMerchantName() +
                 " on " +
-                transaction.institutionName;
+                transaction.getInstitutionName();
     }
 }

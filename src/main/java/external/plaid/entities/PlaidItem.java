@@ -8,7 +8,10 @@ import org.immutables.value.Value;
 import java.util.List;
 import java.util.Optional;
 
-// Immutable class that represents response of item creation.
+/**
+ * Immutable class that represents response of item creation.
+ * Uses get* format for out-the-box JSON serialization in AWS Lambda handler request types.
+ */
 @Value.Immutable
 @JsonSerialize(as= ImmutablePlaidItem.class)
 @JsonDeserialize(as= ImmutablePlaidItem.class)

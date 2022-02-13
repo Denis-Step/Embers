@@ -11,7 +11,7 @@ export class JPTables extends Construct {
         this.transactionsTable = new Table(this, 'Transactions', {
             tableName: 'Transactions',
             partitionKey: {name: 'user', type: AttributeType.STRING},
-            sortKey: {name: 'dateAmountTransactionId', type: AttributeType.STRING},
+            sortKey: {name: 'dateTransactionId', type: AttributeType.STRING},
             billingMode: BillingMode.PAY_PER_REQUEST,
         })
         this.transactionsTable.addLocalSecondaryIndex({

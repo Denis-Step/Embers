@@ -1,4 +1,4 @@
-package dynamo.setup;
+package dynamo.setup.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,6 @@ public class LocalDynamoDbContainer {
     private static LocalDynamoDbContainer singleton;
     private final GenericContainer<?> dockerContainer;
     private final int exposedPort;
-
-    private DockerComposeContainer<?> dockerComposeContainer;
 
     private static final int INTERNAL_CONTAINER_PORT = 8000;
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalDynamoDbContainer.class);

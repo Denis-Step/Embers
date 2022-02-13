@@ -7,7 +7,7 @@
 //import org.junit.jupiter.api.TestInstance;
 //import org.junit.runner.RunWith;
 //import org.mockito.junit.MockitoJUnitRunner;
-//import dynamo.setup.TransactionsTableSetup;
+//import dynamo.setup.TransactionsTableUtils;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //
@@ -24,17 +24,17 @@
 //
 //    TransactionDAOTests() {
 //        this.transactionDao = new TransactionDAO();
-//        TransactionsTableSetup.setUpTransactionsTable();
+//        TransactionsTableUtils.setUpTransactionsTable();
 //    }
 //
 //    @AfterAll
 //    public void deleteTransactionsTable() {
-//        TransactionsTableSetup.deleteTransactionsTable();
+//        TransactionsTableUtils.deleteTransactionsTable();
 //    }
 //
 //    @Test
 //    public void test_LoadQueryTransaction() {
-//        Transaction transaction = TransactionsTableSetup.createTransaction();
+//        Transaction transaction = TransactionsTableUtils.createTransaction();
 //        transactionDao.save(transaction);
 //
 //        Transaction loadedTransaction = transactionDao.load(transaction);
@@ -59,7 +59,7 @@
 //
 //    @Test
 //    public void test_deleteTransaction() {
-//        Transaction transaction = TransactionsTableSetup.createTransaction();
+//        Transaction transaction = TransactionsTableUtils.createTransaction();
 //        transactionDao.save(transaction);
 //        transactionDao.delete(transaction);
 //
@@ -77,7 +77,7 @@
 //
 //    @Test
 //    public void test_queryLsi() {
-//        Transaction transaction = TransactionsTableSetup.createTransaction();
+//        Transaction transaction = TransactionsTableUtils.createTransaction();
 //        transactionDao.save(transaction);
 //
 //        List<Transaction> queriedTransaction = transactionDao.queryByInstitution(

@@ -20,7 +20,7 @@ public class CreateSummaryMessageProcessor {
 
         public TransactionSummary(List<Transaction> transactionList) {
             netBalance = transactionList.stream()
-                    .mapToDouble(tx -> tx.amount)
+                    .mapToDouble(tx -> tx.getAmount())
                     .reduce(0, (subtotal, amount) -> subtotal + amount);
             numTransactions = transactionList.size();
         }

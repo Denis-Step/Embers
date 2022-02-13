@@ -9,7 +9,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
-import dynamo.setup.LocalDynamoDbClient;
+import dynamo.setup.client.LocalDynamoDbClient;
 
 import java.util.HashSet;
 import java.util.List;

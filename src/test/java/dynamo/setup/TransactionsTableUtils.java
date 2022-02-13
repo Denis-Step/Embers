@@ -3,6 +3,7 @@ package dynamo.setup;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import dagger.DaggerAwsComponent;
 import dynamo.TransactionDAO;
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.Transaction;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -17,18 +18,16 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TransactionsTableSetup {
+public class TransactionsTableUtils {
     public static final String TRANSACTION_TABLE_NAME = "Transactions";
     public static final String HASH_KEY_USER = "user";
-    public static final String RANGE_KEY = "dateAmountTransactionId";
+    public static final String RANGE_KEY = "dateTransactionId";
     public static final String INSTITUTION_GSI_ATTRIBUTE = "institutionName";
-    public static final String ACCOUNT_LSI_ATTRIBUTE = "account";
+    public static final String AMOUNT_LSI_ATTRIBUTE = "amount";
     public static final String DESCRIPTION_LSI_ATTRIBUTE = "description";
     public static final String ORIGINAL_DESCRIPTION_ATTRIBUTE = "originalDescription";
     public static final String MERCHANT_NAME_LSI_ATTRIBUTE = "merchantName";
     public static final String ITEM_ID_ATTRIBUTE = "itemId";
-
-    private static final DynamoDbClient dynamoDbClient = DaggerAwsComponent.create().buildDynamoDbClient();
 
     private static final String USER = "USER";
     private static final String INSTITUTION = "INSTITUTION";
@@ -41,12 +40,14 @@ public class TransactionsTableSetup {
     private static final String ACCOUNT_ID = "1233456789";
     private static final String TRANSACTION_ID = "TX-123456789";
 
+    private final DynamoDbClient dynamoDbClient;
 
+    public TransactionsTableUtils(DynamoDbClient dynamoDbClient) {this.dynamoDbClient = dynamoDbClient;}
 
     /**
      * Clean up existing table and create new one.
      */
-    public static void setUpTransactionsTable() {
+    public void setUpTransactionsTable() {
 
         try {
             deleteTransactionsTable();
@@ -68,14 +69,14 @@ public class TransactionsTableSetup {
         dynamoDbClient.createTable(createTableRequest);
     }
 
-    public static void deleteTransactionsTable() {
+    public void deleteTransactionsTable() {
         DeleteTableRequest deleteTableRequest = DeleteTableRequest.builder()
                 .tableName(TRANSACTION_TABLE_NAME)
                 .build();
         dynamoDbClient.deleteTable(deleteTableRequest);
     }
 
-    private static List<KeySchemaElement> getKeySchemaElements() {
+    private List<KeySchemaElement> getKeySchemaElements() {
         List<KeySchemaElement> keySchemaElements = new ArrayList<>();
         KeySchemaElement partitionKey = KeySchemaElement.builder()
                 .keyType(KeyType.HASH)
@@ -92,7 +93,7 @@ public class TransactionsTableSetup {
         return keySchemaElements;
     }
 
-    private static List<LocalSecondaryIndex> getLocalSecondaryIndices() {
+    private List<LocalSecondaryIndex> getLocalSecondaryIndices() {
         List<KeySchemaElement> keySchemaElements = new ArrayList<>();
         KeySchemaElement partitionKey = KeySchemaElement.builder()
                 .keyType(KeyType.HASH)
@@ -102,23 +103,23 @@ public class TransactionsTableSetup {
 
         KeySchemaElement rangeKey = KeySchemaElement.builder()
                 .keyType(KeyType.RANGE)
-                .attributeName(INSTITUTION_GSI_ATTRIBUTE)
+                .attributeName(AMOUNT_LSI_ATTRIBUTE)
                 .build();
         keySchemaElements.add(rangeKey);
 
         List<LocalSecondaryIndex> localSecondaryIndices = new ArrayList<>();
-        LocalSecondaryIndex institutionLsi = LocalSecondaryIndex.builder()
-                .indexName(INSTITUTION_GSI_ATTRIBUTE + "Index")
+        LocalSecondaryIndex amountLsi = LocalSecondaryIndex.builder()
+                .indexName(AMOUNT_LSI_ATTRIBUTE + "Index")
                 .keySchema(keySchemaElements)
                 .projection( Projection.builder()
                         .projectionType("ALL")
                         .build() )
                 .build();
-        localSecondaryIndices.add(institutionLsi);
+        localSecondaryIndices.add(amountLsi);
         return localSecondaryIndices;
     }
 
-    private static List<AttributeDefinition> getAttributeDefinitions() {
+    private List<AttributeDefinition> getAttributeDefinitions() {
         List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
 
         AttributeDefinition userAttribute = AttributeDefinition.builder()
@@ -133,53 +134,31 @@ public class TransactionsTableSetup {
                 .build();
         attributeDefinitions.add(rangeKeyAttribute);
 
-        AttributeDefinition institutionAttribute = AttributeDefinition.builder()
-                .attributeName(INSTITUTION_GSI_ATTRIBUTE)
-                .attributeType(ScalarAttributeType.S)
+        AttributeDefinition amountAttribute = AttributeDefinition.builder()
+                .attributeName(AMOUNT_LSI_ATTRIBUTE)
+                .attributeType(ScalarAttributeType.N)
                 .build();
-        attributeDefinitions.add(institutionAttribute);
+        attributeDefinitions.add(amountAttribute);
 
         return attributeDefinitions;
     }
 
     /**
-     * @return Set up by creating 25 transactions with diff ID's.
-     * @implSpec Requires table to be instantiated already.
-     */
-    public static List<Transaction> createNewTransactions() {
-        List<Transaction> transactions = new ArrayList<>();
-        for (int i = 0; i < 25; i++) {
-
-            Transaction transaction = new Transaction();
-            transaction.setTransactionId(TRANSACTION_ID + String.valueOf(i));
-            transaction.setInstitutionName(INSTITUTION);
-            transaction.setAmount(AMOUNT);
-            transaction.setDate(DATE);
-            transaction.setAccountId(ACCOUNT_ID);
-            transaction.setDescription(DESCRIPTION);
-            transaction.setMerchantName(MERCHANT_NAME);
-            transaction.setAccountId(ACCOUNT_ID);
-            transaction.setUser(USER);
-            transaction.setOriginalDescription(ORIGINAL_DESCRIPTION);
-        }
-        return transactions;
-    }
-
-    /**
      * @return sample Transaction
      */
-    public static Transaction createTransaction() {
-        Transaction transaction = new Transaction();
-        transaction.setTransactionId(TRANSACTION_ID);
-        transaction.setInstitutionName(INSTITUTION);
-        transaction.setAmount(AMOUNT);
-        transaction.setDate(DATE);
-        transaction.setAccountId(ACCOUNT_ID);
-        transaction.setDescription(DESCRIPTION);
-        transaction.setMerchantName(MERCHANT_NAME);
-        transaction.setAccountId(ACCOUNT_ID);
-        transaction.setUser(USER);
-        transaction.setOriginalDescription(ORIGINAL_DESCRIPTION);
+    public Transaction createTransaction() {
+        Transaction transaction = ImmutableTransaction.builder()
+                .transactionId(TRANSACTION_ID)
+                .institutionName(INSTITUTION)
+                .amount(AMOUNT)
+                .date(DATE)
+                .accountId(ACCOUNT_ID)
+                .description(DESCRIPTION)
+                .merchantName(MERCHANT_NAME)
+                .accountId(ACCOUNT_ID)
+                .user(USER)
+                .originalDescription(ORIGINAL_DESCRIPTION)
+                .build();
 
         return transaction;
     }
@@ -188,7 +167,7 @@ public class TransactionsTableSetup {
      * @param transactionDAO DAO used to interact with DDB.
      * @param transaction transaction to persist.
      */
-    public static void saveTransaction(TransactionDAO transactionDAO,
+    public void saveTransaction(TransactionDAO transactionDAO,
                                        Transaction transaction) {
         transactionDAO.save(transaction);
     }
@@ -197,7 +176,7 @@ public class TransactionsTableSetup {
      * @param transactionDAO DAO used to interact with DDB.
      * @param transactions {@link Collection} of transactions to persist.
      */
-    public static void saveTransaction(TransactionDAO transactionDAO,
+    public void saveTransaction(TransactionDAO transactionDAO,
                                         Collection<Transaction> transactions) {
         transactions.stream()
                 .forEach(tx -> saveTransaction(transactionDAO, tx));

@@ -2,15 +2,14 @@ package dynamo;
 
 
 import external.plaid.entities.ImmutablePlaidItem;
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.PlaidItem;
+import external.plaid.entities.Transaction;
 import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticImmutableTableSchema;
 
-import java.util.List;
-
-import static software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags.primaryPartitionKey;
-import static software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags.primarySortKey;
+import static software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags.*;
 
 /**
  * Constants class to hold schemas for DynamoDB.
@@ -64,6 +63,63 @@ public final class DynamoTableSchemas {
                     .getter(PlaidItem::getWebhook)
                     .setter(ImmutablePlaidItem.Builder::webhook)
                     .build())
+            .build();
+
+    public static TableSchema<Transaction> TRANSACTION_SCHEMA = StaticImmutableTableSchema.builder(Transaction.class,
+            ImmutableTransaction.Builder.class).newItemBuilder(ImmutableTransaction::builder,
+            ImmutableTransaction.Builder::build)
+            // PARTITION KEY
+            .addAttribute(String.class, partitionKey -> partitionKey.name("user")
+                    .getter(Transaction::getUser)
+                    .setter(ImmutableTransaction.Builder::user)
+                    .tags(primaryPartitionKey())
+                    .build()
+            )
+            // COMPOSITE SORT KEY {date#transactionId}
+            .addAttribute(String.class, sort -> sort.name("dateTransactionId")
+                    .getter(tx -> tx.getDate() + "#" + tx.getTransactionId())
+                    .setter( (builder, sortKey) -> {
+                        String[] sortKeyInfo = sortKey.split("#");
+                        builder.date(sortKeyInfo[0]);
+                        builder.transactionId(sortKeyInfo[1]);
+                    })
+                    .tags(primarySortKey())
+            )
+            // ATTRIBUTES
+            .addAttribute(Double.class, a -> a.name("amount")
+                    .getter(Transaction::getAmount)
+                    .setter(ImmutableTransaction.Builder::amount)
+                    .tags(secondarySortKey("amountIndex"))
+            )
+            .addAttribute(String.class, a -> a.name("institutionName")
+                    .getter(Transaction::getInstitutionName)
+                    .setter(ImmutableTransaction.Builder::institutionName)
+                    .tags(secondarySortKey("institutionIndex"))
+            )
+            .addAttribute(String.class, a -> a.name("accountId")
+                    .getter(Transaction::getAccountId)
+                    .setter(ImmutableTransaction.Builder::accountId)
+                    .tags(secondaryPartitionKey("accountIndex"))
+            )
+            .addAttribute(String.class, a -> a.name("description")
+                    .getter(Transaction::getDescription)
+                    .setter(ImmutableTransaction.Builder::description)
+                    .tags(secondarySortKey("descriptionIndex"))
+            )
+            .addAttribute(String.class, a -> a.name("originalDescription")
+                    .getter(Transaction::getOriginalDescription)
+                    .setter(ImmutableTransaction.Builder::originalDescription)
+            )
+            .addAttribute(String.class, a -> a.name("merchantName")
+                    .getter(Transaction::getMerchantName)
+                    .setter(ImmutableTransaction.Builder::merchantName)
+                    .tags(secondarySortKey("merchantIndex"))
+            )
+            .addAttribute(String.class, a -> a.name("transactionId")
+                    .getter(Transaction::getTransactionId)
+                    .setter(ImmutableTransaction.Builder::transactionId)
+                    .tags(secondaryPartitionKey("transactionIdIndex"))
+            )
             .build();
 
     /**

@@ -3,6 +3,7 @@ package external.plaid.clients;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.TransactionsGetRequest;
 import com.plaid.client.response.TransactionsGetResponse;
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.Transaction;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -74,16 +75,16 @@ public class TransactionsGrabber {
     }
 
     private Transaction buildFromPlaid (String user, String institution, TransactionsGetResponse.Transaction plaidTransaction) {
-        return Transaction.getBuilder()
-                .setAmount(plaidTransaction.getAmount())
-                .setDescription(plaidTransaction.getName())
-                .setOriginalDescription(plaidTransaction.getOriginalDescription())
-                .setMerchantName(plaidTransaction.getMerchantName())
-                .setDate(plaidTransaction.getDate())
-                .setAccountId(plaidTransaction.getAccountId())
-                .setTransactionId(plaidTransaction.getTransactionId())
-                .setUser(user)
-                .setInstitutionName(institution)
+        return ImmutableTransaction.builder()
+                .amount(plaidTransaction.getAmount())
+                .description(plaidTransaction.getName())
+                .originalDescription(plaidTransaction.getOriginalDescription())
+                .merchantName(plaidTransaction.getMerchantName())
+                .date(plaidTransaction.getDate())
+                .accountId(plaidTransaction.getAccountId())
+                .transactionId(plaidTransaction.getTransactionId())
+                .user(user)
+                .institutionName(institution)
                 .build();
     }
 

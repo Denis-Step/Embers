@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dynamo.DynamoTableSchemas;
 import dynamo.TransactionDAO;
 import external.plaid.entities.PlaidItem;
+import external.plaid.entities.Transaction;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -86,8 +87,8 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    @Named("TRANSACTION_TABLE_SCHEMA")
-    static TableSchema<TransactionDAO> provideTransactionTableSchema() {
+    @Named("OLD_TRANSACTION_TABLE_SCHEMA")
+    static TableSchema<TransactionDAO> provideOldTransactionTableSchema() {
         return TableSchema.fromBean(TransactionDAO.class);
     }
 
@@ -100,11 +101,18 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    @Named("TRANSACTION_TABLE")
+    @Named("TRANSACTION_TABLE_SCHEMA")
+    static TableSchema<Transaction> provideTransactionTableSchema() {
+        return DynamoTableSchemas.TRANSACTION_SCHEMA;
+    }
+
+    @Provides
+    @Singleton
+    @Named("OLD_TRANSACTION_TABLE")
     static DynamoDbTable<TransactionDAO> provideNewTransactionDdbTable(
             DynamoDbEnhancedClient dynamoDbEnhancedClient,
             @Named("TRANSACTION_TABLE_NAME") String transactionTableName,
-            @Named("TRANSACTION_TABLE_SCHEMA") TableSchema<TransactionDAO> tableSchema) {
+            @Named("OLD_TRANSACTION_TABLE_SCHEMA") TableSchema<TransactionDAO> tableSchema) {
 
         return dynamoDbEnhancedClient
                 .table(transactionTableName, tableSchema);
@@ -120,8 +128,16 @@ public interface AwsClientModule {
     }
 
     @Provides
-    static TransactionDAO provideNewTransactionDao(DynamoDbEnhancedClient client,
-                                                   @Named("TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> table) {
+    @Singleton
+    static DynamoDbTable<Transaction> provideTransactionTable(DynamoDbEnhancedClient dynamoDbEnhancedClient,
+                                                              @Named("TRANSACTION_TABLE_NAME") String txTableName,
+                                                              @Named("TRANSACTION_TABLE_SCHEMA") TableSchema<Transaction> tableSchema) {
+        return dynamoDbEnhancedClient.table(txTableName, tableSchema);
+    }
+
+    @Provides
+    static TransactionDAO provideTransactionDao(DynamoDbEnhancedClient client,
+                                                   @Named("OLD_TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> table) {
         return new TransactionDAO(client, table);
     }
 

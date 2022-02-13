@@ -1,6 +1,7 @@
 package dynamo;
 
 import dagger.DaggerAwsComponent;
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,16 +249,16 @@ public class TransactionDAO {
         double amount = Double.valueOf(this.dateAmountTransactionId.split("#")[1]);
         String transactionId = this.dateAmountTransactionId.split("#")[2];
 
-        return Transaction.getBuilder()
-                .setUser(this.user)
-                .setInstitutionName(this.institutionName)
-                .setAccountId(this.account)
-                .setAmount(amount)
-                .setDescription(this.description)
-                .setOriginalDescription(this.originalDescription)
-                .setMerchantName(this.merchantName)
-                .setDate(date)
-                .setTransactionId(transactionId)
+        return ImmutableTransaction.builder()
+                .user(this.user)
+                .institutionName(this.institutionName)
+                .accountId(this.account)
+                .amount(amount)
+                .description(this.description)
+                .originalDescription(this.originalDescription)
+                .merchantName(this.merchantName)
+                .date(date)
+                .transactionId(transactionId)
                 .build();
     }
 

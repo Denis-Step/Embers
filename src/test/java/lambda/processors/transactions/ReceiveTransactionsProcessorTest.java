@@ -2,7 +2,7 @@
 //
 //import com.amazonaws.services.dynamodbv2.xspec.S;
 //import dynamo.TransactionDAO;
-//import dynamo.setup.TransactionsTableSetup;
+//import dynamo.setup.TransactionsTableUtils;
 //import events.impl.TransactionsEbClient;
 //import external.plaid.entities.Transaction;
 //import org.junit.jupiter.api.AfterAll;
@@ -43,17 +43,17 @@
 //        transactionsEbClient = Mockito.mock(TransactionsEbClient.class);
 //        receiveTransactionsProcessor = new ReceiveTransactionsProcessor(transactionDAO, transactionsEbClient);
 //
-//        TransactionsTableSetup.setUpTransactionsTable();
+//        TransactionsTableUtils.setUpTransactionsTable();
 //    }
 //
 //    @AfterAll
 //    public void deleteTransactionsTable() {
-//        TransactionsTableSetup.deleteTransactionsTable();
+//        TransactionsTableUtils.deleteTransactionsTable();
 //    }
 //
 //    @Test
 //    public void test_saveAndReturnNewTransactions() {
-//        List<Transaction> newTransactions = TransactionsTableSetup.createNewTransactions();
+//        List<Transaction> newTransactions = TransactionsTableUtils.createNewTransactions();
 //        //newTransactions.forEach(tx -> transactionDAO.save(tx));
 //        cleanup_Transactions(newTransactions);
 //

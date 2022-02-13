@@ -3,6 +3,7 @@ package lambda.processors.transactions;
 
 import dynamo.PlaidItemDAO;
 import external.plaid.clients.TransactionsGrabber;
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.PlaidItem;
 import external.plaid.entities.Transaction;
 import org.junit.jupiter.api.Test;
@@ -79,17 +80,18 @@ public class LoadTransactionsProcessorTest {
         List<Transaction> transactions = new ArrayList<>();
         for (int i = 0; i < 25; i++) {
 
-            Transaction transaction = new Transaction();
-            transaction.setTransactionId(TRANSACTION_ID + String.valueOf(i));
-            transaction.setInstitutionName(INSTITUTION);
-            transaction.setAmount(AMOUNT);
-            transaction.setDate(DATE);
-            transaction.setAccountId(ACCOUNT_ID);
-            transaction.setDescription(DESCRIPTION);
-            transaction.setMerchantName(MERCHANT_NAME);
-            transaction.setAccountId(ACCOUNT_ID);
-            transaction.setUser(USER);
-            transaction.setOriginalDescription(ORIGINAL_DESCRIPTION);
+            Transaction transaction = ImmutableTransaction.builder()
+                    .transactionId(TRANSACTION_ID + String.valueOf(i))
+                    .institutionName(INSTITUTION)
+                    .amount(AMOUNT)
+                    .date(DATE)
+                    .accountId(ACCOUNT_ID)
+                    .description(DESCRIPTION)
+                    .merchantName(MERCHANT_NAME)
+                    .accountId(ACCOUNT_ID)
+                    .user(USER)
+                    .originalDescription(ORIGINAL_DESCRIPTION)
+                    .build();
         }
         return transactions;
     }

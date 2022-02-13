@@ -59,8 +59,8 @@ public class TransactionsGrabberTest {
         List<Transaction> transactions = this.transactionsGrabber.requestTransactions(USER, INSTITUTION,
                 ACCESS_TOKEN, START_DATE, END_DATE);
         Transaction sampleTx = transactions.get(0);
-        assert (sampleTx.institutionName == INSTITUTION);
-        assert (sampleTx.amount == AMOUNT);
+        assert (sampleTx.getInstitutionName() == INSTITUTION);
+        assert (sampleTx.getAmount() == AMOUNT);
         verify(this.mockService, times(1)).transactionsGet(any());
     }
 
