@@ -164,6 +164,26 @@ public class TransactionsTableUtils {
     }
 
     /**
+     * Creates sample transactions differing only by transactionId.
+     * @param i number of transactions
+     * @return List of Transactions
+     */
+    public List<Transaction> createTransactions(int i) {
+        List<Transaction> transactions = new ArrayList<>();
+
+        for (int j = 0; j <= i; j++) {
+            Transaction baseTransaction = createTransaction();
+            Transaction transaction = ImmutableTransaction.builder()
+                    .from(baseTransaction)
+                    .transactionId(baseTransaction.getTransactionId() + String.valueOf(j))
+                    .build();
+            transactions.add(transaction);
+        }
+
+        return transactions;
+    }
+
+    /**
      * @param transactionDAO DAO used to interact with DDB.
      * @param transaction transaction to persist.
      */

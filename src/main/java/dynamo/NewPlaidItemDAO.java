@@ -104,7 +104,6 @@ public class NewPlaidItemDAO {
                             .sortValue(institutionIdAccessToken)
                             .build()
                     )));
-            LOGGER.info("Query returned: {}", queryResult.items().toString());
             return queryResult;
         } else {
             PageIterable<PlaidItem> queryResult = table.query(r -> r.queryConditional(
@@ -113,7 +112,6 @@ public class NewPlaidItemDAO {
                                     .partitionValue(user)
                                     .build()
                     )));
-            LOGGER.info("Query returned: {}", queryResult.items().toString());
             return queryResult;
         }
     }

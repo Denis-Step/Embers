@@ -11,7 +11,9 @@ import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NewTransactionDAO {
@@ -25,6 +27,38 @@ public class NewTransactionDAO {
     public List<Transaction> query(String user) {
         PageIterable<Transaction> transactionPages = this.paginatedQuery(user, null);
         return transactionPages.items().stream().collect(Collectors.toList());
+    }
+
+    public List<Transaction> query(String user, String dateTransactionId) {
+        PageIterable<Transaction> transactionPages = this.paginatedQuery(user, dateTransactionId);
+        return transactionPages.items().stream().collect(Collectors.toList());
+    }
+
+    public void save(Transaction transaction) { this.table.putItem(transaction); }
+
+    public void delete(Transaction transaction) {this.table.deleteItem(transaction); }
+
+    /**
+     * This method stylistically throws in order to provide the items found inside the Exception.
+     * This allows the caller to potentially recover by finding the intended invoice.
+     * @param user
+     * @param dateTransactionId
+     * @return Optional containing whether or not the item was found.
+     * @throws NewTransactionDAO.MultipleItemsFoundException
+     */
+    public Optional<Transaction> get(String user, String dateTransactionId) throws NewTransactionDAO.MultipleItemsFoundException {
+        List<Transaction> transactionList = query(user, dateTransactionId);
+
+        if (transactionList.size() == 0) {
+            return Optional.empty();
+        }
+
+        if (transactionList.size() == 1) {
+            return Optional.of(transactionList.get(0));
+        } else {
+            throw new NewTransactionDAO.MultipleItemsFoundException(String.format("%d Items Found",
+                    transactionList.size()), transactionList);
+        }
     }
 
     /**
@@ -45,7 +79,6 @@ public class NewTransactionDAO {
                                     .sortValue(date)
                                     .build()
                     )));
-            LOGGER.info("Query returned: {}", queryResult.items().toString());
             return queryResult;
         } else {
             PageIterable<Transaction> queryResult = table.query(r -> r.queryConditional(
@@ -54,8 +87,30 @@ public class NewTransactionDAO {
                                     .partitionValue(user)
                                     .build()
                     )));
-            LOGGER.info("Query returned: {}", queryResult.items().toString());
             return queryResult;
         }
+    }
+
+    /**
+     * Thrown from DAO methods that should only return 1 item but found more.
+     */
+    public static class MultipleItemsFoundException extends NewTransactionDAO.TransactionDAOException {
+        private final Collection<Transaction> items;
+
+        /**
+         * @param message Exception message.
+         * @param items items found.
+         */
+        public MultipleItemsFoundException(String message, List<Transaction> items) { super(message); this.items = items;}
+
+        public Collection<Transaction> getItems() { return this.items; }
+    }
+
+    private static class TransactionDAOException extends Exception {
+        // Check out and follow https://docs.oracle.com/javase/7/docs/api/java/lang/Exception.html
+
+        public TransactionDAOException(String message) { super(message); }
+
+        public TransactionDAOException(String message, Throwable cause) { super(message, cause); }
     }
 }
