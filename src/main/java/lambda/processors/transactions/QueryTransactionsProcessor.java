@@ -6,11 +6,11 @@ import external.plaid.entities.Transaction;
 import javax.inject.Inject;
 import java.util.List;
 
-public class GetTransactionsProcessor {
+public class QueryTransactionsProcessor {
     private final TransactionDAO transactionDAO;
 
     @Inject
-    public GetTransactionsProcessor(TransactionDAO transactionDAO) {
+    public QueryTransactionsProcessor(TransactionDAO transactionDAO) {
         this.transactionDAO = transactionDAO;
     }
 

@@ -243,7 +243,7 @@ public class TransactionsTableUtils {
     /**
      * @return sample Transaction
      */
-    public Transaction createTransaction() {
+    public static Transaction createTransaction() {
         Transaction transaction = ImmutableTransaction.builder()
                 .transactionId(TRANSACTION_ID)
                 .institutionName(INSTITUTION)
@@ -265,7 +265,7 @@ public class TransactionsTableUtils {
      * @param i number of transactions
      * @return List of Transactions
      */
-    public List<Transaction> createTransactions(int i) {
+    public static List<Transaction> createTransactions(int i) {
         List<Transaction> transactions = new ArrayList<>();
 
         for (int j = 0; j <= i; j++) {
@@ -280,23 +280,5 @@ public class TransactionsTableUtils {
         return transactions;
     }
 
-    /**
-     * @param transactionDAO DAO used to interact with DDB.
-     * @param transaction transaction to persist.
-     */
-    public void saveTransaction(TransactionDAO transactionDAO,
-                                       Transaction transaction) {
-        transactionDAO.save(transaction);
-    }
-
-    /**
-     * @param transactionDAO DAO used to interact with DDB.
-     * @param transactions {@link Collection} of transactions to persist.
-     */
-    public void saveTransaction(TransactionDAO transactionDAO,
-                                        Collection<Transaction> transactions) {
-        transactions.stream()
-                .forEach(tx -> saveTransaction(transactionDAO, tx));
-    }
 
 }

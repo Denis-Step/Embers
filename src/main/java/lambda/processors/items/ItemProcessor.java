@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Item-related functionality wrapping Plaid clients. Create Items with Link Tokens
+ * Item-related functionality wrapping Plaid clients & Data Acces. Create Items with Link Tokens
  * & Query for existing Items.
  */
 // Params: Link --> User, InstitutionId,

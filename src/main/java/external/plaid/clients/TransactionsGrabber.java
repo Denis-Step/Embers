@@ -30,6 +30,8 @@ public class TransactionsGrabber {
     }
 
     /**
+     * Needs the accessToken to query Plaid, but needs user + institutionName associated with the access token
+     * To return full Transaction object.
      * @param user user to query.
      * @param institutionName institution to query.
      * @param accessToken plaid Item access token.
@@ -57,10 +59,8 @@ public class TransactionsGrabber {
      * @return plaidclient's transactions.
      */
     public List<TransactionsGetResponse.Transaction> callGetTransactionsRequest
-            (TransactionsGetRequest transactionsGetRequest) {
-
+    (TransactionsGetRequest transactionsGetRequest) {
         try {
-
             Call<TransactionsGetResponse> txCall = plaidClient.service().transactionsGet(transactionsGetRequest);
             Response<TransactionsGetResponse> resp = txCall.execute();
             if (resp.isSuccessful()) {

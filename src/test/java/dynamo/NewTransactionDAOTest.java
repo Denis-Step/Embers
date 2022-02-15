@@ -18,9 +18,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

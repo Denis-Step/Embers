@@ -100,7 +100,7 @@ public class PlaidItemsTableUtils {
         return attributeDefinitions;
     }
 
-    public PlaidItem createItem() {
+    public static PlaidItem createItem() {
         AVAILABLE_PRODUCTS = new ArrayList<>();
         AVAILABLE_PRODUCTS.add("transactions");
         ACCOUNTS = new ArrayList<>();
@@ -119,7 +119,7 @@ public class PlaidItemsTableUtils {
                 .build();
     }
 
-    public List<PlaidItem> createItems() {
+    public static List<PlaidItem> createItems() {
         List<PlaidItem> items = new ArrayList<>();
         PlaidItem item = createItem();
 

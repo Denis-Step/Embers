@@ -8,13 +8,12 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetTransactionsProcessorTest {
+public class QueryTransactionsProcessorTest {
     private final TransactionDAO transactionDAO;
-    private final GetTransactionsProcessor getTransactionsProcessor;
+    private final QueryTransactionsProcessor queryTransactionsProcessor;
 
 
     private static final String USER = "USER";
@@ -29,15 +28,15 @@ public class GetTransactionsProcessorTest {
     private static final String ACCOUNT_ID = "1233456789";
     private static final String TRANSACTION_ID = "TX-123456789";
 
-    public GetTransactionsProcessorTest(GetTransactionsProcessor getTransactionsProcessor) {
+    public QueryTransactionsProcessorTest(QueryTransactionsProcessor queryTransactionsProcessor) {
         this.transactionDAO = new TransactionDAO();
-        this.getTransactionsProcessor = new GetTransactionsProcessor(transactionDAO);
+        this.queryTransactionsProcessor = new QueryTransactionsProcessor(transactionDAO);
     }
 
     @Test
     public void test_getTransactionsWithoutStartDate() {
         List<Transaction> sampleTransactions = createAndSaveNewTransactions();
-        List<Transaction> queriedTransactions = getTransactionsProcessor.getTransactions(USER);
+        List<Transaction> queriedTransactions = queryTransactionsProcessor.getTransactions(USER);
         assert (sampleTransactions.equals(queriedTransactions));
         cleanup_transactions(sampleTransactions);
     }
@@ -45,7 +44,7 @@ public class GetTransactionsProcessorTest {
     @Test
     public void test_getTransactionsWithStartDate() {
         List<Transaction> sampleTransactions = createAndSaveNewTransactions();
-        List<Transaction> queriedTransactions = getTransactionsProcessor.getTransactions(USER,
+        List<Transaction> queriedTransactions = queryTransactionsProcessor.getTransactions(USER,
                 DATE.replaceFirst("01", "24"));
         assert (sampleTransactions.size() == 2);
         cleanup_transactions(sampleTransactions);
