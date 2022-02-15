@@ -1,12 +1,14 @@
 package dynamo;
 
-import external.plaid.entities.PlaidItem;
 import external.plaid.entities.Transaction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
@@ -19,6 +21,11 @@ import java.util.stream.Collectors;
 public class NewTransactionDAO {
 
     private final DynamoDbTable<Transaction> table;
+    private static final String AMOUNT_INDEX = "amountIndex";
+    private static final String DESCRIPTION_INDEX = "descriptionIndex";
+    private static final String INSTITUTION_INDEX = "institutionNameIndex";
+    private static final String ACCOUNT_INDEX = "accountIdIndex";
+    private static final String TRANSACTION_ID_INDEX = "transactionIdIndex";
     private static final Logger LOGGER = LoggerFactory.getLogger(NewTransactionDAO.class);
 
     @Inject
@@ -32,6 +39,41 @@ public class NewTransactionDAO {
     public List<Transaction> query(String user, String dateTransactionId) {
         PageIterable<Transaction> transactionPages = this.paginatedQuery(user, dateTransactionId);
         return transactionPages.items().stream().collect(Collectors.toList());
+    }
+
+    public List<Transaction> queryByAmount(String user, double amount) {
+        SdkIterable<Page<Transaction>> pageSdkIterable = paginatedQueryByAmount(user, amount);
+        return pageSdkIterable.stream()
+                .flatMap(page -> page.items().stream())
+                .collect(Collectors.toList());
+    }
+
+    public List<Transaction> queryByDescription(String user, String description) {
+        SdkIterable<Page<Transaction>> pageSdkIterable = paginatedQueryByDescription(user, description);
+        return pageSdkIterable.stream()
+                .flatMap(page -> page.items().stream())
+                .collect(Collectors.toList());
+    }
+
+    public List<Transaction> queryByInstitutionName(String user, String institutionName) {
+        SdkIterable<Page<Transaction>> pageSdkIterable = paginatedQueryByInstitution(user, institutionName);
+        return pageSdkIterable.stream()
+                .flatMap(page -> page.items().stream())
+                .collect(Collectors.toList());
+    }
+
+    public List<Transaction> queryByAccountId(String accountId) {
+        SdkIterable<Page<Transaction>> pageSdkIterable = paginatedQueryByAccount(accountId, null);
+        return pageSdkIterable.stream()
+                .flatMap(page -> page.items().stream())
+                .collect(Collectors.toList());
+    }
+
+    public List<Transaction> queryByAccountId(String accountId, String dateTransactionId) {
+        SdkIterable<Page<Transaction>> pageSdkIterable = paginatedQueryByAccount(accountId, dateTransactionId);
+        return pageSdkIterable.stream()
+                .flatMap(page -> page.items().stream())
+                .collect(Collectors.toList());
     }
 
     public void save(Transaction transaction) { this.table.putItem(transaction); }
@@ -49,6 +91,19 @@ public class NewTransactionDAO {
     public Optional<Transaction> get(String user, String dateTransactionId) throws NewTransactionDAO.MultipleItemsFoundException {
         List<Transaction> transactionList = query(user, dateTransactionId);
 
+        return getOptionalTransactionOrThrow(transactionList);
+    }
+
+    public Optional<Transaction> getByTransactionId(String transactionId) throws MultipleItemsFoundException {
+        SdkIterable<Page<Transaction>> pageSdkIterable = paginatedQueryByTransactionId(transactionId);
+        List<Transaction> transactionList = pageSdkIterable.stream()
+                .flatMap(page -> page.items().stream())
+                .collect(Collectors.toList());
+
+        return getOptionalTransactionOrThrow(transactionList);
+    }
+
+    private Optional<Transaction> getOptionalTransactionOrThrow(List<Transaction> transactionList) throws MultipleItemsFoundException {
         if (transactionList.size() == 0) {
             return Optional.empty();
         }
@@ -56,7 +111,7 @@ public class NewTransactionDAO {
         if (transactionList.size() == 1) {
             return Optional.of(transactionList.get(0));
         } else {
-            throw new NewTransactionDAO.MultipleItemsFoundException(String.format("%d Items Found",
+            throw new MultipleItemsFoundException(String.format("%d Items Found",
                     transactionList.size()), transactionList);
         }
     }
@@ -90,6 +145,75 @@ public class NewTransactionDAO {
             return queryResult;
         }
     }
+
+    private SdkIterable<Page<Transaction>> paginatedQueryByAmount(String user, double amount) {
+        LOGGER.info("Querying Transactions Table for user {} and amount {}", user, amount);
+
+        return table.index(AMOUNT_INDEX).query(r -> r.queryConditional(
+                QueryConditional.sortGreaterThanOrEqualTo(
+                        Key.builder()
+                                .partitionValue(user)
+                                .sortValue(amount)
+                                .build()
+                )));
+    }
+
+    private SdkIterable<Page<Transaction>> paginatedQueryByDescription(String user, String description) {
+        LOGGER.info("Querying Transactions Table for user {} and description {}", user, description);
+
+        return table.index(DESCRIPTION_INDEX).query(
+                QueryConditional.sortBeginsWith(
+                        Key.builder()
+                                .partitionValue(user)
+                                .sortValue(description)
+                                .build()
+                ));
+    }
+
+    private SdkIterable<Page<Transaction>> paginatedQueryByInstitution(String user, String institutionName) {
+        LOGGER.info("Querying Transactions Table for user {} and institutionName {}", user, institutionName);
+
+        return table.index(INSTITUTION_INDEX).query(
+                QueryConditional.keyEqualTo(
+                        Key.builder()
+                                .partitionValue(user)
+                                .sortValue(institutionName)
+                        .build()));
+    }
+
+    private SdkIterable<Page<Transaction>> paginatedQueryByAccount(String accountId, @Nullable String dateTransactionId) {
+        LOGGER.info("Querying Transactions Table for accountId {} and dateTransactionId {}"
+                , accountId, dateTransactionId);
+
+        if (dateTransactionId != null) {
+            return table.index(ACCOUNT_INDEX).query(
+                    QueryConditional.sortGreaterThanOrEqualTo(
+                            Key.builder()
+                                    .partitionValue(accountId)
+                                    .sortValue(dateTransactionId)
+                                    .build()
+                    ));
+        } else {
+            return table.index(ACCOUNT_INDEX).query(
+                    QueryConditional.keyEqualTo(
+                            Key.builder()
+                                    .partitionValue(accountId)
+                                    .build()
+                    ));
+        }
+    }
+
+    private SdkIterable<Page<Transaction>> paginatedQueryByTransactionId (String transactionId) {
+        LOGGER.info("Querying Transactions Table for transactionId {}", transactionId);
+
+        return table.index(TRANSACTION_ID_INDEX).query(
+                QueryConditional.keyEqualTo(
+                        Key.builder()
+                                .partitionValue(transactionId)
+                                .build())
+        );
+    }
+
 
     /**
      * Thrown from DAO methods that should only return 1 item but found more.

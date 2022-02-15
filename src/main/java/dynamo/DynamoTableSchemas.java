@@ -83,7 +83,7 @@ public final class DynamoTableSchemas {
                         builder.date(sortKeyInfo[0]);
                         builder.transactionId(sortKeyInfo[1]);
                     })
-                    .tags(primarySortKey())
+                    .tags(primarySortKey(), secondarySortKey("accountIdIndex"))
             )
             // ATTRIBUTES
             .addAttribute(Double.class, a -> a.name("amount")
@@ -94,12 +94,12 @@ public final class DynamoTableSchemas {
             .addAttribute(String.class, a -> a.name("institutionName")
                     .getter(Transaction::getInstitutionName)
                     .setter(ImmutableTransaction.Builder::institutionName)
-                    .tags(secondarySortKey("institutionIndex"))
+                    .tags(secondarySortKey("institutionNameIndex"))
             )
             .addAttribute(String.class, a -> a.name("accountId")
                     .getter(Transaction::getAccountId)
                     .setter(ImmutableTransaction.Builder::accountId)
-                    .tags(secondaryPartitionKey("accountIndex"))
+                    .tags(secondaryPartitionKey("accountIdIndex"))
             )
             .addAttribute(String.class, a -> a.name("description")
                     .getter(Transaction::getDescription)
@@ -113,7 +113,6 @@ public final class DynamoTableSchemas {
             .addAttribute(String.class, a -> a.name("merchantName")
                     .getter(Transaction::getMerchantName)
                     .setter(ImmutableTransaction.Builder::merchantName)
-                    .tags(secondarySortKey("merchantIndex"))
             )
             .addAttribute(String.class, a -> a.name("transactionId")
                     .getter(Transaction::getTransactionId)
