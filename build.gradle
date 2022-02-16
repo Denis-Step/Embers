@@ -99,7 +99,6 @@ test {
     jacoco {
         enabled = true
         destinationFile = layout.buildDirectory.file("jacoco/${name}.exec").get().asFile
-        includes = []
         excludes = []
         excludeClassLoaders = []
         includeNoLocationClasses = false

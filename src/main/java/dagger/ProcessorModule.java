@@ -74,7 +74,7 @@ public interface ProcessorModule {
 
     @Provides
     @Singleton
-    static TransactionProcessor provideTransactionProcessor(ItemProcessor itemProcessor) {
-        return new TransactionProcessor(new TransactionDAO(), itemProcessor);
+    static PollTransactionProcessor provideTransactionProcessor(ItemProcessor itemProcessor) {
+        return new PollTransactionProcessor(new TransactionDAO(), itemProcessor);
     } */
 }

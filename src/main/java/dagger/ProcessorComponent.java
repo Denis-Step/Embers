@@ -3,10 +3,7 @@ package dagger;
 import com.fasterxml.jackson.databind.JsonNode;
 import lambda.processors.items.CreateLinkTokenProcessor;
 import lambda.processors.items.ItemProcessor;
-import lambda.processors.transactions.QueryTransactionsProcessor;
-import lambda.processors.transactions.LoadTransactionsProcessor;
-import lambda.processors.transactions.NewTransactionProcessor;
-import lambda.processors.transactions.ReceiveTransactionsProcessor;
+import lambda.processors.transactions.*;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -22,7 +19,7 @@ public interface ProcessorComponent {
     CreateLinkTokenProcessor buildLinkTokenProcessor();
     ItemProcessor buildItemProcessor();
     QueryTransactionsProcessor buildGetTransactionsProcessor();
-    LoadTransactionsProcessor buildLoadTransactionsProcessor();
+    PollTransactionsProcessor buildPollTransactionsProcessor();
     NewTransactionProcessor buildNewTransactionProcessor();
     ReceiveTransactionsProcessor buildReceiveTransactionsProcessor();
 

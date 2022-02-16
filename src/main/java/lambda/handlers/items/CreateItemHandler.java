@@ -1,18 +1,21 @@
 package lambda.handlers.items;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dagger.DaggerProcessorComponent;
 import lambda.processors.items.ItemProcessor;
 import lambda.requests.items.CreateItemRequest;
 import external.plaid.entities.PlaidItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
 
-public class CreateItemHandler implements RequestHandler<CreateItemRequest, String> {
+public class CreateItemHandler implements RequestHandler<CreateItemRequest, PlaidItem> {
     private final ItemProcessor processor;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateItemHandler.class);
+
 
     public CreateItemHandler() {this.processor = DaggerProcessorComponent.create().buildItemProcessor();}
 
@@ -20,18 +23,17 @@ public class CreateItemHandler implements RequestHandler<CreateItemRequest, Stri
     public CreateItemHandler(ItemProcessor processor) {this.processor = processor;}
 
     @Override
-    public String handleRequest(CreateItemRequest event, Context context) {
-        LambdaLogger logger = context.getLogger();
-        logger.log("Getting access token for" + event.getPublicToken());
-        logger.log(event.toString());
+    public PlaidItem handleRequest(CreateItemRequest event, Context context) {
+        LOGGER.info("Getting access token for {}", event.getPublicToken());
+        LOGGER.info(event.toString());
 
         try {
             PlaidItem item = processor.createPlaidItem(event);
-            logger.log("Created item:" + item.getId());
-            return item.toString();
+            LOGGER.info("Created item:" + item.getId());
+            return item;
         } catch (IOException e){
             // Rethrow Exception to prevent Lambda from succeeding.
-            logger.log("Exception" + e.getMessage() + System.currentTimeMillis());
+            LOGGER.info("Exception" + e.getMessage() + System.currentTimeMillis());
             throw new RuntimeException(String.format("Exception: %s", e.getMessage()));
         }
     }

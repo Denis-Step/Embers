@@ -1,6 +1,5 @@
 package lambda.processors.transactions;
 
-import dynamo.NewPlaidItemDAO;
 import dynamo.NewTransactionDAO;
 import dynamo.setup.PlaidItemsTableUtils;
 import dynamo.setup.TransactionsTableUtils;
@@ -19,20 +18,18 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TransactionProcessorTest {
-    private final NewTransactionDAO transactionDAO;
+public class PollTransactionsProcessorTest {
     private final TransactionsGrabber transactionsGrabber;
-    private final TransactionProcessor transactionProcessor;
+    private final PollTransactionsProcessor pollTransactionsProcessor;
 
 
-    public TransactionProcessorTest() {
-        this.transactionDAO = mock(NewTransactionDAO.class);
+    public PollTransactionsProcessorTest() {
         this.transactionsGrabber = mock(TransactionsGrabber.class);
-        this.transactionProcessor = new TransactionProcessor(transactionDAO, transactionsGrabber);
+        this.pollTransactionsProcessor = new PollTransactionsProcessor(transactionsGrabber);
     }
 
     @Test
-    public void pullsTransactions() {
+    public void pollsTransactions() {
         PlaidItem plaidItem = PlaidItemsTableUtils.createItem();
         List<Transaction> expectedTransactions = TransactionsTableUtils.createTransactions(2);
         Date startDate = Date.from(Instant.now());
@@ -40,7 +37,7 @@ public class TransactionProcessorTest {
         when(transactionsGrabber.requestTransactions(plaidItem.getUser(), plaidItem.getInstitutionId(),
                 plaidItem.getAccessToken(), startDate, endDate)).thenReturn(expectedTransactions);
 
-        List<Transaction> transactions = transactionProcessor.pullNewTransactions(plaidItem, startDate, endDate);
+        List<Transaction> transactions = pollTransactionsProcessor.pollForTransactions(plaidItem, startDate, endDate);
         verify(transactionsGrabber.requestTransactions(plaidItem.getUser(), plaidItem.getInstitutionId(),
                 plaidItem.getAccessToken(), startDate, endDate), times(1));
 
