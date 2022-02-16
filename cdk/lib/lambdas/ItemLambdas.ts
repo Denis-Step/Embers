@@ -23,7 +23,7 @@ export class ItemLambdas extends Construct {
 
         this.createLinkTokenLambda = new lambda.Function(this, 'LinkTokenLambda', {
             runtime: lambda.Runtime.JAVA_8_CORRETTO,
-            handler: "lambda.handlers.CreateLinkTokenHandler",
+            handler: "lambda.handlers.items.CreateLinkTokenHandler",
 
             // Code supports local build steps, S3 buckets, and inlining.
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
@@ -34,7 +34,7 @@ export class ItemLambdas extends Construct {
 
         this.createItemLambda = new lambda.Function(this, 'CreateItemLambda', {
             runtime: lambda.Runtime.JAVA_8_CORRETTO,
-            handler: "lambda.handlers.CreateItemHandler",
+            handler: "lambda.handlers.items.CreateItemHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
             memorySize: 512,
             timeout: Duration.seconds(300),
@@ -43,7 +43,7 @@ export class ItemLambdas extends Construct {
 
         this.getItemLambda = new lambda.Function(this, 'GetItemLambda', {
             runtime: lambda.Runtime.JAVA_8_CORRETTO,
-            handler: "lambda.handlers.GetItemsHandler",
+            handler: "lambda.handlers.items.GetItemsHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
             memorySize: 512,
             timeout: Duration.seconds(300),
