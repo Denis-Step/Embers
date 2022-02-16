@@ -35,6 +35,7 @@ public class NewPlaidItemDAO {
      * @throws MultipleItemsFoundException
      * This method stylistically throws in order to provide the items found inside the Exception.
      * This allows the caller to potentially recover by finding the intended invoice.
+     * @TODO: Fix this to use a sortKeyEquals condition instead of regular query. THIS IS A BUG.
      */
     public Optional<PlaidItem> get(String user, String institutionIdAccessToken) throws MultipleItemsFoundException {
         List<PlaidItem> plaidItemList = query(user, institutionIdAccessToken);

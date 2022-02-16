@@ -91,15 +91,15 @@ public class ItemProcessorTest {
     }
 
     @Test
-    public void getItemOptionalEmptyOnMultipleItemsReturned() throws MultipleItemsFoundException {
+    public void getItemThrowsExceptionOnMultipleItemsReturned()  {
         GetItemRequest request = sampleGetItemRequest();
         PlaidItem mockItem = mock(PlaidItem.class);
-        when(plaidItemDAO.get(request.getUser(), request.getInstitutionIdAccessToken()))
-                .thenThrow(MultipleItemsFoundException.class);
-
-        Optional<PlaidItem> plaidItemOptional = itemProcessor.getItem(request.getUser(),
-                request.getInstitutionIdAccessToken());
-        assertTrue(!plaidItemOptional.isPresent());
+        assertThrows(MultipleItemsFoundException.class, () -> {
+            when(plaidItemDAO.get(request.getUser(), request.getInstitutionIdAccessToken()))
+                    .thenThrow(MultipleItemsFoundException.class);
+            itemProcessor.getItem(request.getUser(),
+                    request.getInstitutionIdAccessToken());
+        } );
     }
 
     private GetItemRequest sampleGetItemRequest() {

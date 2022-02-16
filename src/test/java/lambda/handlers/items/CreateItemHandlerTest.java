@@ -1,4 +1,4 @@
-package lambda.handlers;
+package lambda.handlers.items;
 
 import dynamo.setup.PlaidItemsTableUtils;
 import external.plaid.entities.PlaidItem;
@@ -6,7 +6,7 @@ import lambda.handlers.items.CreateItemHandler;
 import lambda.processors.items.ItemProcessor;
 import lambda.requests.items.CreateItemRequest;
 import lambda.requests.items.ImmutableCreateItemRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -29,9 +29,6 @@ public class CreateItemHandlerTest {
     private final String DATE_CREATED = "2022-01-01";
     private final String METADATA = "METADATA";
     private final boolean webhook = false;
-
-    private final String RESP_ID = "RESP_ID";
-    private final String ACCESS_TOKEN = "ACESS_TOKEN";
 
     @Test
     public void handlerCallsProcessor() throws IOException {

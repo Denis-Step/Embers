@@ -70,16 +70,11 @@ public class ItemProcessor {
      * @return
      * @throws MultipleItemsFoundException
      */
-    public Optional<PlaidItem> getItem(String user, String institutionIdAccessToken) {
-        try {
-            Optional<PlaidItem> plaidItemOptional = plaidItemDAO.get(user, institutionIdAccessToken);
-            LOGGER.info("Plaid Item Optional: {}",
-                    plaidItemOptional.isPresent() ? plaidItemOptional.toString() : "NONE");
-            return plaidItemOptional;
-        } catch (MultipleItemsFoundException e) {
-            LOGGER.error(e.toString());
-            return Optional.empty();
-        }
+    public Optional<PlaidItem> getItem(String user, String institutionIdAccessToken) throws MultipleItemsFoundException {
+        Optional<PlaidItem> plaidItemOptional = plaidItemDAO.get(user, institutionIdAccessToken);
+        LOGGER.info("Plaid Item Optional: {}",
+                plaidItemOptional.isPresent() ? plaidItemOptional.toString() : "NONE");
+        return plaidItemOptional;
     }
 
     private PlaidItem createItem(CreateItemRequest createItemRequest) {
