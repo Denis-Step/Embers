@@ -17,7 +17,7 @@ public interface PollTransactionsRequest {
 
     PlaidItem getPlaidItem();
     @Nullable String getAccountId(); // Nullable
-    @Nullable String getStartDate(); // Nullable
-    @Nullable String getEndDate(); // Nullable
+    String getStartDate(); // Nullable
+    String getEndDate(); // Nullable
 
 }

@@ -78,8 +78,7 @@ public class ItemFlowTest {
     private final String DATE_CREATED = "2022-01-01";
     private final String METADATA = "METADATA";
     private final boolean usingWebhook = false;
-
-    private final String RESP_ID = "RESP_ID";
+    
     private final String ACCESS_TOKEN = "ACCESS_TOKEN";
     private static final String ITEM_ID = "Item-1234";
 

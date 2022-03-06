@@ -28,7 +28,7 @@ public class PollTransactionsProcessor {
      * @param plaidItem the item to fetch transactions for
      * @param startDate start date to check, inclusive
      * @param endDate end date to check, exclusive
-     * @return
+     * @return List of transactions from Plaid
      */
     public List<Transaction> pollForTransactions(PlaidItem plaidItem, Date startDate, Date endDate) {
         return transactionsGrabber.requestTransactions(plaidItem.getUser(), plaidItem.getInstitutionId(),

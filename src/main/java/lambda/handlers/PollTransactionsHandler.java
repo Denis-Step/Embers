@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import external.plaid.entities.Transaction;
 
 import javax.inject.Inject;
-import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -36,15 +39,20 @@ public class PollTransactionsHandler implements RequestHandler<PollTransactionsR
         LOGGER.info("Polling for transactions for user {} between {} and {}",
                 request.getPlaidItem().getUser(), request.getStartDate(), request.getEndDate());
 
-        return processor.pollForTransactions(request.getPlaidItem(),
-                Date.valueOf(request.getStartDate()), Date.valueOf(request.getEndDate()));
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+        try {
+            return processor.pollForTransactions(request.getPlaidItem(),
+                    dateFormatter.parse(request.getStartDate()),
+                    dateFormatter.parse((request.getEndDate())));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Inject
     public PollTransactionsHandler(PollTransactionsProcessor processor) {
         this.processor = processor;
     }
-
-
 
 }
