@@ -45,7 +45,7 @@ public class CreateLinkTokenHandler
         }
     }
 
-    protected class CreateLinkTokenLambdaRequest {
+    public static class CreateLinkTokenLambdaRequest {
         private final ImmutableCreateLinkTokenRequest.Builder builder;
 
         private String user;
