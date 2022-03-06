@@ -42,7 +42,7 @@ export class JpApi extends cdk.Construct {
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
       requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito:username\']",' +
             '"products" : $input.json(\'$.products\'),' +
-            '"webhook" : "$util.escapeJavaScript($input.json(\'$.webhook\'))"}'},
+            '"webhookEnabled" : "$util.escapeJavaScript($input.json(\'$.webhookEnabled\'))"}'},
       integrationResponses: [
         {
 

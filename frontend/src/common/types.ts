@@ -4,7 +4,7 @@ export interface PlaidItemCreationInfo {
     availableProducts: string[];
     accounts: string[];
     dateCreated: Date | string;
-    webhook: boolean;
+    webhookEnabled: boolean;
     metaData: string; // Stringfied metadata.
 }
 

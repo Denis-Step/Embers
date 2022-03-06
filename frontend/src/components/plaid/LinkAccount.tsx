@@ -59,7 +59,7 @@ function linkReducer(state: State, action: Action): State {
 // Helper function to build object to send request for a new item.
 const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
                        publicToken: string,
-                       webhook: boolean,
+                       webhookEnabled: boolean,
                        products: string[]): PlaidItemCreationInfo => {
 
     // No institutionId means Dummy string.
@@ -75,7 +75,7 @@ const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
         availableProducts: products,
         accounts: accounts,
         dateCreated: new Date().toISOString(),
-        webhook: webhook,
+        webhookEnabled: webhookEnabled,
         metaData: JSON.stringify(metadata)
     };
 }

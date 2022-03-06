@@ -11,8 +11,6 @@ import java.util.List;
  * Lambda Request Type.
  */
 @Value.Immutable
-@JsonSerialize(as= ImmutablePlaidItem.class)
-@JsonDeserialize(as= ImmutablePlaidItem.class)
 public interface CreateItemRequest {
 
      String getUser();
