@@ -50,7 +50,7 @@ export class JpApi extends cdk.Construct {
           statusCode: "200",
           responseTemplates: {
             // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
-            'application/json': JSON.stringify({linkToken: '$input.body'})
+            'application/json': "{linkToken: $input.body})"
           },
           responseParameters: {
             // We can map response parameters
