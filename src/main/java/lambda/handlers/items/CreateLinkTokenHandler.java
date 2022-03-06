@@ -2,19 +2,19 @@ package lambda.handlers.items;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.DaggerProcessorComponent;
 import lambda.processors.items.CreateLinkTokenProcessor;
 import lambda.requests.items.CreateLinkTokenRequest;
-import lambda.requests.items.ImmutableCreateLinkTokenRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
 
-public class CreateLinkTokenHandler
-        implements RequestHandler<CreateLinkTokenHandler.CreateLinkTokenLambdaRequest, String> {
+public class CreateLinkTokenHandler implements RequestHandler<InputStream, String> {
     private final CreateLinkTokenProcessor processor;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateLinkTokenHandler.class);
 
     public CreateLinkTokenHandler() {this.processor = DaggerProcessorComponent.create().buildLinkTokenProcessor();}
@@ -24,9 +24,13 @@ public class CreateLinkTokenHandler
     }
 
     @Override
-    public String handleRequest(CreateLinkTokenLambdaRequest request, Context context) {
-        ImmutableCreateLinkTokenRequest linkTokenRequest = request.build();
-        return handleRequest(linkTokenRequest, context);
+    public String handleRequest(InputStream inputStream, Context context) {
+        try {
+            return handleRequest(objectMapper.readValue(inputStream, CreateLinkTokenRequest.class), context);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String handleRequest(CreateLinkTokenRequest event, Context context) {
@@ -41,20 +45,5 @@ public class CreateLinkTokenHandler
             throw new RuntimeException(String.format("Exception: %s", e.getMessage()));
         }
     }
-
-    protected class CreateLinkTokenLambdaRequest {
-        private final ImmutableCreateLinkTokenRequest.Builder builder;
-
-        public CreateLinkTokenLambdaRequest() {
-            this.builder = ImmutableCreateLinkTokenRequest.builder();
-        }
-
-        public void setUser(String user) {this.builder.user(user);}
-        public void setProducts(List<String> products) {this.builder.products(products);}
-        public void setWebhookEnabled(boolean webhookEnabled) {this.builder.webhookEnabled(webhookEnabled);}
-
-        public ImmutableCreateLinkTokenRequest build() {return this.builder.build();}
-    }
-
 
 }
