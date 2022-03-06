@@ -11,15 +11,15 @@ import {formatDate} from "./utils";
 
 // Get link token for clients.plaid flow.
 export const getLinkToken = async (token: string,
-                             webhook: boolean,
-                             products?: string[]): Promise<string> => {
+                                   webhookEnabled: boolean,
+                                   products?: string[]): Promise<string> => {
 
     // Pass in default list of products if link is not passed.
     products = (typeof products !== 'undefined') ? products : LINK_DEFAULT_PRODUCTS;
     const endpoint = BETA_ENDPOINT + LINK_API_RESOURCE;
 
     const request = await axios.post(endpoint,
-        { products, webhook },
+        { products, webhookEnabled },
         {headers: {
             Authorization: token
         }});

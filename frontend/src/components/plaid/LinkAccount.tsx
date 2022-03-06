@@ -25,12 +25,12 @@ type State = {
     linkToken?: string;
     publicToken?: string;
     metaData?: PlaidLinkOnSuccessMetadata;
-    webhook: boolean
+    webhookEnabled: boolean
 }
 
 const initialState: State = {
     products: ["transactions"], // Default products. Not changed for now.
-    webhook: false
+    webhookEnabled: false
 };
 
 function linkReducer(state: State, action: Action): State {
@@ -49,7 +49,7 @@ function linkReducer(state: State, action: Action): State {
         case ActionKind.UpdateWebhook:
             return {
                 ...state,
-                webhook: action.payload.webhook
+                webhookEnabled: action.payload.webhook
             }
         default:
             return {...state}
@@ -96,8 +96,8 @@ const LinkAccount = () => {
 
         // Send info back when publicToken is generated.
         if (state.publicToken && state.metaData) {
-            const {metaData, publicToken, webhook, products} = state;
-            const infoToSend = buildItemInfo(metaData, publicToken, webhook, products)
+            const {metaData, publicToken, webhookEnabled, products} = state;
+            const infoToSend = buildItemInfo(metaData, publicToken, webhookEnabled, products)
             sendInfoBack(infoToSend);
         }
 
@@ -109,14 +109,14 @@ const LinkAccount = () => {
     };
 
     const updateWebhook = useCallback( (): void => {
-        dispatch({type: ActionKind.UpdateWebhook, payload: {webhook: !state.webhook}});
-    }, [state.webhook])
+        dispatch({type: ActionKind.UpdateWebhook, payload: {webhookEnabled: !state.webhookEnabled}});
+    }, [state.webhookEnabled])
 
     // Handler for link token button.
     const updateLinkToken = useCallback(async () => {
-        const link = await getLinkToken(auth.token.id_token, state.webhook,  state.products);
+        const link = await getLinkToken(auth.token.id_token, state.webhookEnabled,  state.products);
         dispatch({type: ActionKind.UpdateLinkToken, payload: link});
-    }, [state.products, state.webhook, auth]);
+    }, [state.products, state.webhookEnabled, auth]);
 
     // onSuccess callback for LinkFlow to initiate item creation server-side.
     const onLinkSuccess = useCallback(async (public_token: string,
