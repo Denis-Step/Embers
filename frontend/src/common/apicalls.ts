@@ -53,4 +53,3 @@ export const getTransactions = async (startDate: Date, token: string): Promise<T
     return JSON.parse(request.data);
 }
 
-export const refreshTransactions = async()
