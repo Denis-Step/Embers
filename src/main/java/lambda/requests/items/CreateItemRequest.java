@@ -21,5 +21,5 @@ public interface CreateItemRequest {
      List<String> getAccounts();
      String getDateCreated();
      String getMetadata(); // Remaining metadata. Rarely used.
-     boolean getWebhook();
+     boolean getWebhookEnabled();
 }

@@ -26,7 +26,7 @@ export class TransactionLambdas extends Construct {
         });
 
         this.loadTransactionsLambda = new lambda.Function(this, 'LoadTransactionsLambda', {
-            runtime: lambda.Runtime.JAVA_8_CORRETTO,
+            runtime: lambda.Runtime.JAVA_11,
             handler: "lambda.handlers.LoadTransactionsHandler",
 
             // Code supports local build steps, S3 buckets, and inlining.
@@ -37,7 +37,7 @@ export class TransactionLambdas extends Construct {
         })
 
         this.receiveTransactionsLambda = new lambda.Function(this, 'ReceiveTransactionsLambda', {
-            runtime: lambda.Runtime.JAVA_8_CORRETTO,
+            runtime: lambda.Runtime.JAVA_11,
             handler: "lambda.handlers.ReceiveTransactionsHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
             memorySize: 512,
@@ -46,7 +46,7 @@ export class TransactionLambdas extends Construct {
         });
 
         this.newTransactionLambda = new lambda.Function(this, 'NewTransactionLambda', {
-            runtime: lambda.Runtime.JAVA_8_CORRETTO,
+            runtime: lambda.Runtime.JAVA_11,
             handler: "lambda.handlers.NewTransactionHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
             memorySize: 512,
@@ -55,7 +55,7 @@ export class TransactionLambdas extends Construct {
         });
 
         this.getTransactionsLambda = new lambda.Function(this, 'GetTransactionsLambda', {
-            runtime: lambda.Runtime.JAVA_8_CORRETTO,
+            runtime: lambda.Runtime.JAVA_11,
             handler: "lambda.handlers.GetTransactionsHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
             memorySize: 512,

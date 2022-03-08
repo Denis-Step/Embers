@@ -3,7 +3,6 @@ package lambda.processors.items;
 import dynamo.NewPlaidItemDAO;
 import dynamo.NewPlaidItemDAO.MultipleItemsFoundException;
 import lambda.requests.items.CreateItemRequest;
-import lambda.requests.items.GetItemRequest;
 import external.plaid.clients.ItemCreator;
 import external.plaid.entities.ImmutablePlaidItem;
 import external.plaid.entities.PlaidItem;
@@ -89,7 +88,7 @@ public class ItemProcessor {
                 .accounts(createItemRequest.getAccounts())
                 .institutionId(createItemRequest.getInstitutionId())
                 .metadata(createItemRequest.getMetadata())
-                .webhook(createItemRequest.getWebhook())
+                .webhook(createItemRequest.getWebhookEnabled())
                 .build();
     }
 

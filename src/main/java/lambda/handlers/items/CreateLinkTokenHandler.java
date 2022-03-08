@@ -11,11 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 public class CreateLinkTokenHandler
-        implements RequestHandler<CreateLinkTokenHandler.CreateLinkTokenLambdaRequest, String> {
+        implements RequestHandler<CreateLinkTokenHandler.LambdaCreateLinkTokenRequest, String> {
 
     private final CreateLinkTokenProcessor processor;
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -28,7 +27,7 @@ public class CreateLinkTokenHandler
     }
 
     @Override
-    public String handleRequest(CreateLinkTokenLambdaRequest request, Context context) {
+    public String handleRequest(LambdaCreateLinkTokenRequest request, Context context) {
         return handleRequest(request.build(), context);
     }
 
@@ -45,14 +44,14 @@ public class CreateLinkTokenHandler
         }
     }
 
-    public static class CreateLinkTokenLambdaRequest {
+    public static class LambdaCreateLinkTokenRequest {
         private final ImmutableCreateLinkTokenRequest.Builder builder;
 
         private String user;
         private List<String> products;
         private boolean webhookEnabled;
 
-        public CreateLinkTokenLambdaRequest() {
+        public LambdaCreateLinkTokenRequest() {
             this.builder = ImmutableCreateLinkTokenRequest.builder();
         }
 

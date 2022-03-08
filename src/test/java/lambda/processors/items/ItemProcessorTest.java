@@ -117,7 +117,7 @@ public class ItemProcessorTest {
                 .institutionId(INST_ID)
                 .metadata(METADATA)
                 .publicToken(PUBLIC_TOKEN)
-                .webhook(webhook)
+                .webhookEnabled(webhook)
                 .build();
     }
 }

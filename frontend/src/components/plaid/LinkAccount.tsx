@@ -38,7 +38,7 @@ function linkReducer(state: State, action: Action): State {
         case ActionKind.UpdateLinkToken:
             return {
                 ...state,
-                linkToken: action.payload
+                linkToken: action.payload.linkToken
             }
         case ActionKind.UpdatePublicToken:
             return {

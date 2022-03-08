@@ -49,7 +49,7 @@ public class CreateItemHandlerTest {
                 .institutionId(INST_ID)
                 .metadata(METADATA)
                 .publicToken(PUBLIC_TOKEN)
-                .webhook(webhook)
+                .webhookEnabled(webhook)
                 .build();
     }
 }

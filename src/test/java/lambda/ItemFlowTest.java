@@ -183,7 +183,7 @@ public class ItemFlowTest {
                 .institutionId(INST_ID)
                 .metadata(METADATA)
                 .publicToken(publicToken)
-                .webhook(usingWebhook)
+                .webhookEnabled(usingWebhook)
                 .build();
     }
 
