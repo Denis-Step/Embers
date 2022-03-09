@@ -2,6 +2,8 @@ package lambda.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dagger.DaggerProcessorComponent;
 import external.plaid.entities.PlaidItem;
 import lambda.processors.transactions.PollTransactionsProcessor;
@@ -66,6 +68,7 @@ public class PollTransactionsHandler implements
 
     public static class LambdaPollTransactionsRequest {
         private final ImmutablePollTransactionsRequest.Builder builder;
+        private final ObjectMapper objectMapper;
 
         private PlaidItem item;
         @Nullable private String accountId;
@@ -73,6 +76,8 @@ public class PollTransactionsHandler implements
         private String endDate;
 
         public LambdaPollTransactionsRequest() {
+            objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new Jdk8Module());
             this.builder = ImmutablePollTransactionsRequest.builder();
         }
 
@@ -84,9 +89,10 @@ public class PollTransactionsHandler implements
             return item;
         }
 
-        public void setItem(PlaidItem item) {
-            this.builder.plaidItem(item);
-            this.item = item;
+        public void setItem(Object itemJson) {
+            PlaidItem plaidItem = objectMapper.convertValue(itemJson, PlaidItem.class);
+            this.builder.plaidItem(plaidItem);
+            this.item = plaidItem;
         }
 
         public String getAccountId() {

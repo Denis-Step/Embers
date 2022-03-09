@@ -34,7 +34,7 @@ export class MainStack extends Stack {
         this.messageLambdas = new MessageLambdas(this, 'MessageLambdas');
 
         this.pullTxStateMachine = new PullTransactionsMachine(this, 'PullTxStateMachine', {
-            loadTransactionsLambda:this.transactionLambdas.loadTransactionsLambda,
+            loadTransactionsLambda:this.transactionLambdas.pollTransactionsLambda,
             receiveTransactionsLambda: this.transactionLambdas.receiveTransactionsLambda
         })
 

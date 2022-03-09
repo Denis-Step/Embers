@@ -10,7 +10,7 @@ export class TransactionLambdasProps {
 }
 
 export class TransactionLambdas extends Construct {
-    public readonly loadTransactionsLambda: lambda.Function;
+    public readonly pollTransactionsLambda: lambda.Function;
     public readonly receiveTransactionsLambda: lambda.Function;
     public readonly newTransactionLambda: lambda.Function;
     public readonly getTransactionsLambda: lambda.Function;
@@ -25,9 +25,9 @@ export class TransactionLambdas extends Construct {
             itemsTable: props.itemsTable
         });
 
-        this.loadTransactionsLambda = new lambda.Function(this, 'LoadTransactionsLambda', {
+        this.pollTransactionsLambda = new lambda.Function(this, 'PollTransactionsLambda', {
             runtime: lambda.Runtime.JAVA_11,
-            handler: "lambda.handlers.LoadTransactionsHandler",
+            handler: "lambda.handlers.PollTransactionsHandler",
 
             // Code supports local build steps, S3 buckets, and inlining.
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
