@@ -24,7 +24,7 @@ type State = {
     products: string[];
     linkToken?: string;
     publicToken?: string;
-    metaData?: PlaidLinkOnSuccessMetadata;
+    metadata?: PlaidLinkOnSuccessMetadata;
     webhookEnabled: boolean
 }
 
@@ -44,7 +44,7 @@ function linkReducer(state: State, action: Action): State {
             return {
                 ...state,
                 publicToken: action.payload.publicToken,
-                metaData: action.payload.metaData
+                metadata: action.payload.metadata
             }
         case ActionKind.UpdateWebhook:
             return {
@@ -76,7 +76,7 @@ const buildItemInfo = (metadata: Partial<PlaidLinkOnSuccessMetadata>,
         accounts: accounts,
         dateCreated: new Date().toISOString(),
         webhookEnabled: webhookEnabled,
-        metaData: JSON.stringify(metadata)
+        metadata: JSON.stringify(metadata)
     };
 }
 
@@ -95,9 +95,9 @@ const LinkAccount = () => {
         }
 
         // Send info back when publicToken is generated.
-        if (state.publicToken && state.metaData) {
-            const {metaData, publicToken, webhookEnabled, products} = state;
-            const infoToSend = buildItemInfo(metaData, publicToken, webhookEnabled, products)
+        if (state.publicToken && state.metadata) {
+            const {metadata, publicToken, webhookEnabled, products} = state;
+            const infoToSend = buildItemInfo(metadata, publicToken, webhookEnabled, products)
             sendInfoBack(infoToSend);
         }
 
@@ -124,7 +124,7 @@ const LinkAccount = () => {
         console.log('on link success called', public_token, metadata);
         dispatch({
             type: ActionKind.UpdatePublicToken,
-            payload: {publicToken: public_token, metaData: metadata}
+            payload: {publicToken: public_token, metadata}
         });
     }, [])
 

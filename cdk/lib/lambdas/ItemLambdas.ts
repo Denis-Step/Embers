@@ -43,7 +43,7 @@ export class ItemLambdas extends Construct {
 
         this.getItemLambda = new lambda.Function(this, 'GetItemLambda', {
             runtime: lambda.Runtime.JAVA_11,
-            handler: "lambda.handlers.items.GetItemsHandler",
+            handler: "lambda.handlers.items.GetItemHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
             memorySize: 512,
             timeout: Duration.seconds(300),

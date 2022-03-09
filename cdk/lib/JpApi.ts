@@ -99,7 +99,7 @@ export class JpApi extends cdk.Construct {
             '"institutionId": $input.json(\'$.institutionId\'),' +
             '"accounts": $input.json(\'$.accounts\'),' +
             '"dateCreated": $input.json(\'$.dateCreated\'),' +
-            '"metaData" : $input.json(\'$.metaData\'),' +
+            '"metadata" : $input.json(\'$.metadata\'),' +
             '"webhookEnabled" : $input.json(\'$.webhookEnabled\')}'
       },
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH, integrationResponses: [

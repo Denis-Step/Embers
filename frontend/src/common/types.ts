@@ -5,7 +5,7 @@ export interface PlaidItemCreationInfo {
     accounts: string[];
     dateCreated: Date | string;
     webhookEnabled: boolean;
-    metaData: string; // Stringfied metadata.
+    metadata: string; // Stringfied metadata.
 }
 
 export interface CognitoJwt {

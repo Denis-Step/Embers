@@ -13,8 +13,6 @@ import java.util.Optional;
  * Uses get* format for out-the-box JSON serialization in AWS Lambda handler request types.
  */
 @Value.Immutable
-@JsonSerialize(as= ImmutablePlaidItem.class)
-@JsonDeserialize(as= ImmutablePlaidItem.class)
 public interface PlaidItem {
     String getUser();
     String getInstitutionId();
