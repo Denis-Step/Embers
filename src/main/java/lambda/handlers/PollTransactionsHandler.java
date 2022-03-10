@@ -85,11 +85,11 @@ public class PollTransactionsHandler implements
             return this.builder.build();
         }
 
-        public PlaidItem getItem() {
+        public PlaidItem getPlaidItem() {
             return item;
         }
 
-        public void setItem(Object itemJson) {
+        public void setPlaidItem(Object itemJson) {
             PlaidItem plaidItem = objectMapper.convertValue(itemJson, PlaidItem.class);
             this.builder.plaidItem(plaidItem);
             this.item = plaidItem;
