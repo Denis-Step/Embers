@@ -3,6 +3,7 @@ package external.plaid.entities;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Wrapper on Plaid Transactions. Removes unnecessary info.
@@ -24,6 +25,6 @@ public interface Transaction {
      * @return description of transaction
      */
     String getDescription();
-    String getOriginalDescription();
+    @Nullable String getOriginalDescription();
     String getMerchantName();
 }

@@ -83,7 +83,7 @@ public class TransactionsGrabberTest {
         TransactionsGetResponse.Transaction mockTransaction = mock(TransactionsGetResponse.Transaction.class);
         when(mockTransaction.getAmount()).thenReturn(AMOUNT);
         when(mockTransaction.getName()).thenReturn(DESCRIPTION);
-        when(mockTransaction.getOriginalDescription()).thenReturn(ORIGINAL_DESCRIPTION);
+        when(mockTransaction.getOriginalDescription()).thenReturn(null);
         when(mockTransaction.getMerchantName()).thenReturn(MERCHANT_NAME);
         when(mockTransaction.getDate()).thenReturn(DATE);
         when(mockTransaction.getAccountId()).thenReturn(ACCOUNT_ID);
