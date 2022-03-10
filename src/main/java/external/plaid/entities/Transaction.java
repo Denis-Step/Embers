@@ -26,5 +26,5 @@ public interface Transaction {
      */
     String getDescription();
     @Nullable String getOriginalDescription();
-    String getMerchantName();
+    @Nullable String getMerchantName();
 }
