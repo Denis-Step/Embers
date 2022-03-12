@@ -7,7 +7,7 @@ class TransactionsTable extends Construct {
     constructor(scope: Construct, id: string, props?: TableProps) {
         super(scope, id);
 
-        this.underlyingTable =  new Table(scope, 'Transactions', {
+        this.underlyingTable =  new Table(scope, 'TransactionsT', {
             tableName: 'Transactions',
             partitionKey: {name: 'user', type: AttributeType.STRING},
             sortKey: {name: 'dateTransactionId', type: AttributeType.STRING},
@@ -59,7 +59,7 @@ export class JPTables extends Construct {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        this.transactionsTable = new TransactionsTable(this, "TransactionTable").underlyingTable;
-        this.itemsTable = new PlaidItemsTable(this, "ItemTable").underlyingTable;
+        this.transactionsTable = new TransactionsTable(this, "TransactionTable2").underlyingTable;
+        this.itemsTable = new PlaidItemsTable(this, "ItemTable2").underlyingTable;
     }
 }
