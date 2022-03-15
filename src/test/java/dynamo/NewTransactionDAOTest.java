@@ -14,6 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedResponse;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
 import java.util.*;
@@ -154,6 +155,24 @@ public class NewTransactionDAOTest {
                         .sortValue(transaction.getDate() + "#" + transaction.getTransactionId())
                         .build()))).items().stream().collect(Collectors.toList());
         assertEquals(transaction, transactionList.get(0));
+
+        //Cleanup.
+        transactionsTable.deleteItem(transaction);
+    }
+
+    @Test
+    public void saveWithCorrectResponse() {
+        Transaction transaction = TransactionsTableUtils.createTransaction();
+        boolean transactionExisted = transactionDAO.saveWithResponse(transaction);
+
+        assertEquals(false, transactionExisted);
+        Transaction secondTransaction = ImmutableTransaction.builder()
+                .from(transaction)
+                .description("DESC")
+                .build();
+
+        boolean secondTransactionExisted = transactionDAO.saveWithResponse(secondTransaction);
+        assertEquals(true, secondTransactionExisted);
 
         //Cleanup.
         transactionsTable.deleteItem(transaction);

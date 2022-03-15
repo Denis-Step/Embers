@@ -13,6 +13,8 @@ repositories {
 dependencies {
     annotationProcessor 'javax.annotation:javax.annotation-api:1.3.2'
 
+    implementation "io.vavr:vavr:0.10.4"
+
     implementation 'com.plaid:plaid-java:8.5.0'
     implementation 'com.twilio.sdk:twilio:8.20.0'
 
@@ -144,8 +146,8 @@ task packageSkinny(type: Zip) {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 build.dependsOn packageSkinny

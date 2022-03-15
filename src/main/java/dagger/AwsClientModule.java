@@ -7,6 +7,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dynamo.DynamoTableSchemas;
 import dynamo.TransactionDAO;
+import events.impl.SmsEbClient;
+import events.impl.TransactionsEbClient;
 import external.plaid.entities.PlaidItem;
 import external.plaid.entities.Transaction;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -23,6 +25,9 @@ import javax.inject.Singleton;
 
 @Module
 public interface AwsClientModule {
+
+    static final String TRANSACTIONS_EVENT_BUS_NAME = "TransactionsBus";
+    static final String SMS_EVENT_BUS_NAME = "SmsBus";
 
     @Provides
     @Singleton
@@ -160,4 +165,18 @@ public interface AwsClientModule {
     static ObjectMapper provideObjectMapper() {
         return new ObjectMapper();
     }
+
+
+    @Provides
+    static TransactionsEbClient provideTransactionsEbClient(EventBridgeClient eventBridgeClient,
+                                                            ObjectMapper objectMapper) {
+        return new TransactionsEbClient(eventBridgeClient, TRANSACTIONS_EVENT_BUS_NAME, objectMapper);
+    }
+
+    @Provides
+    static SmsEbClient provideSmsEbClient(EventBridgeClient eventBridgeClient,
+                                          @Named("DEFAULT_MAPPER") ObjectMapper objectMapper) {
+        return new SmsEbClient(eventBridgeClient, SMS_EVENT_BUS_NAME, objectMapper);
+    }
+
 }

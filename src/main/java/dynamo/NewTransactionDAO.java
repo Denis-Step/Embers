@@ -1,16 +1,14 @@
 package dynamo;
 
 import external.plaid.entities.Transaction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.model.Page;
-import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
-import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.*;
+import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -77,6 +75,21 @@ public class NewTransactionDAO {
     }
 
     public void save(Transaction transaction) { this.table.putItem(transaction); }
+
+    /**
+     * Saves new {@link Transaction} or overwrites all attributes of existing item with provided item's attributes,
+     * returns a boolean indicating whether the item previously existed or not.
+     * @param transaction transaction to save
+     * @return booleans indicating whether ot not an item with the same primary key already existed
+     */
+    public boolean saveWithResponse(Transaction transaction) {
+        PutItemEnhancedResponse<Transaction> response = this.table.putItemWithResponse(
+                PutItemEnhancedRequest.builder(Transaction.class)
+                        .item(transaction)
+                        .returnValues(ReturnValue.ALL_OLD)
+                        .build());
+        return response.attributes() != null;
+    }
 
     public void delete(Transaction transaction) {this.table.deleteItem(transaction); }
 

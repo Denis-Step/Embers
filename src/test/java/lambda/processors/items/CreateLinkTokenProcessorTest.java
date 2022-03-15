@@ -55,7 +55,6 @@ public class CreateLinkTokenProcessorTest {
 
     @Test
     public void createLinkTokenWithWebhook() {
-        when(webhookUrl.toString()).thenReturn(webhookUrlString);
         when(linkGrabber.getLinkToken(USER, PRODUCTS, webhookUrlString)).thenReturn(WEBHOOK_LINK_TOKEN);
 
         CreateLinkTokenRequest request = sampleLinkTokenRequest(true);

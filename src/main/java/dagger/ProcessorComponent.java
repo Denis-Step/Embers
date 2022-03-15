@@ -21,6 +21,5 @@ public interface ProcessorComponent {
     QueryTransactionsProcessor buildGetTransactionsProcessor();
     PollTransactionsProcessor buildPollTransactionsProcessor();
     NewTransactionProcessor buildNewTransactionProcessor();
-    ReceiveTransactionsProcessor buildReceiveTransactionsProcessor();
 
 }

@@ -268,7 +268,7 @@ public class TransactionsTableUtils {
     public static List<Transaction> createTransactions(int i) {
         List<Transaction> transactions = new ArrayList<>();
 
-        for (int j = 0; j <= i; j++) {
+        for (int j = 0; j < i; j++) {
             Transaction baseTransaction = createTransaction();
             Transaction transaction = ImmutableTransaction.builder()
                     .from(baseTransaction)
