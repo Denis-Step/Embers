@@ -33,13 +33,13 @@ public class NewTransactionProcessor {
 
     public String process(Transaction transaction) throws PlaidItemDAO.ItemException {
         PlaidItem item = plaidItemDAO.getItem(transaction.getUser(), transaction.getInstitutionName());
-        if (!item.receiverNumber().isPresent()) {
+        if (!item.getReceiverNumber().isPresent()) {
             throw new PlaidItemDAO.ItemException("No receiver number found for this user");
         }
 
-        String receiverNumber = item.receiverNumber().get();
+        String receiverNumber = item.getReceiverNumber().get();
         SmsMessage smsMessage = createMessage(transaction, receiverNumber);
-        LOGGER.info("Created message {} for {} to {}", smsMessage.getMessage(), item.user(), receiverNumber);
+        LOGGER.info("Created message {} for {} to {}", smsMessage.getMessage(), item.getUser(), receiverNumber);
 
         this.smsEbClient.createNewSmsEvent(smsMessage);
         return smsMessage.toString();

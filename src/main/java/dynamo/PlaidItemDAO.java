@@ -32,17 +32,17 @@ public class PlaidItemDAO {
     public PlaidItemDAO() { }
 
     public PlaidItemDAO(PlaidItem plaidItem) {
-        this.setUser(plaidItem.user()); // Set partition key.
-        this.setInstitutionIdAccessToken(plaidItem.institutionId() +
-                "#" + plaidItem.accessToken()); // Set sort key.
-        this.setID(plaidItem.ID());
-        this.setAvailableProducts(plaidItem.availableProducts());
-        this.setAccounts(plaidItem.accounts());
-        this.setDateCreated(plaidItem.dateCreated());
-        this.setMetaData(plaidItem.metaData());
-        this.setWebHook(plaidItem.webhook());
-        if (plaidItem.receiverNumber().isPresent()) {
-            this.setReceiverNumber(plaidItem.receiverNumber().get());
+        this.setUser(plaidItem.getUser()); // Set partition key.
+        this.setInstitutionIdAccessToken(plaidItem.getInstitutionId() +
+                "#" + plaidItem.getAccessToken()); // Set sort key.
+        this.setID(plaidItem.getId());
+        this.setAvailableProducts(plaidItem.getAvailableProducts());
+        this.setAccounts(plaidItem.getAccounts());
+        this.setDateCreated(plaidItem.getDateCreated());
+        this.setMetaData(plaidItem.getMetadata());
+        this.setWebHook(plaidItem.getWebhook());
+        if (plaidItem.getReceiverNumber().isPresent()) {
+            this.setReceiverNumber(plaidItem.getReceiverNumber().get());
         };
     }
 
@@ -52,27 +52,28 @@ public class PlaidItemDAO {
         String accessToken = institutionIdAccessToken.split("#")[1];
 
         ImmutablePlaidItem.Builder builder = ImmutablePlaidItem.builder()
-                .ID(itemInfo.getID())
+                .id(itemInfo.getID())
                 .accessToken(accessToken)
                 .user(itemInfo.getUser())
                 .dateCreated(itemInfo.getDateCreated())
                 .availableProducts(itemInfo.getAvailableProducts())
                 .accounts(itemInfo.getAccounts())
                 .institutionId(institutionID)
-                .metaData(itemInfo.getMetaData())
+                .metadata(itemInfo.getMetaData())
                 .webhook(itemInfo.getWebHook());
-        if (!(this.receiverNumber == null)) {
+
+        if (this.receiverNumber != null) {
             return builder.build().withReceiverNumber(this.receiverNumber);
         } else {
             return builder.build();
         }
     }
 
-    @DynamoDBHashKey(attributeName = "User")
+    @DynamoDBHashKey(attributeName = "user")
     public String getUser() { return user; }
     public void setUser(String user) { this.user = user; }
 
-    @DynamoDBRangeKey(attributeName = "InstitutionID")
+    @DynamoDBRangeKey(attributeName = "institutionIdAccessToken")
     public String getInstitutionIdAccessToken() { return institutionIdAccessToken; }
     public void setInstitutionIdAccessToken(String institutionIdAccessToken) { this.institutionIdAccessToken = institutionIdAccessToken; }
 
@@ -80,29 +81,32 @@ public class PlaidItemDAO {
     public String getID() { return ID; }
     public void setID(String ID) { this.ID = ID; }
 
-    @DynamoDBAttribute(attributeName = "AvailableProducts")
+    @DynamoDBAttribute(attributeName = "availableProducts")
     public List<String> getAvailableProducts() { return availableProducts; }
     public void setAvailableProducts(List<String> availableProducts) { this.availableProducts = availableProducts; }
 
-    @DynamoDBAttribute(attributeName = "DateCreated")
+    @DynamoDBAttribute(attributeName = "dateCreated")
     public String getDateCreated() { return dateCreated; }
     public void setDateCreated(String dateCreated) { this.dateCreated = dateCreated; }
 
-    @DynamoDBAttribute(attributeName = "Metadata")
+    @DynamoDBAttribute(attributeName = "metaData")
     public String getMetaData() { return metaData; }
     public void setMetaData(String metaData) { this.metaData = metaData; }
 
-    @DynamoDBAttribute(attributeName = "Accounts")
+    @DynamoDBAttribute(attributeName = "accounts")
     public List<String> getAccounts() { return accounts; }
     public void setAccounts(List<String> accounts) { this.accounts = accounts; }
 
-    @DynamoDBAttribute(attributeName = "ReceiverNumber")
+    @DynamoDBAttribute(attributeName = "receiverNumber")
     public String getReceiverNumber() { return receiverNumber; }
     public void setReceiverNumber(String receiverNumber) { this.receiverNumber = receiverNumber; }
 
-    @DynamoDBAttribute(attributeName = "Webhook")
+    @DynamoDBAttribute(attributeName = "webHook")
     public Boolean getWebHook() { return webHook; }
     public void setWebHook(Boolean webHook) { this.webHook = webHook; }
+
+    // @TODO: Start here for public API.
+
 
     public PlaidItem getItem(String user, String institution) throws ItemException {
         List<PlaidItem> plaidItems = this.query(user, institution);
@@ -146,6 +150,24 @@ public class PlaidItemDAO {
         dao.save();
     }
 
+    public void delete(String user, String institutionIdAccessToken) {
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":name", new AttributeValue().withS(user));
+        eav.put(":institutionId", new AttributeValue().withS(institutionIdAccessToken));
+
+        DynamoDBDeleteExpression dynamoDBDeleteExpression = new DynamoDBDeleteExpression()
+                .withConditionExpression("#U = :name AND #Ins = :institutionId")
+                .addExpressionAttributeNamesEntry("#U", "user")
+                .addExpressionAttributeNamesEntry("#Ins", "institutionIdAccessToken")
+                .withExpressionAttributeValues(eav);
+
+        dynamoDBMapper.delete(PlaidItemDAO.class, dynamoDBDeleteExpression);
+    }
+
+    public void delete(PlaidItem plaidItem) {
+        dynamoDBMapper.delete(new PlaidItemDAO(plaidItem));
+    }
+
     private void save() {
         this.dynamoDBMapper.save(this);
     }
@@ -156,9 +178,10 @@ public class PlaidItemDAO {
         eav.put(":institution",new AttributeValue().withS(institutionId));
 
         return new DynamoDBQueryExpression<PlaidItemDAO>()
-                .withKeyConditionExpression("#U = :name AND begins_with ( InstitutionID, :institution )")
-                .addExpressionAttributeNamesEntry("#U", "User")
+                .withKeyConditionExpression("#U = :name AND begins_with ( institutionIdAccessToken, :institution )")
+                .addExpressionAttributeNamesEntry("#U", "user")
                 .withExpressionAttributeValues(eav);
+
     }
 
     private DynamoDBQueryExpression<PlaidItemDAO> createQueryRequest(String user) {
@@ -167,7 +190,7 @@ public class PlaidItemDAO {
 
         return new DynamoDBQueryExpression<PlaidItemDAO>()
                 .withKeyConditionExpression("#U = :name")
-                .addExpressionAttributeNamesEntry("#U", "User")
+                .addExpressionAttributeNamesEntry("#U", "user")
                 .withExpressionAttributeValues(eav);
     }
 

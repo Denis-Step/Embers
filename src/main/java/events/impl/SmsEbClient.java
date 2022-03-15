@@ -45,12 +45,6 @@ public class SmsEbClient extends AbstractSmsEbClient {
         }
     }
 
-    public void createNewSmsEvent(Collection<SmsMessage> smsMessages) {
-        smsMessages.stream().forEach(
-                newSms -> createNewSmsEvent(newSms));
-    }
-
-
     private PutEventsRequestEntry newTransactionSmsPutEvent(SmsMessage smsMessage) throws JsonProcessingException {
         return PutEventsRequestEntry.builder()
                 .eventBusName(this.eventBusName)

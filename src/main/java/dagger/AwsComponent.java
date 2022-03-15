@@ -1,13 +1,14 @@
 package dagger;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import dynamo.NewPlaidItemDAO;
+import dynamo.NewTransactionDAO;
 import dynamo.TransactionDAO;
+import events.impl.TransactionsEbClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -20,9 +21,10 @@ public interface AwsComponent {
     AmazonDynamoDB buildDynamoClient();
     DynamoDbClient buildDynamoDbClient();
     DynamoDbEnhancedClient buildDynamoEnhancedClient();
-    AWSCredentialsProvider buildCredentialsProvider();
-    EventBridgeClient buildEventBridgeClient();
 
-    TransactionDAO buildNewTransactionDao();
-    @Named("TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> buildNewTransactionsTable();
+    @Named("OLD_TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> buildNewTransactionsTable();
+    NewPlaidItemDAO buildPlaidItemDAO();
+    NewTransactionDAO buildTransactionDAO();
+
+    TransactionsEbClient buildTransactionsEbClient();
 }

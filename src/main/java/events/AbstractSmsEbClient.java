@@ -6,7 +6,7 @@ import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 
 import java.util.Collection;
 
-public abstract class AbstractSmsEbClient implements SmsEventCreator, EventBridgeEventCreator {
+public abstract class AbstractSmsEbClient implements SmsEventCreator {
 
     protected final EventBridgeClient eventBridgeClient;
     protected final String eventBusName;
@@ -24,20 +24,8 @@ public abstract class AbstractSmsEbClient implements SmsEventCreator, EventBridg
 
     public abstract void createNewSmsEvent(SmsMessage smsMessage);
 
-    public abstract void createNewSmsEvent(Collection<SmsMessage> smsMessages);
-
-    @Override
-    public EventBridgeClient getEventBridgeClient() {
-        return eventBridgeClient;
+    public void createNewSmsEvent(Collection<SmsMessage> smsMessages) {
+        smsMessages.stream().forEach(sms -> createNewSmsEvent(sms));
     }
 
-    @Override
-    public String getEventBusName() {
-        return eventBusName;
-    }
-
-    @Override
-    public ObjectMapper getObjectMapper() {
-        return objectMapper;
-    }
 }

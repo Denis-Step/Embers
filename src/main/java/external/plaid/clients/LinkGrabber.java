@@ -3,6 +3,8 @@ package external.plaid.clients;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.LinkTokenCreateRequest;
 import com.plaid.client.response.LinkTokenCreateResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -10,12 +12,12 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
+
 
 public class LinkGrabber {
 
     public final PlaidClient plaidClient;
-    private static final Logger LOGGER = Logger.getLogger(LinkGrabber.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinkGrabber.class.getName());
 
     // Serve only US requests.
     public static final List<String> COUNTRY_CODES = Arrays.asList("US");

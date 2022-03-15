@@ -1,6 +1,7 @@
 package dynamo;
 
 import dagger.DaggerAwsComponent;
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @DynamoDbBean
@@ -114,26 +116,44 @@ public class TransactionDAO {
                 .collect(Collectors.toList());
     }
 
-    public List<Transaction> query(Transaction transaction) {
-        String sortKey = transaction.date + "#" + transaction.amount.toString() + "#" +
-                transaction.transactionId;
+    public Optional<Transaction> query(Transaction transaction) {
+        String sortKey = transaction.getDate() +
+                "#" +
+                transaction.getAmount() +
+                "#" +
+                transaction.getTransactionId();
 
-        return query(transaction.getUser(), sortKey);
-    }
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder()
+                        .partitionValue(transaction.getUser())
+                        .sortValue(sortKey)
+                        .build());
 
-    public Transaction querySingle(String user, String sortKey) throws TransactionNotFoundException {
-        List<Transaction> transactions = query(user, sortKey);
-        if (transactions.size() != 1) {
-            throw new TransactionNotFoundException("Transaction not found");
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        PageIterable<TransactionDAO> pages = this.table.query(queryRequest);
+
+        List<Transaction> transactions = pages.items().stream()
+                .map(TransactionDAO::asTransaction)
+                .collect(Collectors.toList());
+
+        if (!transactions.isEmpty()) {
+            return Optional.of(transactions.get(0));
         } else {
-            return transactions.get(0);
+            return Optional.empty();
         }
     }
 
+    /**
+     * @param user
+     * @param sortKey usually date.
+     * @return
+     */
     public List<Transaction> query(String user, String sortKey) {
 
         QueryConditional queryConditional = QueryConditional
-                .sortBeginsWith(Key.builder()
+                .sortGreaterThanOrEqualTo(Key.builder()
                         .partitionValue(user)
                         .sortValue(sortKey)
                         .build()
@@ -225,21 +245,20 @@ public class TransactionDAO {
     }
 
     private Transaction asTransaction() {
-        LOGGER.info(this.dateAmountTransactionId);
         String date = this.dateAmountTransactionId.split("#")[0];
         double amount = Double.valueOf(this.dateAmountTransactionId.split("#")[1]);
         String transactionId = this.dateAmountTransactionId.split("#")[2];
 
-        return Transaction.getBuilder()
-                .setUser(this.user)
-                .setInstitutionName(this.institutionName)
-                .setAccountId(this.account)
-                .setAmount(amount)
-                .setDescription(this.description)
-                .setOriginalDescription(this.originalDescription)
-                .setMerchantName(this.merchantName)
-                .setDate(date)
-                .setTransactionId(transactionId)
+        return ImmutableTransaction.builder()
+                .user(this.user)
+                .institutionName(this.institutionName)
+                .accountId(this.account)
+                .amount(amount)
+                .description(this.description)
+                .originalDescription(this.originalDescription)
+                .merchantName(this.merchantName)
+                .date(date)
+                .transactionId(transactionId)
                 .build();
     }
 

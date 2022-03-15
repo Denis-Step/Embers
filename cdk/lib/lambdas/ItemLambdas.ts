@@ -2,6 +2,11 @@ import * as lambda from "@aws-cdk/aws-lambda";
 import {Construct, Duration, Stack, StackProps} from "@aws-cdk/core";
 import * as path from "path";
 import {ItemLambdaRoles} from "./lambdaroles";
+import {Table} from "@aws-cdk/aws-dynamodb";
+
+export class ItemLambdasProps {
+    itemsTable: Table
+}
 
 export class ItemLambdas extends Construct {
     public readonly createLinkTokenLambda: lambda.Function;
@@ -9,51 +14,37 @@ export class ItemLambdas extends Construct {
     public readonly getItemLambda: lambda.Function;
     public roles: ItemLambdaRoles;
 
-    constructor(scope: Construct, id: string) {
+    constructor(scope: Construct, id: string, props: ItemLambdasProps) {
         super(scope, id);
 
-        this.roles = new ItemLambdaRoles(scope, 'ItemLambdaRoles');
+        this.roles = new ItemLambdaRoles(scope, 'ItemLambdaRoles', {
+            itemsTable: props.itemsTable
+        });
 
         this.createLinkTokenLambda = new lambda.Function(this, 'LinkTokenLambda', {
-            runtime: lambda.Runtime.JAVA_8_CORRETTO,
-            handler: "lambda.handlers.CreateLinkTokenHandler",
+            runtime: lambda.Runtime.JAVA_11,
+            handler: "lambda.handlers.items.CreateLinkTokenHandler",
 
             // Code supports local build steps, S3 buckets, and inlining.
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
-            environment: {
-                "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
-                "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
-                "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
-
-            },
             memorySize: 512,
             timeout: Duration.seconds(300),
             role: this.roles.createLinkTokenLambdaRole
         })
 
         this.createItemLambda = new lambda.Function(this, 'CreateItemLambda', {
-            runtime: lambda.Runtime.JAVA_8_CORRETTO,
-            handler: "lambda.handlers.CreateItemHandler",
+            runtime: lambda.Runtime.JAVA_11,
+            handler: "lambda.handlers.items.CreateItemHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
-            environment: {
-                "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
-                "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
-                "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
-            },
             memorySize: 512,
             timeout: Duration.seconds(300),
             role: this.roles.createItemLambdaRole
         });
 
         this.getItemLambda = new lambda.Function(this, 'GetItemLambda', {
-            runtime: lambda.Runtime.JAVA_8_CORRETTO,
-            handler: "lambda.handlers.GetItemHandler",
+            runtime: lambda.Runtime.JAVA_11,
+            handler: "lambda.handlers.items.GetItemHandler",
             code: lambda.Code.fromAsset(path.join(__dirname, 'JavaPlaid-1.0.zip')),
-            environment: {
-                "CLIENT_ID": "5eb13e97fd0ed40013cc0438",
-                "DEVELOPMENT_SECRET": "60ea81ee4fa5b9ff9b3c07f72f56da",
-                "SANDBOX_SECRET": "68134865febfc98c05f21563bd8b99",
-            },
             memorySize: 512,
             timeout: Duration.seconds(300),
             role: this.roles.getItemLambdaRole

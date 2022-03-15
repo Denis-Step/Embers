@@ -1,98 +1,94 @@
 package lambda.processors.items;
 
-import dynamo.PlaidItemDAO;
+import dynamo.NewPlaidItemDAO;
+import dynamo.NewPlaidItemDAO.MultipleItemsFoundException;
 import lambda.requests.items.CreateItemRequest;
-import lambda.requests.items.GetItemRequest;
 import external.plaid.clients.ItemCreator;
 import external.plaid.entities.ImmutablePlaidItem;
 import external.plaid.entities.PlaidItem;
 import external.plaid.responses.PublicTokenExchangeResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
+/**
+ * Item-related functionality wrapping Plaid clients & Data Acces. Create Items with Link Tokens
+ * & Query for existing Items.
+ */
 // Params: Link --> User, InstitutionId,
 public class ItemProcessor {
 
     private final ItemCreator itemCreator;
-    private final PlaidItemDAO plaidItemDAO;
+    private final NewPlaidItemDAO plaidItemDAO;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemProcessor.class);
+
+    /**
+     * Takes Plaid ItemCreator client & Item DAO in constructor.
+     * @param itemCreator Plaid client to create items
+     * @param plaidItemDAO DAO
+     */
     @Inject
-    public ItemProcessor(ItemCreator itemCreator, PlaidItemDAO plaidItemDAO) {
+    public ItemProcessor(ItemCreator itemCreator, NewPlaidItemDAO plaidItemDAO) {
         this.itemCreator = itemCreator;
         this.plaidItemDAO = plaidItemDAO;
     }
 
-    // Calls Plaid client to request a new Item and uses info from incoming request
-    // to build PlaidItem.
+    /**
+     * Calls Plaid client to request a new Item and uses info from incoming request
+     * to build PlaidItem.
+     * @param createItemRequest incoming request
+     * @return built & saved PlaidItem
+     * @throws IOException
+     */
     public PlaidItem createPlaidItem (CreateItemRequest createItemRequest) throws IOException {
         PlaidItem item = createItem(createItemRequest);
         plaidItemDAO.save(item);
         return item;
     }
 
-    public List<PlaidItem> getItems(GetItemRequest itemRequest) {
-        if (itemRequest.getInstitution() == null) {
-            return plaidItemDAO.query(itemRequest.getUser());
-        } else {
-            return plaidItemDAO.query(itemRequest.getUser(), itemRequest.getInstitution());
-        }
+    /**
+     * Get all items for a user.
+     * @param user the user associated with this item
+     * @param institutionIdAccessToken sort key
+     * @return
+     */
+    public List<PlaidItem> getItems(String user,  String institutionIdAccessToken) {
+        return plaidItemDAO.query(user, institutionIdAccessToken);
     }
 
-    // For when a specific Item is required, avoids having to check size farther up the stack.
-    // Requires institutionId to make this possible.
-    public PlaidItem getItem(GetItemRequest request) throws PlaidItemDAO.ItemException {
-        List<PlaidItem> plaidItems = plaidItemDAO.query(request.getUser(), request.getInstitution());
-
-        if (plaidItems.size() > 1) {
-            throw new PlaidItemDAO.MultipleItemsFoundException("Found " +
-                    plaidItems.size() +
-                    " items:" +
-                    plaidItems.toString());
-        }
-        if (plaidItems.size() < 1) {
-            throw new PlaidItemDAO.ItemNotFoundException("Item Not Found for User:" +
-                    request.getUser() +
-                    "And institution:" +
-                    request.getInstitution());
-        } else {
-            return plaidItems.get(0);
-        }
-    }
-
-    public PlaidItem getItem(String user, String institution) throws PlaidItemDAO.ItemException {
-        List<PlaidItem> plaidItems = plaidItemDAO.query(user, institution);
-
-        if (plaidItems.size() > 1) {
-            throw new PlaidItemDAO.MultipleItemsFoundException("Found " +
-                    plaidItems.size() +
-                    " items:" +
-                    plaidItems.toString());
-        }
-        if (plaidItems.size() < 1) {
-            throw new PlaidItemDAO.ItemNotFoundException("Item Not Found for User:" +
-                    user +
-                    "And institution:" +
-                    institution);
-        } else {
-            return plaidItems.get(0);
-        }
+    /**
+     * Finds a specific item. If and only if one matching item is found, it returns a full Optional.
+     * Otherwise, it will return an empty Optional.
+     * @param user
+     * @param institutionIdAccessToken
+     * @return
+     * @throws MultipleItemsFoundException
+     */
+    public Optional<PlaidItem> getItem(String user, String institutionIdAccessToken) throws MultipleItemsFoundException {
+        Optional<PlaidItem> plaidItemOptional = plaidItemDAO.get(user, institutionIdAccessToken);
+        LOGGER.info("Plaid Item Optional: {}",
+                plaidItemOptional.isPresent() ? plaidItemOptional.toString() : "NONE");
+        return plaidItemOptional;
     }
 
     private PlaidItem createItem(CreateItemRequest createItemRequest) {
         PublicTokenExchangeResponse itemInfo = this.itemCreator.requestItem(createItemRequest.getPublicToken());
 
         return ImmutablePlaidItem.builder()
-                .ID(itemInfo.getID())
+                .id(itemInfo.getID())
                 .accessToken(itemInfo.getAccessToken())
                 .user(createItemRequest.getUser())
                 .dateCreated(createItemRequest.getDateCreated())
                 .availableProducts(createItemRequest.getAvailableProducts())
                 .accounts(createItemRequest.getAccounts())
                 .institutionId(createItemRequest.getInstitutionId())
-                .metaData(createItemRequest.getMetaData())
-                .webhook(createItemRequest.isWebhook())
+                .metadata(createItemRequest.getMetadata())
+                .webhook(createItemRequest.getWebhookEnabled())
                 .build();
     }
 

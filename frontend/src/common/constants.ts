@@ -1,4 +1,4 @@
-export const BETA_ENDPOINT = "https://np9ukj9rr9.execute-api.us-east-2.amazonaws.com/prod/"
+export const BETA_ENDPOINT = "https://abisw8zs99.execute-api.us-east-2.amazonaws.com/prod/"
 export const LINK_API_RESOURCE = "linktoken";
 export const ITEM_API_RESOURCE = "items";
 export const TRANSACTIONS_API_RESOURCE = "transactions";

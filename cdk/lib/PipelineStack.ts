@@ -20,6 +20,7 @@ export class JPPipelineStack extends cdk.Stack{
         const sourceCode = CodePipelineSource.codeCommit(this.repo, 'cdk2');
 
         this.pipeline = new CodePipeline(this, 'JPPipeline', {
+            crossAccountKeys: true,
             selfMutation: true, // Can be turned off to ensure stability.
             synth: new CodeBuildStep('CloudSynth', {
                 input: sourceCode,
@@ -37,6 +38,10 @@ export class JPPipelineStack extends cdk.Stack{
         // Now, we can add stages. The stages consume Stacks. This allows per-stage
         // stack deployment (useful for alarms and monitoring).
 
-        this.pipeline.addStage(new DefaultPipelineStage(this, 'Prod'));
+        // this.pipeline.addStage(new DefaultPipelineStage(this, 'Beta',
+        //     {env:
+        //             {account: "305108885532", region: "us-east-1"}
+        //     }))
+        this.pipeline.addStage(new DefaultPipelineStage(this, 'Production',));
 
-        }}
+    }}

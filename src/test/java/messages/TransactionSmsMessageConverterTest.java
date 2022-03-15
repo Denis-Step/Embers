@@ -1,5 +1,6 @@
 package messages;
 
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.Transaction;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -30,27 +31,28 @@ public class TransactionSmsMessageConverterTest {
         Transaction transaction = sampleTransaction();
         String newTxSms = this.transactionSmsMessageConverter.createNewTransactionMessage(transaction);
         assert (newTxSms.equals("New Transaction: " +
-                transaction.description + " " +
+                transaction.getDescription() + " " +
                 "for " +
-                transaction.amount + " " +
+                transaction.getAmount() + " " +
                 "at " +
-                transaction.merchantName +
+                transaction.getMerchantName() +
                 " on " +
-                transaction.institutionName));
+                transaction.getInstitutionName()));
 
     }
 
     private Transaction sampleTransaction() {
-        return Transaction.getBuilder()
-                .setTransactionId(TRANSACTION_ID)
-                .setAmount(AMOUNT)
-                .setAccountId(ACCOUNT_ID)
-                .setDate(DATE)
-                .setDescription(DESCRIPTION)
-                .setOriginalDescription(ORIGINAL_DESCRIPTION)
-                .setMerchantName(MERCHANT_NAME)
-                .setInstitutionName(INSTITUTION)
-                .setUser(USER)
+        return ImmutableTransaction.builder()
+                .transactionId(TRANSACTION_ID)
+                .institutionName(INSTITUTION)
+                .amount(AMOUNT)
+                .date(DATE)
+                .accountId(ACCOUNT_ID)
+                .description(DESCRIPTION)
+                .merchantName(MERCHANT_NAME)
+                .accountId(ACCOUNT_ID)
+                .user(USER)
+                .originalDescription(ORIGINAL_DESCRIPTION)
                 .build();
     }
 }

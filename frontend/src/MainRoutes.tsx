@@ -3,7 +3,6 @@ import {
     Switch,
     Route,
 } from "react-router-dom";
-import LinkAccount from "./components/plaid/LinkAccount";
 import {CognitoAuthContextProvider} from "./contexts/cognitoAuthContext";
 import {HomePage} from "./pages/HomePage";
 import {LinkAccountPage} from "./pages/LinkAccountPage";

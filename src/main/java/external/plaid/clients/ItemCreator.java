@@ -4,6 +4,8 @@ import com.plaid.client.PlaidClient;
 import com.plaid.client.request.ItemPublicTokenExchangeRequest;
 import com.plaid.client.response.ItemPublicTokenExchangeResponse;
 import external.plaid.responses.PublicTokenExchangeResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -13,6 +15,7 @@ import java.io.IOException;
 public class ItemCreator {
 
     private final PlaidClient plaidClient;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemCreator.class);
 
     @Inject
     public ItemCreator(PlaidClient plaidClient) {
@@ -28,14 +31,17 @@ public class ItemCreator {
      * @VisibleForTesting Leave Public to allow alternative implementations.
      * Throw all exceptions at runtime as they are unrecoverable.
      * @param request Plaid-provided request type.
-     * @return
+     * @return response.
      */
     public PublicTokenExchangeResponse callItemPublicTokenExchangeRequest(ItemPublicTokenExchangeRequest request) {
         Call<ItemPublicTokenExchangeResponse> publicTokenExchangeResponseCall = plaidClient.service()
                 .itemPublicTokenExchange(request);
 
+        LOGGER.info(publicTokenExchangeResponseCall.toString());
+
         try {
             Response<ItemPublicTokenExchangeResponse> resp = publicTokenExchangeResponseCall.execute();
+            LOGGER.info("Response result: {}", resp);
 
             if (resp.isSuccessful()) {
                 return new PublicTokenExchangeResponse(

@@ -2,6 +2,7 @@ package lambda.processors.transactions;
 
 import dynamo.PlaidItemDAO;
 import events.impl.SmsEbClient;
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.PlaidItem;
 import external.plaid.entities.Transaction;
 import messages.SmsMessage;
@@ -55,7 +56,7 @@ public class NewTransactionProcessorTest {
     public void test_throwsException() throws PlaidItemDAO.ItemException {
         when(plaidItemDAO.getItem(any(), any())).thenReturn(plaidItem);
         Optional receiverNumberOptional = Optional.empty();
-        when(plaidItem.receiverNumber()).thenReturn(receiverNumberOptional);
+        when(plaidItem.getReceiverNumber()).thenReturn(receiverNumberOptional);
         newTransactionProcessor.process(createTransaction());
     }
 
@@ -63,23 +64,24 @@ public class NewTransactionProcessorTest {
     public void test_sendsSmsMessage() throws PlaidItemDAO.ItemException {
         when(plaidItemDAO.getItem(any(), any())).thenReturn(plaidItem);
         Optional receiverNumberOptional = Optional.of("+191755555555");
-        when(plaidItem.receiverNumber()).thenReturn(receiverNumberOptional);
+        when(plaidItem.getReceiverNumber()).thenReturn(receiverNumberOptional);
 
         verify(smsEbClient).createNewSmsEvent((SmsMessage) any());
     }
 
     private Transaction createTransaction() {
-        Transaction transaction = new Transaction();
-        transaction.setTransactionId(TRANSACTION_ID);
-        transaction.setInstitutionName(INSTITUTION);
-        transaction.setAmount(AMOUNT);
-        transaction.setDate(DATE);
-        transaction.setAccountId(ACCOUNT_ID);
-        transaction.setDescription(DESCRIPTION);
-        transaction.setMerchantName(MERCHANT_NAME);
-        transaction.setAccountId(ACCOUNT_ID);
-        transaction.setUser(USER);
-        transaction.setOriginalDescription(ORIGINAL_DESCRIPTION);
+        Transaction transaction = ImmutableTransaction.builder()
+                .transactionId(TRANSACTION_ID)
+                .institutionName(INSTITUTION)
+                .amount(AMOUNT)
+                .date(DATE)
+                .accountId(ACCOUNT_ID)
+                .description(DESCRIPTION)
+                .merchantName(MERCHANT_NAME)
+                .accountId(ACCOUNT_ID)
+                .user(USER)
+                .originalDescription(ORIGINAL_DESCRIPTION)
+                .build();
         return transaction;
     }
 }

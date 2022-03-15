@@ -3,7 +3,7 @@ package external.plaid.clients;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.TransactionsGetRequest;
 import com.plaid.client.response.TransactionsGetResponse;
-import dagger.DaggerPlaidComponent;
+import external.plaid.entities.ImmutableTransaction;
 import external.plaid.entities.Transaction;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -30,6 +30,8 @@ public class TransactionsGrabber {
     }
 
     /**
+     * Needs the accessToken to query Plaid, but needs user + institutionName associated with the access token
+     * To return full Transaction object.
      * @param user user to query.
      * @param institutionName institution to query.
      * @param accessToken plaid Item access token.
@@ -57,10 +59,8 @@ public class TransactionsGrabber {
      * @return plaidclient's transactions.
      */
     public List<TransactionsGetResponse.Transaction> callGetTransactionsRequest
-            (TransactionsGetRequest transactionsGetRequest) {
-
+    (TransactionsGetRequest transactionsGetRequest) {
         try {
-
             Call<TransactionsGetResponse> txCall = plaidClient.service().transactionsGet(transactionsGetRequest);
             Response<TransactionsGetResponse> resp = txCall.execute();
             if (resp.isSuccessful()) {
@@ -75,16 +75,16 @@ public class TransactionsGrabber {
     }
 
     private Transaction buildFromPlaid (String user, String institution, TransactionsGetResponse.Transaction plaidTransaction) {
-        return Transaction.getBuilder()
-                .setAmount(plaidTransaction.getAmount())
-                .setDescription(plaidTransaction.getName())
-                .setOriginalDescription(plaidTransaction.getOriginalDescription())
-                .setMerchantName(plaidTransaction.getMerchantName())
-                .setDate(plaidTransaction.getDate())
-                .setAccountId(plaidTransaction.getAccountId())
-                .setTransactionId(plaidTransaction.getTransactionId())
-                .setUser(user)
-                .setInstitutionName(institution)
+        return ImmutableTransaction.builder()
+                .amount(plaidTransaction.getAmount())
+                .description(plaidTransaction.getName())
+                .originalDescription(plaidTransaction.getOriginalDescription())
+                .merchantName(plaidTransaction.getMerchantName())
+                .date(plaidTransaction.getDate())
+                .accountId(plaidTransaction.getAccountId())
+                .transactionId(plaidTransaction.getTransactionId())
+                .user(user)
+                .institutionName(institution)
                 .build();
     }
 

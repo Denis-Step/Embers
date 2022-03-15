@@ -1,20 +1,25 @@
 import React from "react";
-import {Calendar, CalendarChangeParams} from "primereact/calendar";
+import DatePicker from 'react-datepicker';
+import {Text} from '@chakra-ui/react';
 import {ViewTransactionsSearchParams} from "../transactions/ViewTransactions";
 
 export const ViewTransactionsSearchBox = (props: ViewTransactionsSearchBoxProps) => {
 
-    const handleDateChange = (e: CalendarChangeParams) => {
-        const newDate = e.target.value as Date;
-
+    const handleDateChange = (newDate: Date) => {
         const newParams = {...props.paramsState, startDate: newDate}
         props.handleChange(newParams);
     }
 
     return (
-        <Calendar dateFormat="yy/mm/dd"
-                  value={props.paramsState.startDate}
-                  onChange={handleDateChange} />
+        <>
+            <Text fontSize='24px' color='teal' >
+                Start Date
+            </Text>
+            <DatePicker
+                selected={props.paramsState.startDate}
+                onChange={handleDateChange}
+            />
+        </>
     );
 
 }

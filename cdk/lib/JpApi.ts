@@ -1,26 +1,29 @@
 import {UserPool} from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import {Duration, StackProps} from '@aws-cdk/core';
+import {StackProps} from '@aws-cdk/core';
 import * as apigw from '@aws-cdk/aws-apigateway';
-import {PassthroughBehavior} from '@aws-cdk/aws-apigateway';
+import {IntegrationType, PassthroughBehavior} from '@aws-cdk/aws-apigateway';
 import {DEFAULT_COGNITO_USER_POOL_ARN} from "./constants";
+import {StateMachine} from "@aws-cdk/aws-stepfunctions";
+import {Role} from "@aws-cdk/aws-iam";
 
-export interface PlaidLinkApiProps extends StackProps {
+export interface PlaidLinkApiProps {
   linkLambda: lambda.Function;
   itemLambda: lambda.Function;
   getTransactionsLambda: lambda.Function;
+  pullTransactionsMachine: StateMachine
 }
 
-export class JpApi extends cdk.Stack {
+export class JpApi extends cdk.Construct {
 
   // (Optional) Set instance vars. I prefer to do this to make reading these
   // stacks easier. Access modifier does not affect creation details.
-  private userPoolsAuthorizer: apigw.CognitoUserPoolsAuthorizer
+  private readonly userPoolsAuthorizer: apigw.CognitoUserPoolsAuthorizer
   public restApi: apigw.RestApi;
 
   constructor(scope: cdk.Construct, id: string, props: PlaidLinkApiProps) {
-    super(scope, id, props);
+    super(scope, id);
 
     this.restApi = new apigw.RestApi(this, 'PlaidLinkApi', {
       description: "Transaction Service API",
@@ -32,11 +35,14 @@ export class JpApi extends cdk.Stack {
       cognitoUserPools: [userPool]
     })
 
-    // Let's do the integration for linkTokens:
+    // Integrate for linkTokens:
     const postLinkTokenIntegration = new apigw.LambdaIntegration(props.linkLambda, {
       proxy: false,
       allowTestInvoke: true,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito:username\']",' +
+            '"products" : $input.json(\'$.products\'),' +
+            '"webhookEnabled" : "$util.escapeJavaScript($input.json(\'$.webhookEnabled\'))"}'},
       integrationResponses: [
         {
 
@@ -44,7 +50,7 @@ export class JpApi extends cdk.Stack {
           statusCode: "200",
           responseTemplates: {
             // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
-            'application/json': JSON.stringify('$util.escapeJavaScript($input.body)') // Just return the accessToken string.
+            'application/json': '{"linkToken": $input.body}'
           },
           responseParameters: {
             // We can map response parameters
@@ -83,13 +89,19 @@ export class JpApi extends cdk.Stack {
       allowHeaders: apigw.Cors.DEFAULT_HEADERS
     })
 
-    // Now we'll integrate the postItem lambda:
+    // Integrate the postItem lambda:
     const postItemIntegration = new apigw.LambdaIntegration(props.itemLambda, {
       proxy: false,
       allowTestInvoke: true,
       requestTemplates: {"application/json": '{"user" : "$context.authorizer.claims[\'cognito:username\']",' +
-          '"products" : $input.json(\'$.products\'),' +
-          '"webhook" : "$util.escapeJavaScript($input.json(\'$.webhook\'))"}'},
+          '"availableProducts" : $input.json(\'$.availableProducts\'),' +
+          '"publicToken" : $input.json(\'$.publicToken\'),' +
+            '"institutionId": $input.json(\'$.institutionId\'),' +
+            '"accounts": $input.json(\'$.accounts\'),' +
+            '"dateCreated": $input.json(\'$.dateCreated\'),' +
+            '"metadata" : $input.json(\'$.metadata\'),' +
+            '"webhookEnabled" : $input.json(\'$.webhookEnabled\')}'
+      },
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH, integrationResponses: [
         {
 
@@ -136,7 +148,7 @@ export class JpApi extends cdk.Stack {
       allowHeaders: apigw.Cors.DEFAULT_HEADERS
     })
 
-
+    // Integrate getTransactions lambda:
     const getTransactionsIntegration = new apigw.LambdaIntegration(props.getTransactionsLambda, {
       proxy: false,
       allowTestInvoke: true,
@@ -171,8 +183,8 @@ export class JpApi extends cdk.Stack {
         },
       ],
     })
-    const getTransactionsResource = this.restApi.root.addResource("transactions")
-    getTransactionsResource.addMethod('GET', getTransactionsIntegration, {
+    const transactionsResource = this.restApi.root.addResource("transactions")
+    transactionsResource.addMethod('GET', getTransactionsIntegration, {
       authorizer: this.userPoolsAuthorizer,
       authorizationType: apigw.AuthorizationType.COGNITO,
       requestParameters: {
@@ -190,11 +202,66 @@ export class JpApi extends cdk.Stack {
         },
       }]
     })
-    getTransactionsResource.addCorsPreflight({
+    transactionsResource.addCorsPreflight({
       allowOrigins: ['http://localhost:3000'],
       allowMethods: ['OPTIONS', 'GET', 'POST'],
       allowCredentials: true,
       allowHeaders: apigw.Cors.DEFAULT_HEADERS
+    })
+
+    // Integrate postTransactions lambda:
+    const postTransactionsIntegration = new apigw.AwsIntegration({
+      service: "states",
+      action: "StartExecution",
+      integrationHttpMethod: "POST",
+      options: {
+        credentialsRole: Role.fromRoleArn(this,
+            'StepFunctionsAPIRole',
+            "arn:aws:iam::397250182609:role/JPApiGatewayToStepFunctions"),
+        integrationResponses: [
+          {
+
+            // Successful response from the Lambda function, no filter defined
+            statusCode: "200",
+            responseTemplates: {
+              // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+              'application/json': JSON.stringify('$util.escapeJavaScript($input.body)')
+            },
+            responseParameters: {
+              // We can map response parameters
+              // - Destination parameters (the key) are the response parameters (used in mappings)
+              // - Source parameters (the value) are the integration response parameters or expressions
+              // Do this for CORS.
+              // WARNING: DOES NOT SUPPORT ALL HEADERS.
+              'method.response.header.X-Requested-With': "'*'",
+              'method.response.header.Content-Type': "'application/json'",
+              'method.response.header.Access-Control-Allow-Origin': "'http://localhost:3000'",
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'",
+              'method.response.header.Access-Control-Allow-Methods': "'POST,GET,OPTIONS'"
+            }
+          },
+        ],
+        requestTemplates: {
+          "application/json": `{
+              "input": "$util.escapeJavaScript($input.body)",
+              "stateMachineArn": "${props.pullTransactionsMachine.stateMachineArn}"
+            }`,
+        },
+      }
+    })
+    transactionsResource.addMethod('POST', postTransactionsIntegration, {
+      authorizer: this.userPoolsAuthorizer,
+      authorizationType: apigw.AuthorizationType.COGNITO,
+      methodResponses: [{
+        statusCode: "200",
+        responseParameters: {
+          'method.response.header.X-Requested-With': true,
+          'method.response.header.Content-Type': true,
+          'method.response.header.Access-Control-Allow-Origin': true,
+          'method.response.header.Access-Control-Allow-Headers': true,
+          'method.response.header.Access-Control-Allow-Methods': true
+        },
+      }]
     })
 
   }

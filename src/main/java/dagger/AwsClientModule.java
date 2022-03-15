@@ -1,26 +1,33 @@
 package dagger;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dynamo.DynamoTableSchemas;
 import dynamo.TransactionDAO;
+import events.impl.SmsEbClient;
+import events.impl.TransactionsEbClient;
+import external.plaid.entities.PlaidItem;
+import external.plaid.entities.Transaction;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Module
 public interface AwsClientModule {
+
+    static final String TRANSACTIONS_EVENT_BUS_NAME = "TransactionsBus";
+    static final String SMS_EVENT_BUS_NAME = "SmsBus";
 
     @Provides
     @Singleton
@@ -31,8 +38,13 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    static AWSCredentialsProvider provideAWSCredentials() {
-        return new DefaultAWSCredentialsProviderChain();
+    @Named("PLAID_ITEM_TABLE_NAME")
+    static String providePlaidItemTableName() {return "PlaidItems";}
+
+    @Provides
+    @Singleton
+    static AwsCredentialsProvider provideAWSCredentials() {
+        return DefaultCredentialsProvider.create();
     }
 
     @Provides
@@ -43,11 +55,11 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    static AmazonDynamoDB provideAmazonDynamoDb(AWSCredentialsProvider awsCredentialsProvider) {
+    static AmazonDynamoDB provideAmazonDynamoDb() {
         return AmazonDynamoDBClientBuilder
                 .standard()
                 .withRegion("us-east-2")
-                .withCredentials(awsCredentialsProvider)
+                .withCredentials(new DefaultAWSCredentialsProviderChain())
                 .build();
     }
 
@@ -66,23 +78,9 @@ public interface AwsClientModule {
     @Provides
     @Singleton
     static DynamoDbClient provideDdbClient() {
-
-        String stage = System.getenv().get("STAGE");
-
-        if (stage.equals("TEST")) {
-            try {
-                return DynamoDbClient.builder()
-                        .credentialsProvider(DefaultCredentialsProvider.create())
-                        .endpointOverride(new URI("http://localhost:8000"))
-                        .build();
-            } catch (URISyntaxException e) {
-                throw new RuntimeException("Cannot build DynamoDbClient");
-            }
-        } else {
             return DynamoDbClient.builder()
                     .credentialsProvider(DefaultCredentialsProvider.create())
                     .build();
-        }
     }
 
     @Provides
@@ -94,27 +92,67 @@ public interface AwsClientModule {
 
     @Provides
     @Singleton
-    @Named("TRANSACTION_TABLE_SCHEMA")
-    static TableSchema<TransactionDAO> provideTransactionTableSchema() {
+    @Named("OLD_TRANSACTION_TABLE_SCHEMA")
+    static TableSchema<TransactionDAO> provideOldTransactionTableSchema() {
         return TableSchema.fromBean(TransactionDAO.class);
     }
 
     @Provides
     @Singleton
-    @Named("TRANSACTION_TABLE")
+    @Named("PLAID_ITEM_TABLE_SCHEMA")
+    static TableSchema<PlaidItem> providePlaidItemSchema() {
+        return DynamoTableSchemas.PLAID_ITEM_SCHEMA;
+    }
+
+    @Provides
+    @Singleton
+    @Named("TRANSACTION_TABLE_SCHEMA")
+    static TableSchema<Transaction> provideTransactionTableSchema() {
+        return DynamoTableSchemas.TRANSACTION_SCHEMA;
+    }
+
+    @Provides
+    @Singleton
+    @Named("OLD_TRANSACTION_TABLE")
     static DynamoDbTable<TransactionDAO> provideNewTransactionDdbTable(
             DynamoDbEnhancedClient dynamoDbEnhancedClient,
             @Named("TRANSACTION_TABLE_NAME") String transactionTableName,
-            @Named("TRANSACTION_TABLE_SCHEMA") TableSchema<TransactionDAO> tableSchema) {
+            @Named("OLD_TRANSACTION_TABLE_SCHEMA") TableSchema<TransactionDAO> tableSchema) {
 
         return dynamoDbEnhancedClient
                 .table(transactionTableName, tableSchema);
     }
 
     @Provides
-    static TransactionDAO provideNewTransactionDao(DynamoDbEnhancedClient client,
-                                                   @Named("TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> table) {
+    @Singleton
+    static DynamoDbTable<PlaidItem> providePlaidItemTable(DynamoDbEnhancedClient dynamoDbEnhancedClient,
+                                                          @Named("PLAID_ITEM_TABLE_NAME") String itemTableName,
+                                                          @Named("PLAID_ITEM_TABLE_SCHEMA") TableSchema<PlaidItem> tableSchema) {
+
+        return dynamoDbEnhancedClient.table(itemTableName, tableSchema);
+    }
+
+    @Provides
+    @Singleton
+    static DynamoDbTable<Transaction> provideTransactionTable(DynamoDbEnhancedClient dynamoDbEnhancedClient,
+                                                              @Named("TRANSACTION_TABLE_NAME") String txTableName,
+                                                              @Named("TRANSACTION_TABLE_SCHEMA") TableSchema<Transaction> tableSchema) {
+        return dynamoDbEnhancedClient.table(txTableName, tableSchema);
+    }
+
+    @Provides
+    static TransactionDAO provideTransactionDao(DynamoDbEnhancedClient client,
+                                                   @Named("OLD_TRANSACTION_TABLE") DynamoDbTable<TransactionDAO> table) {
         return new TransactionDAO(client, table);
+    }
+
+    @Provides
+    @Singleton
+    static SecretsManagerClient provideSecretsManager(AwsCredentialsProvider awsCredentialsProvider) {
+        return SecretsManagerClient.builder()
+                .credentialsProvider(awsCredentialsProvider)
+                .build();
+
     }
 
     @Provides
@@ -127,4 +165,18 @@ public interface AwsClientModule {
     static ObjectMapper provideObjectMapper() {
         return new ObjectMapper();
     }
+
+
+    @Provides
+    static TransactionsEbClient provideTransactionsEbClient(EventBridgeClient eventBridgeClient,
+                                                            ObjectMapper objectMapper) {
+        return new TransactionsEbClient(eventBridgeClient, TRANSACTIONS_EVENT_BUS_NAME, objectMapper);
+    }
+
+    @Provides
+    static SmsEbClient provideSmsEbClient(EventBridgeClient eventBridgeClient,
+                                          @Named("DEFAULT_MAPPER") ObjectMapper objectMapper) {
+        return new SmsEbClient(eventBridgeClient, SMS_EVENT_BUS_NAME, objectMapper);
+    }
+
 }

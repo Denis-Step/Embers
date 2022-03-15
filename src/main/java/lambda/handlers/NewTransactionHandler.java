@@ -2,7 +2,7 @@ package lambda.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import dagger.DaggerPlaidComponent;
+import dagger.DaggerProcessorComponent;
 import dynamo.PlaidItemDAO;
 import lambda.processors.transactions.NewTransactionProcessor;
 import external.plaid.entities.Transaction;
@@ -11,7 +11,7 @@ public class NewTransactionHandler implements RequestHandler<Transaction, String
     private final NewTransactionProcessor newTransactionProcessor;
 
     public NewTransactionHandler() {
-        this.newTransactionProcessor = DaggerPlaidComponent.create().buildNewTransactionProcessor();
+        this.newTransactionProcessor = DaggerProcessorComponent.create().buildNewTransactionProcessor();
     }
 
     @Override
